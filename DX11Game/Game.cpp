@@ -13,7 +13,7 @@
 #include "fade.h"
 #include "Sound.h"
 #include "DwarfEffect.h"
-#include "Boss.h"
+//#include "Boss.h"
 
 
 HRESULT InitGame() {
@@ -34,10 +34,10 @@ HRESULT InitGame() {
 	if (FAILED(hr)) {
 		return hr;
 	}
-	hr = InitBoss();
-	if (FAILED(hr)) {
-		return hr;
-	}
+	//hr = InitBoss();
+	//if (FAILED(hr)) {
+	//	return hr;
+	//}
 
 	// フィールド初期化
 	hr = InitMeshField(16, 16, 80.0f, 80.0f);
@@ -129,7 +129,7 @@ void UninitGame() {
 	UninitPlayer();
 
 	// 敵機終了処理
-	UninitBoss();
+	//UninitBoss();
 	UninitEnemy();
 
 	// 丸影終了処理
@@ -146,10 +146,10 @@ void UpdateGame() {
 	// 敵更新
 	UpdateEnemy();
 	if (GetEnemyKillSum() == MAX_ENEMY) {
-		bool isBossAlive = UpdateBoss();
-		if (!isBossAlive) {
+		//bool isBossAlive = UpdateBoss();
+		//if (!isBossAlive) {
 			StartFadeOut(SCENE_RESULT);
-		}
+		//}
 	}
 
 
@@ -207,7 +207,7 @@ void DrawGame() {
 	// 敵機描画
 	DrawEnemy();
 	if (GetEnemyKillSum() == MAX_ENEMY) {
-		DrawBoss();
+		//DrawBoss();
 	}
 
 	// 丸影描画

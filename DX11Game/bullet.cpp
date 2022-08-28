@@ -21,7 +21,8 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define	TEXTURE_FILENAME	L"data/texture/bullet000.png"	// テクスチャ ファイル名
+#define	PLAYERBULLET_FILENAME	L"data/texture/bullet_p.png"	// テクスチャ ファイル名
+#define	ENEMYBULLET_FILENAME	L"data/texture/bullet_e.png"	// テクスチャ ファイル名
 
 #define M_DIFFUSE			XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
 #define M_SPECULAR			XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
@@ -33,7 +34,7 @@
 
 #define BULLET_SPEED		7.5f
 #define EBULLET_SPEED		5.5f
-#define BULLET_RADIUS		5.0f
+#define BULLET_RADIUS		10.0f
 #define BULLET_STRENGTH		1.0f
 #define BULLET_GRAVITY		0.95f
 
@@ -59,7 +60,8 @@ struct TBullet {
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-static MESH			g_mesh;					// メッシュ情報
+static MESH			g_mesh_p;					// メッシュ情報
+static MESH			g_mesh_e;					// メッシュ情報
 static MATERIAL		g_material;				// マテリアル
 static TBullet		g_bullet[MAX_BULLET];	// 弾情報
 
@@ -88,17 +90,24 @@ HRESULT InitBullet(void)
 	g_material.Specular = M_SPECULAR;
 	g_material.Power = M_POWER;
 	g_material.Emissive = M_EMISSIVE;
-	g_mesh.pMaterial = &g_material;
+	g_mesh_p.pMaterial = &g_material;
+	g_mesh_e.pMaterial = &g_material;
 
 	// テクスチャの読み込み
-	hr = CreateTextureFromFile(pDevice, TEXTURE_FILENAME, &g_mesh.pTexture);
+	hr = CreateTextureFromFile(pDevice, PLAYERBULLET_FILENAME, &g_mesh_p.pTexture);
+	if (FAILED(hr)) {
+		return hr;
+	}	hr = CreateTextureFromFile(pDevice, ENEMYBULLET_FILENAME, &g_mesh_e.pTexture);
 	if (FAILED(hr)) {
 		return hr;
 	}
-	XMStoreFloat4x4(&g_mesh.mtxTexture, XMMatrixIdentity());
+
+	XMStoreFloat4x4(&g_mesh_p.mtxTexture, XMMatrixIdentity());
+	XMStoreFloat4x4(&g_mesh_e.mtxTexture, XMMatrixIdentity());
 
 	// ワールド マトリックス初期化
-	XMStoreFloat4x4(&g_mesh.mtxWorld, XMMatrixIdentity());
+	XMStoreFloat4x4(&g_mesh_p.mtxWorld, XMMatrixIdentity());
+	XMStoreFloat4x4(&g_mesh_e.mtxWorld, XMMatrixIdentity());
 
 	// 弾情報初期化
 	for (int i = 0; i < MAX_BULLET; ++i) {
@@ -125,7 +134,8 @@ void UninitBullet(void)
 			pBullet->nShadow = -1;
 		}
 	}
-	ReleaseMesh(&g_mesh);
+	ReleaseMesh(&g_mesh_p);
+	ReleaseMesh(&g_mesh_e);
 }
 
 
@@ -204,12 +214,16 @@ void UpdateBullet(void)
 			// 煙生成
 			SetSmoke(pBullet->pos, XMFLOAT2(8.0f, 8.0f));
 		} else {
-			SetEffect(pBullet->pos, XMFLOAT3(0.0f, 0.0f, 0.0f),
-				XMFLOAT4(0.85f, 0.05f, 0.25f, 0.50f), XMFLOAT2(16.0f, 16.0f), 30);
-			SetEffect(pBullet->pos, XMFLOAT3(0.0f, 0.0f, 0.0f),
-				XMFLOAT4(0.65f, 0.85f, 0.05f, 0.30f), XMFLOAT2(12.0f, 12.0f), 30);
-			SetEffect(pBullet->pos, XMFLOAT3(0.0f, 0.0f, 0.0f),
-				XMFLOAT4(0.45f, 0.45f, 0.05f, 0.20f), XMFLOAT2(6.0f, 6.0f), 30);
+			//SetEffect(pBullet->pos, XMFLOAT3(0.0f, 0.0f, 0.0f),
+			//	XMFLOAT4(0.85f, 0.05f, 0.25f, 0.50f), XMFLOAT2(16.0f, 16.0f), 30);
+			//SetEffect(pBullet->pos, XMFLOAT3(0.0f, 0.0f, 0.0f),
+			//	XMFLOAT4(0.65f, 0.85f, 0.05f, 0.30f), XMFLOAT2(12.0f, 12.0f), 30);
+			//SetEffect(pBullet->pos, XMFLOAT3(0.0f, 0.0f, 0.0f),
+			//	XMFLOAT4(0.45f, 0.45f, 0.05f, 0.20f), XMFLOAT2(6.0f, 6.0f), 30);
+			
+			// 煙生成
+			SetSmoke(pBullet->pos, XMFLOAT2(8.0f, 8.0f));
+
 		}
 	}
 }
@@ -230,26 +244,51 @@ void DrawBullet(void)
 		if (!pBullet->use) {
 			continue;
 		}
-		// ビュー行列の回転成分の転置行列を設定
-		g_mesh.mtxWorld._11 = mView._11;
-		g_mesh.mtxWorld._12 = mView._21;
-		g_mesh.mtxWorld._13 = mView._31;
-		g_mesh.mtxWorld._14 = 0.0f;
-		g_mesh.mtxWorld._21 = mView._12;
-		g_mesh.mtxWorld._22 = mView._22;
-		g_mesh.mtxWorld._23 = mView._32;
-		g_mesh.mtxWorld._24 = 0.0f;
-		g_mesh.mtxWorld._31 = mView._13;
-		g_mesh.mtxWorld._32 = mView._23;
-		g_mesh.mtxWorld._33 = mView._33;
-		g_mesh.mtxWorld._34 = 0.0f;
-		// 位置を反映
-		g_mesh.mtxWorld._41 = pBullet->pos.x;
-		g_mesh.mtxWorld._42 = pBullet->pos.y;
-		g_mesh.mtxWorld._43 = pBullet->pos.z;
-		g_mesh.mtxWorld._44 = 1.0f;
-		// 描画
-		DrawMesh(pDC, &g_mesh);
+		if (pBullet->type == BULLETTYPE_PLAYER) {
+			// ビュー行列の回転成分の転置行列を設定
+			g_mesh_p.mtxWorld._11 = mView._11;
+			g_mesh_p.mtxWorld._12 = mView._21;
+			g_mesh_p.mtxWorld._13 = mView._31;
+			g_mesh_p.mtxWorld._14 = 0.0f;
+			g_mesh_p.mtxWorld._21 = mView._12;
+			g_mesh_p.mtxWorld._22 = mView._22;
+			g_mesh_p.mtxWorld._23 = mView._32;
+			g_mesh_p.mtxWorld._24 = 0.0f;
+			g_mesh_p.mtxWorld._31 = mView._13;
+			g_mesh_p.mtxWorld._32 = mView._23;
+			g_mesh_p.mtxWorld._33 = mView._33;
+			g_mesh_p.mtxWorld._34 = 0.0f;
+			// 位置を反映
+			g_mesh_p.mtxWorld._41 = pBullet->pos.x;
+			g_mesh_p.mtxWorld._42 = pBullet->pos.y;
+			g_mesh_p.mtxWorld._43 = pBullet->pos.z;
+			g_mesh_p.mtxWorld._44 = 1.0f;
+			// 描画
+			DrawMesh(pDC, &g_mesh_p);
+
+		}else {
+			// ビュー行列の回転成分の転置行列を設定
+			g_mesh_e.mtxWorld._11 = mView._11;
+			g_mesh_e.mtxWorld._12 = mView._21;
+			g_mesh_e.mtxWorld._13 = mView._31;
+			g_mesh_e.mtxWorld._14 = 0.0f;
+			g_mesh_e.mtxWorld._21 = mView._12;
+			g_mesh_e.mtxWorld._22 = mView._22;
+			g_mesh_e.mtxWorld._23 = mView._32;
+			g_mesh_e.mtxWorld._24 = 0.0f;
+			g_mesh_e.mtxWorld._31 = mView._13;
+			g_mesh_e.mtxWorld._32 = mView._23;
+			g_mesh_e.mtxWorld._33 = mView._33;
+			g_mesh_e.mtxWorld._34 = 0.0f;
+			// 位置を反映
+			g_mesh_e.mtxWorld._41 = pBullet->pos.x;
+			g_mesh_e.mtxWorld._42 = pBullet->pos.y;
+			g_mesh_e.mtxWorld._43 = pBullet->pos.z;
+			g_mesh_e.mtxWorld._44 = 1.0f;
+			// 描画
+			DrawMesh(pDC, &g_mesh_e);
+		}
+
 	}
 	SetBlendState(BS_NONE);		// αブレンディング無効
 	CLight::Get()->SetEnable();	// 光源有効
@@ -295,8 +334,8 @@ int FireBullet(XMFLOAT3 pos, XMFLOAT3 dir, EBulletType type)
 HRESULT MakeVertexBullet(ID3D11Device* pDevice)
 {
 	// 一時的な頂点配列を生成
-	g_mesh.nNumVertex = 4;
-	VERTEX_3D* pVertexWk = new VERTEX_3D[g_mesh.nNumVertex];
+	g_mesh_p.nNumVertex = 4;
+	VERTEX_3D* pVertexWk = new VERTEX_3D[g_mesh_p.nNumVertex];
 
 	// 頂点配列の中身を埋める
 	pVertexWk[0].vtx = XMFLOAT3(-BULLET_RADIUS,  BULLET_RADIUS, 0.0f);
@@ -317,7 +356,7 @@ HRESULT MakeVertexBullet(ID3D11Device* pDevice)
 	pVertexWk[3].tex = XMFLOAT2(1.0f, 1.0f);
 
 	// 一時的なインデックス配列を生成
-	g_mesh.nNumIndex = 4;
+	g_mesh_p.nNumIndex = 4;
 	int* pIndexWk = new int[4];
 
 	// インデックス配列の中身を埋める
@@ -327,7 +366,7 @@ HRESULT MakeVertexBullet(ID3D11Device* pDevice)
 	pIndexWk[3] = 3;
 
 	// 頂点バッファ/インデックス バッファ生成
-	HRESULT hr = MakeMeshVertex(pDevice, &g_mesh, pVertexWk, pIndexWk);
+	HRESULT hr = MakeMeshVertex(pDevice, &g_mesh_p, pVertexWk, pIndexWk);
 
 	// 一時的な頂点配列/インデックス配列を解放
 	delete[] pIndexWk;

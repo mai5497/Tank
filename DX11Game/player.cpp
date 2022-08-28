@@ -18,7 +18,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MODEL_PLAYER		"data/model/tank10.fbx"
+#define MODEL_PLAYER		"data/model/kobitoblue.fbx"
 
 #define	VALUE_MOVE_PLAYER	(0.155f)	// 移動速度
 #define	RATE_MOVE_PLAYER	(0.025f)	// 移動慣性係数
@@ -36,6 +36,7 @@ static XMFLOAT3		g_posModel;		// 現在の位置
 static XMFLOAT3		g_rotModel;		// 現在の向き
 static XMFLOAT3		g_rotDestModel;	// 目的の向き
 static XMFLOAT3		g_moveModel;	// 移動量
+static XMFLOAT3		g_size;			// モデルの描画サイズ
 
 static XMFLOAT4X4	g_mtxWorld;		// ワールドマトリックス
 
@@ -55,6 +56,7 @@ HRESULT InitPlayer(void)
 	g_moveModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	g_rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	g_rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	g_size = XMFLOAT3(50.0f, 50.0f, 50.0f);
 
 	// モデルデータの読み込み
 	if (!g_model.Load(pDevice, pDeviceContext, MODEL_PLAYER)) {
@@ -88,14 +90,14 @@ void UpdatePlayer(void)
 	// カメラの向き取得
 	XMFLOAT3 rotCamera = CCamera::Get()->GetAngle();
 
-	if (GetKeyPress(VK_LEFT)) {
-		if (GetKeyPress(VK_UP)) {
+	if (GetKeyPress(VK_A)) {
+		if (GetKeyPress(VK_W)) {
 			// 左前移動
 			g_moveModel.x -= SinDeg(rotCamera.y + 135.0f) * VALUE_MOVE_PLAYER;
 			g_moveModel.z -= CosDeg(rotCamera.y + 135.0f) * VALUE_MOVE_PLAYER;
 
 			g_rotDestModel.y = rotCamera.y + 135.0f;
-		} else if (GetKeyPress(VK_DOWN)) {
+		} else if (GetKeyPress(VK_S)) {
 			// 左後移動
 			g_moveModel.x -= SinDeg(rotCamera.y + 45.0f) * VALUE_MOVE_PLAYER;
 			g_moveModel.z -= CosDeg(rotCamera.y + 45.0f) * VALUE_MOVE_PLAYER;
@@ -108,14 +110,14 @@ void UpdatePlayer(void)
 
 			g_rotDestModel.y = rotCamera.y + 90.0f;
 		}
-	} else if (GetKeyPress(VK_RIGHT)) {
-		if (GetKeyPress(VK_UP)) {
+	} else if (GetKeyPress(VK_D)) {
+		if (GetKeyPress(VK_W)) {
 			// 右前移動
 			g_moveModel.x -= SinDeg(rotCamera.y - 135.0f) * VALUE_MOVE_PLAYER;
 			g_moveModel.z -= CosDeg(rotCamera.y - 135.0f) * VALUE_MOVE_PLAYER;
 
 			g_rotDestModel.y = rotCamera.y - 135.0f;
-		} else if (GetKeyPress(VK_DOWN)) {
+		} else if (GetKeyPress(VK_S)) {
 			// 右後移動
 			g_moveModel.x -= SinDeg(rotCamera.y - 45.0f) * VALUE_MOVE_PLAYER;
 			g_moveModel.z -= CosDeg(rotCamera.y - 45.0f) * VALUE_MOVE_PLAYER;
@@ -128,25 +130,18 @@ void UpdatePlayer(void)
 
 			g_rotDestModel.y = rotCamera.y - 90.0f;
 		}
-	} else if (GetKeyPress(VK_UP)) {
+	} else if (GetKeyPress(VK_W)) {
 		// 前移動
 		g_moveModel.x -= SinDeg(180.0f + rotCamera.y) * VALUE_MOVE_PLAYER;
 		g_moveModel.z -= CosDeg(180.0f + rotCamera.y) * VALUE_MOVE_PLAYER;
 
 		g_rotDestModel.y = 180.0f + rotCamera.y;
-	} else if (GetKeyPress(VK_DOWN)) {
+	} else if (GetKeyPress(VK_S)) {
 		// 後移動
 		g_moveModel.x -= SinDeg(rotCamera.y) * VALUE_MOVE_PLAYER;
 		g_moveModel.z -= CosDeg(rotCamera.y) * VALUE_MOVE_PLAYER;
 
 		g_rotDestModel.y = rotCamera.y;
-	}
-
-	if (GetKeyPress(VK_I)) {
-		g_moveModel.y += VALUE_MOVE_PLAYER;
-	}
-	if (GetKeyPress(VK_K)) {
-		g_moveModel.y -= VALUE_MOVE_PLAYER;
 	}
 
 	if (GetKeyPress(VK_J)) {
@@ -211,18 +206,22 @@ void UpdatePlayer(void)
 		g_posModel.y = 150.0f;
 	}
 
-	if (GetKeyPress(VK_RETURN)) {
-		// リセット
-		g_posModel = XMFLOAT3(0.0f, 40.0f, 0.0f);
-		g_moveModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		g_rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	}
+	//if (GetKeyPress(VK_RETURN)) {
+	//	// リセット
+	//	g_posModel = XMFLOAT3(0.0f, 40.0f, 0.0f);
+	//	g_moveModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	//	g_rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	//	g_rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	//}
 
-	XMMATRIX mtxWorld, mtxRot, mtxTranslate;
+	XMMATRIX mtxWorld, mtxRot, mtxTranslate, mtxScale;
 
 	// ワールドマトリックスの初期化
 	mtxWorld = XMMatrixIdentity();
+
+	// スケールを反映
+	mtxScale = XMMatrixScaling(g_size.x, g_size.y, g_size.z);
+	mtxWorld = XMMatrixMultiply(mtxScale, mtxWorld);
 
 	// 回転を反映
 	mtxRot = XMMatrixRotationRollPitchYaw(XMConvertToRadians(g_rotModel.x),

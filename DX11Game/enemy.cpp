@@ -13,6 +13,7 @@
 #include "explosion.h"
 #include "DwarfEffect.h"
 #include "Sound.h"
+#include "bullet.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -30,16 +31,17 @@
 // 構造体定義
 //*****************************************************************************
 struct TEnemy {
-	XMFLOAT3	m_pos;		// 現在の位置
-	XMFLOAT3	m_rot;		// 現在の向き
-	XMFLOAT3	m_rotDest;	// 目的の向き
-	XMFLOAT3	m_move;		// 移動量
-	XMFLOAT3	m_size;		// 大きさ
-	bool		m_use;		// 使用中かどうか
+	XMFLOAT3	m_pos;			// 現在の位置
+	XMFLOAT3	m_rot;			// 現在の向き
+	XMFLOAT3	m_rotDest;		// 目的の向き
+	XMFLOAT3	m_move;			// 移動量
+	XMFLOAT3	m_size;			// 大きさ
+	bool		m_use;			// 使用中かどうか
+	int			m_bulletTimer;	// 弾発射タイマー
 
-	XMFLOAT4X4	m_mtxWorld;	// ワールドマトリックス
+	XMFLOAT4X4	m_mtxWorld;		// ワールドマトリックス
 
-	int			m_nShadow;	// 丸影番号
+	int			m_nShadow;		// 丸影番号
 };
 
 //*****************************************************************************
@@ -81,6 +83,7 @@ HRESULT InitEnemy(void)
 		// 丸影の生成
 		g_enemy[i].m_nShadow = CreateShadow(g_enemy[i].m_pos, 25.0f);
 		g_enemy[i].m_use = true;
+		g_enemy[i].m_bulletTimer = 300;
 	}
 
 	return hr;
@@ -216,7 +219,20 @@ void UpdateEnemy(void)
 		XMStoreFloat4x4(&g_enemy[i].m_mtxWorld, mtxWorld);
 
 		// 丸影の移動
-	MoveShadow(g_enemy[i].m_nShadow, XMFLOAT3(g_enemy[i].m_pos.x+ShadowMove.x,g_enemy[i].m_pos.y,g_enemy[i].m_pos.z+ShadowMove.z));
+		MoveShadow(g_enemy[i].m_nShadow, XMFLOAT3(g_enemy[i].m_pos.x+ShadowMove.x,g_enemy[i].m_pos.y,g_enemy[i].m_pos.z+ShadowMove.z));
+
+		int randomtime;
+		randomtime = rand() % 3;
+		g_enemy[i].m_bulletTimer -= randomtime;
+		if (g_enemy[i].m_bulletTimer < 0) {
+			FireBullet(
+				g_enemy[i].m_pos,
+				XMFLOAT3(-g_enemy[i].m_mtxWorld._31, -g_enemy[i].m_mtxWorld._32, -g_enemy[i].m_mtxWorld._33),
+				BULLETTYPE_ENEMY);
+
+			g_enemy[i].m_bulletTimer = 300;
+		}
+		
 	}
 }
 
