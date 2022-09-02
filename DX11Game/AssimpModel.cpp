@@ -1,4 +1,10 @@
-// Assimpライブラリ用モデルクラス実装 [AssimpModel.cpp]
+//************************************************************************************
+// 
+// Assimpライブラリ用モデル読込[AssimpModel.cpp]
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
+//-------------------- インクルード部 --------------------
 #include <tuple>
 #include <time.h>
 #include <assimp/cimport.h>
@@ -21,8 +27,10 @@
 using namespace std;
 using namespace DirectX;
 
+//-------------------- 定数定義 --------------------
 #define MAX_BONE_MATRIX	64
 
+//-------------------- 構造体定義 --------------------
 // シェーダに渡す値
 struct SHADER_GLOBAL {
 	XMMATRIX	mWVP;		// ワールド×ビュー×射影行列(転置行列)
@@ -55,9 +63,14 @@ struct SHADER_BONE {
 	}
 };
 
+//-------------------- グローバル変数定義 --------------------
 const aiMatrix4x4 IdentityMatrix;
 
-// コンストラクタ
+//====================================================================================
+//
+//				コンストラクタ
+//
+//====================================================================================
 AnimEvaluator::AnimEvaluator(const aiAnimation *pAnim)
 	: mAnim(pAnim)
 	, mLastTime(0.0)
@@ -65,13 +78,21 @@ AnimEvaluator::AnimEvaluator(const aiAnimation *pAnim)
 	mLastPositions.resize(pAnim->mNumChannels, std::make_tuple(0, 0, 0));
 }
 
-// デストラクタ
+//====================================================================================
+//
+//				デストラクタ
+//
+//====================================================================================
 AnimEvaluator::~AnimEvaluator()
 {
 	// (空)
 }
 
-// 指定された時刻のアニメーショントラックを評価
+//====================================================================================
+//
+//			指定された時刻のアニメーショントラックを評価
+//
+//====================================================================================
 void AnimEvaluator::Evaluate(double pTime)
 {
 	// 1秒あたりのティックを抽出する。指定されていない場合は既定値を想定。
@@ -181,7 +202,11 @@ void AnimEvaluator::Evaluate(double pTime)
 	mLastTime = time;
 }
 
-// コンストラクタ
+//====================================================================================
+//
+//				コンストラクタ
+//
+//====================================================================================
 SceneAnimator::SceneAnimator(const aiScene* pScene, size_t pAnimIndex)
 	: mScene(pScene)
 	, mCurrentAnimIndex(-1)
@@ -202,14 +227,22 @@ SceneAnimator::SceneAnimator(const aiScene* pScene, size_t pAnimIndex)
 	SetAnimIndex(pAnimIndex);
 }
 
-// デストラクタ
+//====================================================================================
+//
+//				デストラクタ
+//
+//====================================================================================
 SceneAnimator::~SceneAnimator()
 {
 	SAFE_DELETE(mRootNode);
 	SAFE_DELETE(mAnimEvaluator);
 }
 
-// 再生に使用するアニメーションを設定
+//====================================================================================
+//
+//				再生に使用するアニメーションを設定
+//
+//====================================================================================
 void SceneAnimator::SetAnimIndex(size_t pAnimIndex)
 {
 	// 変更無し?
@@ -237,7 +270,11 @@ void SceneAnimator::SetAnimIndex(size_t pAnimIndex)
 	mAnimEvaluator = new AnimEvaluator(mScene->mAnimations[mCurrentAnimIndex]);
 }
 
-// シーンのノード変換マトリックスを計算
+//====================================================================================
+//
+//			シーンのノード変換マトリックスを計算
+//
+//====================================================================================
 void SceneAnimator::Calculate(double pTime)
 {
 	// アニメーション無?
@@ -252,7 +289,11 @@ void SceneAnimator::Calculate(double pTime)
 	UpdateTransforms(mRootNode, mAnimEvaluator->GetTransformations());
 }
 
-// 指定されたノードの最新のローカル変換マトリックスを取得
+//====================================================================================
+//
+//			指定されたノードの最新のローカル変換マトリックスを取得
+//
+//====================================================================================
 const aiMatrix4x4& SceneAnimator::GetLocalTransform(const aiNode* node) const
 {
 	NodeMap::const_iterator it = mNodesByName.find(node);
@@ -263,7 +304,11 @@ const aiMatrix4x4& SceneAnimator::GetLocalTransform(const aiNode* node) const
 	return it->second->mLocalTransform;
 }
 
-// 指定されたノードの最新のグローバル変換マトリックスを取得
+//====================================================================================
+//
+//				指定されたノードの最新のグローバル変換マトリックスを取得
+//
+//====================================================================================
 const aiMatrix4x4& SceneAnimator::GetGlobalTransform(const aiNode* node) const
 {
 	NodeMap::const_iterator it = mNodesByName.find(node);
@@ -274,7 +319,12 @@ const aiMatrix4x4& SceneAnimator::GetGlobalTransform(const aiNode* node) const
 	return it->second->mGlobalTransform;
 }
 
-// メッシュ毎のボーンマトリックスを計算
+
+//====================================================================================
+//
+//			メッシュ毎のボーンマトリックスを計算
+//
+//====================================================================================
 const std::vector<aiMatrix4x4>& SceneAnimator::GetBoneMatrices(const aiNode* pNode, size_t pMeshIndex /* = 0 */)
 {
 	//ai_assert(pMeshIndex < pNode->mNumMeshes);
@@ -301,7 +351,12 @@ const std::vector<aiMatrix4x4>& SceneAnimator::GetBoneMatrices(const aiNode* pNo
 	return mTransforms;
 }
 
-// 現在のシーンとアニメーションに一致する内部ノード構造を再帰的に生成
+
+//====================================================================================
+//
+//			現在のシーンとアニメーションに一致する内部ノード構造を再帰的に生成
+//
+//====================================================================================
 SceneAnimNode* SceneAnimator::CreateNodeTree(aiNode* pNode, SceneAnimNode* pParent)
 {
 	// ノード生成
@@ -334,7 +389,12 @@ SceneAnimNode* SceneAnimator::CreateNodeTree(aiNode* pNode, SceneAnimNode* pPare
 	return internalNode;
 }
 
-// 指定されたマトリックス配列から内部ノード変換マトリックスを再帰的に更新
+
+//====================================================================================
+//
+//			指定されたマトリックス配列から内部ノード変換マトリックスを再帰的に更新
+//
+//====================================================================================
 void SceneAnimator::UpdateTransforms(SceneAnimNode* pNode, const std::vector<aiMatrix4x4>& pTransforms)
 {
 	// ノードのローカル変換マトリックスを更新
@@ -352,7 +412,12 @@ void SceneAnimator::UpdateTransforms(SceneAnimNode* pNode, const std::vector<aiM
 	}
 }
 
-// 指定された内部ノードのグローバル変換マトリックスを計算
+
+//====================================================================================
+//
+//			指定された内部ノードのグローバル変換マトリックスを計算
+//
+//====================================================================================
 void SceneAnimator::CalculateGlobalTransform(SceneAnimNode* pInternalNode)
 {
 	// 全ての親マトリックスを連結して、このノードのグローバル変換マトリックスを取得
@@ -364,8 +429,11 @@ void SceneAnimator::CalculateGlobalTransform(SceneAnimNode* pInternalNode)
 	}
 }
 
-// メッシュ クラス
-// コンストラクタ
+//====================================================================================
+//
+//				メッシュクラスコンストラクタ
+//
+//====================================================================================
 CAssimpMesh::CAssimpMesh(ID3D11Device *pDevice, CAssimpModel* pModel, vector<TAssimpVertex> aVertex, vector<UINT> aIndex, TAssimpMaterial& material)
 	: m_pModel(pModel), m_pVertexBuffer(nullptr), m_pIndexBuffer(nullptr), m_pConstantBuffer0(nullptr), m_pConstantBuffer1(nullptr), m_pConstantBufferBone(nullptr)
 {
@@ -375,12 +443,20 @@ CAssimpMesh::CAssimpMesh(ID3D11Device *pDevice, CAssimpModel* pModel, vector<TAs
 	SetupMesh(pDevice);
 }
 
-// デストラクタ
+//====================================================================================
+//
+//				メッシュクラスデストラクタ
+//
+//====================================================================================
 CAssimpMesh::~CAssimpMesh()
 {
 }
 
-// 解放
+//====================================================================================
+//
+//				メッシュクラス解放
+//
+//====================================================================================
 void CAssimpMesh::Release()
 {
 	SAFE_RELEASE(m_pConstantBuffer1);
@@ -390,7 +466,11 @@ void CAssimpMesh::Release()
 	m_material.Release();
 }
 
-// 頂点バッファ/インデックス バッファ生成
+//====================================================================================
+//
+//				メッシュクラス頂点バッファインデックス設定
+//
+//====================================================================================
 bool CAssimpMesh::SetupMesh(ID3D11Device* pDevice)
 {
 	HRESULT hr = S_OK;
@@ -459,7 +539,11 @@ bool CAssimpMesh::SetupMesh(ID3D11Device* pDevice)
 	return SUCCEEDED(hr);
 }
 
-// ボーン マトリックス設定
+//====================================================================================
+//
+//				メッシュクラスボーンマトリックス設定
+//
+//====================================================================================
 void CAssimpMesh::SetBoneMatrix(ID3D11DeviceContext* pDC, XMFLOAT4X4 mtxBone[])
 {
 	D3D11_MAPPED_SUBRESOURCE pData;
@@ -473,7 +557,11 @@ void CAssimpMesh::SetBoneMatrix(ID3D11DeviceContext* pDC, XMFLOAT4X4 mtxBone[])
 	}
 }
 
-// 描画
+//====================================================================================
+//
+//				メッシュクラス描画
+//
+//====================================================================================
 void CAssimpMesh::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World, EByOpacity byOpacity)
 {
 	// ユーザ定義マテリアル
@@ -574,7 +662,11 @@ ID3D11VertexShader* CAssimpModel::m_pVertexShader;
 ID3D11PixelShader* CAssimpModel::m_pPixelShader;
 ID3D11SamplerState* CAssimpModel::m_pSampleLinear;
 
-// コンストラクタ
+//====================================================================================
+//
+//				モデルクラスコンストラクタ
+//
+//====================================================================================
 CAssimpModel::CAssimpModel() : m_pMaterial(nullptr), m_pScene(nullptr), m_pAnimator(nullptr)
 {
 	XMStoreFloat4x4(&m_mtxTexture, XMMatrixIdentity());
@@ -582,24 +674,40 @@ CAssimpModel::CAssimpModel() : m_pMaterial(nullptr), m_pScene(nullptr), m_pAnima
 	m_dCurrent = m_dLastPlaying = 0.0;
 }
 
-// デストラクタ
+//====================================================================================
+//
+//				モデルクラスデストラクタ
+//
+//====================================================================================
 CAssimpModel::~CAssimpModel()
 {
 }
 
-// テクスチャ マトリックス設定
+//====================================================================================
+//
+//				モデルクラステクスチャマトリクス設定
+//
+//====================================================================================
 void CAssimpModel::SetTextureMatrix(DirectX::XMFLOAT4X4& mtxTexture)
 {
 	m_mtxTexture = mtxTexture;
 }
 
-// テクスチャ マトリックス取得
+//====================================================================================
+//
+//				モデルクラステクスチャマトリクス取得
+//
+//====================================================================================
 XMFLOAT4X4& CAssimpModel::GetTextureMatrix()
 {
 	return m_mtxTexture;
 }
 
-// シェーダ初期化
+//====================================================================================
+//
+//				シェーダー初期化
+//
+//====================================================================================
 bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 {
 	// シェーダ読み込み
@@ -625,7 +733,11 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 	return true;
 }
 
-// シェーダ終了処理
+//====================================================================================
+//
+//				モデルクラスシェーダー終了
+//
+//====================================================================================
 void CAssimpModel::UninitShader()
 {
 	SAFE_RELEASE(m_pSampleLinear);
@@ -634,7 +746,11 @@ void CAssimpModel::UninitShader()
 	SAFE_RELEASE(m_pVertexShader);
 }
 
-// モデル読み込み
+//====================================================================================
+//
+//				モデルクラスモデル読み込み
+//
+//====================================================================================
 bool CAssimpModel::Load(ID3D11Device* pDevice, ID3D11DeviceContext* pDC, std::string filename)
 {
 	// default pp steps
@@ -689,7 +805,11 @@ bool CAssimpModel::Load(ID3D11Device* pDevice, ID3D11DeviceContext* pDC, std::st
 	return true;
 }
 
-// アニメーション更新
+//====================================================================================
+//
+//				モデルクラスアニメーション設定
+//
+//====================================================================================
 void CAssimpModel::SetAnimTime(double dTime)
 {
 	if (m_pAnimator) {
@@ -697,7 +817,11 @@ void CAssimpModel::SetAnimTime(double dTime)
 	}
 }
 
-// 描画
+//====================================================================================
+//
+//				モデルクラス描画
+//
+//====================================================================================
 void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpacity byOpacity)
 {
 	if (!m_pScene) return;
@@ -724,7 +848,11 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 	DrawNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity);
 }
 
-// 描画
+//====================================================================================
+//
+//				モデルクラス描画
+//
+//====================================================================================
 void CAssimpModel::DrawNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMatrix4x4& piMatrix, EByOpacity byOpacity)
 {
 	aiMatrix4x4 aiMe;
@@ -772,7 +900,11 @@ void CAssimpModel::DrawNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMa
 		DrawNode(pDC, piNode->mChildren[i], piMatrix, byOpacity);
 }
 
-// 解放
+//====================================================================================
+//
+//				モデルクラス解放
+//
+//====================================================================================
 void CAssimpModel::Release()
 {
 	for (int i = 0; i < m_aMesh.size(); ++i) {
@@ -786,7 +918,11 @@ void CAssimpModel::Release()
 	}
 }
 
-// 全メッシュ取り込み
+//====================================================================================
+//
+//				モデルクラス全メッシュ取得
+//
+//====================================================================================
 void CAssimpModel::processNode(ID3D11Device* pDevice, aiNode* node)
 {
 	for (UINT i = 0; i < node->mNumMeshes; ++i) {
@@ -799,7 +935,11 @@ void CAssimpModel::processNode(ID3D11Device* pDevice, aiNode* node)
 	}
 }
 
-// メッシュ展開
+//====================================================================================
+//
+//				モデルクラスメッシュ取得
+//
+//====================================================================================
 CAssimpMesh CAssimpModel::processMesh(ID3D11Device* pDevice, aiMesh* mesh)
 {
 	vector<TAssimpVertex> aVertex;
@@ -872,7 +1012,11 @@ CAssimpMesh CAssimpModel::processMesh(ID3D11Device* pDevice, aiMesh* mesh)
 	return CAssimpMesh(pDevice, this, aVertex, aIndex, material);
 }
 
-// マテリアル読込
+//====================================================================================
+//
+//				モデルクラスマテリアル取得
+//
+//====================================================================================
 TAssimpMaterial CAssimpModel::loadMaterial(ID3D11Device* pDevice, aiMaterial* mat, aiMesh* mesh)
 {
 	TAssimpMaterial material;
@@ -972,7 +1116,11 @@ TAssimpMaterial CAssimpModel::loadMaterial(ID3D11Device* pDevice, aiMaterial* ma
 	return material;
 }
 
-// テクスチャ タイプ決定
+//====================================================================================
+//
+//				モデルクラステクスチャタイプ決定
+//
+//====================================================================================
 string CAssimpModel::determineTextureType(aiMaterial* mat)
 {
 	aiString textypeStr;
@@ -991,7 +1139,11 @@ string CAssimpModel::determineTextureType(aiMaterial* mat)
 	return "";
 }
 
-// テクスチャ インデックス取得
+//====================================================================================
+//
+//				モデルクラステクスチャインデックス取得
+//
+//====================================================================================
 int CAssimpModel::getTextureIndex(aiString* str)
 {
 	string tistr;
@@ -1000,7 +1152,12 @@ int CAssimpModel::getTextureIndex(aiString* str)
 	return stoi(tistr);
 }
 
-// モデル データ内包テクスチャ読込
+
+//====================================================================================
+//
+//				モデル データ内包テクスチャ読込
+//
+//====================================================================================
 ID3D11ShaderResourceView* CAssimpModel::getTextureFromModel(ID3D11Device* pDevice, int textureindex)
 {
 	HRESULT hr = S_OK;
@@ -1014,7 +1171,11 @@ ID3D11ShaderResourceView* CAssimpModel::getTextureFromModel(ID3D11Device* pDevic
 	return texture;
 }
 
-// テクスチャ読込
+//====================================================================================
+//
+//				モデルクラステクスチャ読込
+//
+//====================================================================================
 void CAssimpModel::LoadTexture(ID3D11Device* pDevice, aiString& szPath, ID3D11ShaderResourceView** ppTexture)
 {
 	if (m_textype == "embedded compressed texture") {
@@ -1042,7 +1203,11 @@ void CAssimpModel::LoadTexture(ID3D11Device* pDevice, aiString& szPath, ID3D11Sh
 	}
 }
 
-// テクスチャのアルファ有無
+//====================================================================================
+//
+//				モデルクラステクスチャのモデル有無
+//
+//====================================================================================
 bool CAssimpModel::HasAlphaPixels(ID3D11ShaderResourceView* pTexture)
 {
 /*
@@ -1086,7 +1251,12 @@ bool CAssimpModel::HasAlphaPixels(ID3D11ShaderResourceView* pTexture)
 	return false;
 }
 
-// ノード毎に頂点座標の最大最小値をチェック
+
+//====================================================================================
+//
+//				モデルクラスノード毎に頂点座標の最大最小値をチェック
+//
+//====================================================================================
 void CAssimpModel::CalculateBounds(aiNode* piNode, aiVector3D* p_avOut, const aiMatrix4x4& piMatrix)
 {
 	aiMatrix4x4 mTemp = piNode->mTransformation;
@@ -1113,7 +1283,12 @@ void CAssimpModel::CalculateBounds(aiNode* piNode, aiVector3D* p_avOut, const ai
 	}
 }
 
-// 境界ボックス計算
+
+//====================================================================================
+//
+//					モデルクラス境界ボックス計算
+//
+//====================================================================================
 void CAssimpModel::ScaleAsset()
 {
 	aiVector3D aiVecs[2] = { aiVector3D(1e10f, 1e10f, 1e10f), aiVector3D(-1e10f, -1e10f, -1e10f) };
@@ -1134,7 +1309,12 @@ void CAssimpModel::ScaleAsset()
 	m_vCenter.z = vCenter.z;
 }
 
-// アニメーション セット選択
+
+//====================================================================================
+//
+//				モデルクラスアニメーション セット選択
+//
+//====================================================================================
 void CAssimpModel::SetAnimIndex(int nAnimIndex)
 {
 	if (m_pAnimator) {
@@ -1142,7 +1322,12 @@ void CAssimpModel::SetAnimIndex(int nAnimIndex)
 	}
 }
 
-// アニメーション セット数取得
+
+//====================================================================================
+//
+//				モデルクラスアニメーション セット数取得
+//
+//====================================================================================
 UINT CAssimpModel::GetAnimCount()
 {
 	if (m_pScene)
@@ -1151,6 +1336,12 @@ UINT CAssimpModel::GetAnimCount()
 	return 0;
 }
 
+
+//====================================================================================
+//
+//				モデルクラスアニメーション時間
+//
+//====================================================================================
 double CAssimpModel::GetAnimDuration(int nAnimIndex)
 {
 	if (m_pScene) {
