@@ -21,6 +21,7 @@
 #include "fade.h"
 #include "Sound.h"
 #include "DwarfEffect.h"
+#include "WallObject.h"
 //#include "Boss.h"
 
 
@@ -97,6 +98,12 @@ HRESULT InitGame() {
 	if (FAILED(hr))
 		return hr;
 
+	// オブジェクトの壁初期化
+	hr = InitWallObj();
+	if (FAILED(hr)) {
+		return hr;
+	}
+
 	SetMeshWall(XMFLOAT3(0.0f, 0.0f, 640.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
 	SetMeshWall(XMFLOAT3(-640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, -90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
 	SetMeshWall(XMFLOAT3(640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
@@ -119,6 +126,9 @@ HRESULT InitGame() {
 //
 //====================================================================================
 void UninitGame() {
+	// オブジェクト壁終了
+	UninitWallObj();
+
 	// タイマー終了処理
 	UninitTimer();
 
@@ -205,6 +215,8 @@ void UpdateGame() {
 	// タイマー更新
 	UpdateTimer();
 
+	// オブジェクトの壁更新
+	UpdateWallObj();
 }
 
 //====================================================================================
@@ -239,6 +251,9 @@ void DrawGame() {
 	if (GetEnemyKillSum() == MAX_ENEMY) {
 		//DrawBoss();
 	}
+
+	// オブジェクトの壁描画
+	DrawWallObj();
 
 	// 丸影描画
 	DrawShadow();

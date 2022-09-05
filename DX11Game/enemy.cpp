@@ -17,7 +17,7 @@
 #include "bullet.h"
 
 //-------------------- ’è”’è‹` --------------------
-#define MODEL_ENEMY			"data/model/kobitoblue.fbx"
+#define MODEL_ENEMY			"data/model/kobitored.fbx"
 
 #define	VALUE_MOVE_ENEMY	(0.40f)		// ˆÚ“®‘¬“x
 #define	RATE_MOVE_ENEMY		(0.20f)		// ˆÚ“®Šµ«ŒW”
