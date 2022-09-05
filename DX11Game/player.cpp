@@ -337,3 +337,9 @@ bool CollisionPlayer(XMFLOAT3 pos, float radius, float damage)
 	}
 	return hit;
 }
+
+bool CollisionPlayer(XMFLOAT3 pos, float radius) {
+	bool hit = CollisionSphere(g_posModel, PLAYER_RADIUS, pos, radius);
+
+	return hit;
+}
