@@ -63,6 +63,7 @@ typedef struct {
 // プロトタイプ宣言
 //*****************************************************************************
 HRESULT InitMesh(void);
+HRESULT InitMesh(const VERTEX_3D vertexWk[], int nVertex, const int indexWk[], int nIndex);
 void UninitMesh(void);
 void UpdateMesh(MESH* pMesh);
 void DrawMesh(ID3D11DeviceContext* pDeviceContext, MESH* pMesh, int nTranslucntType = TT_NOAFFECT);

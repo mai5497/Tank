@@ -41,6 +41,9 @@ struct SHADER_GLOBAL2 {
 
 //-------------------- グローバル変数定義 --------------------
 static ID3D11Buffer*				g_pConstantBuffer[2];	// 定数バッファ
+static ID3D11Buffer* g_pVertexBuffer;	// 頂点バッファインターフェースへのポインタ
+static ID3D11Buffer* g_pIndexBuffer;	// インデックスバッファインターフェースへのポインタ
+
 static ID3D11SamplerState*			g_pSamplerState;		// テクスチャ サンプラ
 static ID3D11VertexShader*			g_pVertexShader;		// 頂点シェーダ
 static ID3D11InputLayout*			g_pInputLayout;			// 頂点フォーマット
@@ -104,6 +107,45 @@ HRESULT InitMesh(void)
 
 	return hr;
 }
+
+HRESULT InitMesh(const VERTEX_3D vertexWk[], int nVertex, const int indexWk[], int nIndex) {
+	HRESULT hr = S_OK;
+	ID3D11Device* pDevice = GetDevice();
+
+	SAFE_RELEASE(g_pVertexBuffer);
+	SAFE_RELEASE(g_pIndexBuffer);
+
+
+	D3D11_BUFFER_DESC vbd;
+	ZeroMemory(&vbd, sizeof(vbd));
+	vbd.Usage = D3D11_USAGE_DYNAMIC;
+	vbd.ByteWidth = sizeof(VERTEX_3D) * nVertex;
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	vbd.MiscFlags = 0;
+	D3D11_SUBRESOURCE_DATA initData;
+	ZeroMemory(&initData, sizeof(initData));
+	initData.pSysMem = vertexWk;
+	hr = pDevice->CreateBuffer(&vbd, &initData, &g_pVertexBuffer);
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	CD3D11_BUFFER_DESC ibd(nIndex * sizeof(int), D3D11_BIND_INDEX_BUFFER);
+	ZeroMemory(&initData, sizeof(initData));
+	initData.pSysMem = indexWk;
+	hr = pDevice->CreateBuffer(&ibd, &initData, &g_pIndexBuffer);
+
+	// マテリアルの初期設定
+	g_material.Diffuse = M_DIFFUSE;
+	g_material.Ambient = M_AMBIENT;
+	g_material.Specular = M_SPECULAR;
+	g_material.Power = 0.0f;
+	g_material.Emissive = M_EMISSIVE;
+
+	return hr;
+}
+
 
 //====================================================================================
 //

@@ -102,6 +102,8 @@ HRESULT InitShadow(void)
 //====================================================================================
 void UninitShadow(void)
 {
+	SAFE_RELEASE(g_pTexture);
+
 	ReleaseMesh(&g_mesh);
 }
 

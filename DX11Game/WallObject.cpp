@@ -16,23 +16,48 @@
 #include "effect.h"
 #include "collision.h"
 #include "explosion.h"
+#include "player.h"
+#include "GameObject.h"
+#include "DebugCollision.h"
 
 //-------------------- マクロ定義 --------------------
 #define MODEL_WALLOBJ		"data/model/rubikcube.fbx"
-#define	WALLOBJ_RADIUS		(10.0f)		// 境界球半径
+#define	WALLOBJ_RADIUS		(45.0f)		// 境界球半径
+#define MAPNUM				(16)		// 壁を置ける縦横共通の最大数
 
 //-------------------- グローバル変数定義 --------------------
 static CAssimpModel	g_model;		// モデル
 
-static XMFLOAT3		g_posModel;		// 現在の位置
+//static XMFLOAT3		g_posModel;		// 現在の位置
 static XMFLOAT3		g_rotModel;		// 現在の向き
 static XMFLOAT3		g_rotDestModel;	// 目的の向き
-static XMFLOAT3		g_moveModel;	// 移動量
-static XMFLOAT3		g_size;			// モデルの描画サイズ
+//static XMFLOAT3		g_moveModel;	// 移動量
+//static XMFLOAT3		g_size;			// モデルの描画サイズ
 
-static XMFLOAT4X4	g_mtxWorld;		// ワールドマトリックス
+//static XMFLOAT4X4	g_mtxWorld;		// ワールドマトリックス
 
 static int			g_nShadow;		// 丸影番号
+
+GameObject *g_wallobj[MAPNUM*MAPNUM];
+
+int g_wallMap[16][16] = {
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+};
 
 //====================================================================================
 //
@@ -44,12 +69,26 @@ HRESULT InitWallObj(void) {
 	ID3D11Device* pDevice = GetDevice();
 	ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
 
+	for (int j = 0; j < MAPNUM; j++) {
+		for (int i = 0; i < MAPNUM; i++) {
+			g_wallobj[j*MAPNUM+i] = new GameObject;
+			g_wallobj[j*MAPNUM+i]->m_size = XMFLOAT3(25.0f, 25.0f, 25.0f);
+			g_wallobj[j*MAPNUM+i]->m_move = XMFLOAT3(0.0f, 0.0f, 0.0f);
+			g_wallobj[j*MAPNUM+i]->m_radius = 10;
+
+			if (g_wallMap[j][i] != 1) {
+				continue;
+			}
+			g_wallobj[j*MAPNUM+i]->m_pos = XMFLOAT3(i*80.0f - 640.0f, 0.0f, j*80.0f - 640.0f);
+		}
+	}
+
 	// 位置・回転・スケールの初期設定
-	g_posModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	g_moveModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	//g_posModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	//g_moveModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	g_rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	g_rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	g_size = XMFLOAT3(25.0f, 25.0f, 25.0f);
+	//g_size = XMFLOAT3(25.0f, 25.0f, 25.0f);
 
 	// モデルデータの読み込み
 	if (!g_model.Load(pDevice, pDeviceContext, MODEL_WALLOBJ)) {
@@ -65,6 +104,13 @@ HRESULT InitWallObj(void) {
 //
 //====================================================================================
 void UninitWallObj(void) {
+	// 壁オブジェクトの解放
+	for (int j = 0; j < MAPNUM; j++) {
+		for (int i = 0; i < MAPNUM; i++) {
+			delete g_wallobj[j * MAPNUM + i];
+		}
+	}
+
 	// モデルの解放
 	g_model.Release();
 }
@@ -85,24 +131,42 @@ void UpdateWallObj(void) {
 
 	XMMATRIX mtxWorld, mtxRot, mtxTranslate, mtxScale;
 
-	// ワールドマトリックスの初期化
-	mtxWorld = XMMatrixIdentity();
+	for (int j = 0; j < MAPNUM; j++) {
+		for (int i = 0; i < MAPNUM; i++) {
+			if (g_wallMap[j][i] != 1) {
+				continue;
+			}
+			// ワールドマトリックスの初期化
+			mtxWorld = XMMatrixIdentity();
 
-	// スケールを反映
-	mtxScale = XMMatrixScaling(g_size.x, g_size.y, g_size.z);
-	mtxWorld = XMMatrixMultiply(mtxScale, mtxWorld);
+			// スケールを反映
+			mtxScale = XMMatrixScaling(
+				g_wallobj[j * MAPNUM + i]->m_size.x,
+				g_wallobj[j * MAPNUM + i]->m_size.y,
+				g_wallobj[j * MAPNUM + i]->m_size.z);
 
-	// 回転を反映
-	mtxRot = XMMatrixRotationRollPitchYaw(XMConvertToRadians(g_rotModel.x),
-		XMConvertToRadians(g_rotModel.y), XMConvertToRadians(g_rotModel.z));
-	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
+			mtxWorld = XMMatrixMultiply(mtxScale, mtxWorld);
 
-	// 移動を反映
-	mtxTranslate = XMMatrixTranslation(g_posModel.x, g_posModel.y, g_posModel.z);
-	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+			// 回転を反映
+			mtxRot = XMMatrixRotationRollPitchYaw(XMConvertToRadians(g_rotModel.x),
+				XMConvertToRadians(g_rotModel.y), XMConvertToRadians(g_rotModel.z));
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
-	// ワールドマトリックス設定
-	XMStoreFloat4x4(&g_mtxWorld, mtxWorld);
+			// 移動を反映
+			mtxTranslate = XMMatrixTranslation(
+				g_wallobj[j * MAPNUM + i]->m_pos.x,
+				g_wallobj[j * MAPNUM + i]->m_pos.y,
+				g_wallobj[j * MAPNUM + i]->m_pos.z);
+
+			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
+
+			// ワールドマトリックス設定
+			XMStoreFloat4x4(&g_wallobj[j * MAPNUM + i]->m_mtxWorld, mtxWorld);
+		}
+	}
+
+	// 当たり判定
+	CollisionWallObj();
 }
 
 //====================================================================================
@@ -113,15 +177,26 @@ void UpdateWallObj(void) {
 void DrawWallObj(void) {
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 
-	// 不透明部分を描画
-	g_model.Draw(pDC, g_mtxWorld, eOpacityOnly);
+	for (int j = 0; j < MAPNUM; j++) {
+		for (int i = 0; i < MAPNUM; i++) {
+			if (g_wallMap[j][i] != 1) {
+				continue;
+			}
 
-	// 半透明部分を描画
-	SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
-	SetZWrite(false);				// Zバッファ更新しない
-	g_model.Draw(pDC, g_mtxWorld, eTransparentOnly);
-	SetZWrite(true);				// Zバッファ更新する
-	SetBlendState(BS_NONE);			// アルファブレンド無効
+			// 不透明部分を描画
+			g_model.Draw(pDC, g_wallobj[j * MAPNUM + i]->m_mtxWorld, eOpacityOnly);
+
+			// 半透明部分を描画
+			SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
+			SetZWrite(false);				// Zバッファ更新しない
+			g_model.Draw(pDC, g_wallobj[j * MAPNUM + i]->m_mtxWorld, eTransparentOnly);
+			SetZWrite(true);				// Zバッファ更新する
+			SetBlendState(BS_NONE);			// アルファブレンド無効
+
+			// デバッグ表示
+			DrawCollisionSphere(*g_wallobj[j * MAPNUM + i]);
+		}
+	}
 }
 
 //====================================================================================
@@ -129,9 +204,9 @@ void DrawWallObj(void) {
 //				位置取得
 //
 //====================================================================================
-XMFLOAT3& GetWallObjPos() {
-	return g_posModel;
-}
+//XMFLOAT3& GetWallObjPos() {
+//	return g_posModel;
+//}
 
 //====================================================================================
 //
@@ -139,5 +214,17 @@ XMFLOAT3& GetWallObjPos() {
 //
 //====================================================================================
 void CollisionWallObj() {
+	bool isHit;
+	for (int j = 0; j < MAPNUM; j++) {
+		for (int i = 0; i < MAPNUM; i++) {
+			if (g_wallMap[j][i] != 1) {
+				continue;
+			}
 
+			isHit = CollisionPlayer(g_wallobj[j * MAPNUM + i]->m_pos,WALLOBJ_RADIUS, g_wallobj[j * MAPNUM + i]->m_size);
+			if (isHit) {
+				return;
+			}
+		}
+	}
 }

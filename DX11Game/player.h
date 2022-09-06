@@ -18,4 +18,4 @@ void DrawPlayer(void);
 
 XMFLOAT3& GetPlayerPos();
 bool CollisionPlayer(XMFLOAT3 pos, float radius, float damage);
-bool CollisionPlayer(XMFLOAT3 pos, float radius);
+bool CollisionPlayer(XMFLOAT3 pos, float radius,XMFLOAT3 size);

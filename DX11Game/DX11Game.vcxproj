@@ -164,6 +164,7 @@
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="collision.cpp" />
+    <ClCompile Include="DebugCollision.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="DwarfEffect.cpp" />
     <ClCompile Include="effect.cpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
@@ -199,6 +201,7 @@
     <ClInclude Include="bullet.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="collision.h" />
+    <ClInclude Include="DebugCollision.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="DwarfEffect.h" />
     <ClInclude Include="effect.h" />
@@ -206,6 +209,7 @@
     <ClInclude Include="explosion.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="main.h" />

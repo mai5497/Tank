@@ -16,6 +16,7 @@
 #include "effect.h"
 #include "collision.h"
 #include "explosion.h"
+#include "GameObject.h"
 
 //-------------------- マクロ定義 --------------------
 #define MODEL_PLAYER		"data/model/kobitoblue.fbx"
@@ -52,7 +53,7 @@ HRESULT InitPlayer(void)
 	ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
 
 	// 位置・回転・スケールの初期設定
-	g_posModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	g_posModel = XMFLOAT3(100.0f, 0.0f, 0.0f);
 	g_moveModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	g_rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	g_rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -304,6 +305,8 @@ void DrawPlayer(void)
 	g_model.Draw(pDC, g_mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
+
+
 }
 
 //====================================================================================
@@ -338,8 +341,22 @@ bool CollisionPlayer(XMFLOAT3 pos, float radius, float damage)
 	return hit;
 }
 
-bool CollisionPlayer(XMFLOAT3 pos, float radius) {
-	bool hit = CollisionSphere(g_posModel, PLAYER_RADIUS, pos, radius);
+bool CollisionPlayer(XMFLOAT3 pos, float radius,XMFLOAT3 size) {
+	GameObject *_GameObject;
 
-	return hit;
+	bool isHit = CollisionSphere(g_posModel,PLAYER_RADIUS , pos, radius);
+
+	if (isHit) {
+		_GameObject = Push(g_posModel, g_size, g_moveModel, pos, size);
+	
+		if (_GameObject == nullptr) {
+			//　押し出しに失敗している
+			return isHit;
+		}
+
+		g_posModel = _GameObject->m_pos;
+		g_moveModel = _GameObject->m_move;
+	}
+
+	return isHit;
 }

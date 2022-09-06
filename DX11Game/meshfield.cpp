@@ -76,6 +76,9 @@ HRESULT InitMeshField(int nNumBlockX, int nNumBlockZ,
 //====================================================================================
 void UninitMeshField(void)
 {
+	// テクスチャ開放
+	SAFE_RELEASE(g_pTexture);
+
 	// メッシュ解放
 	ReleaseMesh(&g_mesh);
 }
