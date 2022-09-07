@@ -8,6 +8,8 @@
 
 #include "main.h"
 
+class GameObject;
+
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -18,4 +20,4 @@ void DrawPlayer(void);
 
 XMFLOAT3& GetPlayerPos();
 bool CollisionPlayer(XMFLOAT3 pos, float radius, float damage);
-bool CollisionPlayer(XMFLOAT3 pos, float radius,XMFLOAT3 size);
+bool CollisionPlayer(GameObject collision);

@@ -5,7 +5,7 @@ GameObject::GameObject() {
 	m_move = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_size = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
-	m_radius = 5.0f;
+	m_radius = 0.5f;
 }
 
 
