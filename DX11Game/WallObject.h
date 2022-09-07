@@ -11,7 +11,7 @@ void UninitWallObj(void);
 void UpdateWallObj(void);
 void DrawWallObj(void);
 
-XMFLOAT3& GetWallObjPos();
+//XMFLOAT3& GetWallObjPos();
 void CollisionWallObj();
 
 

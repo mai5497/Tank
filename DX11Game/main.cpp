@@ -5,6 +5,10 @@
 // 
 //************************************************************************************
 //-------------------- インクルード部 --------------------
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 #include "AssimpModel.h"
 #include "main.h"
 #include "input.h"
@@ -477,6 +481,8 @@ void ReleaseBackBuffer()
 //====================================================================================
 void Uninit(void)
 {
+	_CrtDumpMemoryLeaks();
+
 	// ポリライン終了処理
 	//for (int i = 0; i < MAX_POLYLINE; ++i) {
 	//	ReleasePolyline(&g_polyline[i]);

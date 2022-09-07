@@ -135,8 +135,14 @@
     <ClCompile Include="Title.cpp">
       <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>ソース ファイル\GameSystem</Filter>
+    </ClCompile>
     <ClCompile Include="WallObject.cpp">
       <Filter>ソース ファイル\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugCollision.cpp">
+      <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -218,9 +224,6 @@
     <ClInclude Include="Scene.h">
       <Filter>ヘッダー ファイル\GameSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>ヘッダー ファイル\Shader</Filter>
-    </ClInclude>
     <ClInclude Include="shadow.h">
       <Filter>ヘッダー ファイル\GameSystem</Filter>
     </ClInclude>
@@ -247,6 +250,15 @@
     </ClInclude>
     <ClInclude Include="WallObject.h">
       <Filter>ヘッダー ファイル\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>ヘッダー ファイル\GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugCollision.h">
+      <Filter>ヘッダー ファイル\GameSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
