@@ -74,7 +74,7 @@ HRESULT InitWallObj(void) {
 			g_wallobj[j*MAPNUM+i] = new GameObject;
 			g_wallobj[j*MAPNUM+i]->m_size = XMFLOAT3(25.0f, 25.0f, 25.0f);
 			g_wallobj[j*MAPNUM+i]->m_move = XMFLOAT3(0.0f, 0.0f, 0.0f);
-			g_wallobj[j*MAPNUM+i]->m_radius = 10;
+			g_wallobj[j*MAPNUM+i]->m_radius = WALLOBJ_RADIUS;
 
 			if (g_wallMap[j][i] != 1) {
 				continue;
@@ -221,7 +221,8 @@ void CollisionWallObj() {
 				continue;
 			}
 
-			isHit = CollisionPlayer(g_wallobj[j * MAPNUM + i]->m_pos,WALLOBJ_RADIUS, g_wallobj[j * MAPNUM + i]->m_size);
+			//isHit = CollisionPlayer(g_wallobj[j * MAPNUM + i]->m_pos, g_wallobj[j * MAPNUM + i]->m_radius, g_wallobj[j * MAPNUM + i]->m_size);
+			isHit = CollisionPlayer(*g_wallobj[j * MAPNUM + i]);
 			if (isHit) {
 				return;
 			}

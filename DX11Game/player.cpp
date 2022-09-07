@@ -17,6 +17,7 @@
 #include "collision.h"
 #include "explosion.h"
 #include "GameObject.h"
+#include "DebugCollision.h"
 
 //-------------------- マクロ定義 --------------------
 #define MODEL_PLAYER		"data/model/kobitoblue.fbx"
@@ -31,13 +32,15 @@
 //-------------------- グローバル変数定義 --------------------
 static CAssimpModel	g_model;		// モデル
 
-static XMFLOAT3		g_posModel;		// 現在の位置
+//static XMFLOAT3		g_posModel;		// 現在の位置
 static XMFLOAT3		g_rotModel;		// 現在の向き
 static XMFLOAT3		g_rotDestModel;	// 目的の向き
-static XMFLOAT3		g_moveModel;	// 移動量
-static XMFLOAT3		g_size;			// モデルの描画サイズ
+//static XMFLOAT3		g_moveModel;	// 移動量
+//static XMFLOAT3		g_size;			// モデルの描画サイズ
 
-static XMFLOAT4X4	g_mtxWorld;		// ワールドマトリックス
+static GameObject g_gameObject;
+
+//static XMFLOAT4X4	g_mtxWorld;		// ワールドマトリックス
 
 static int			g_nShadow;		// 丸影番号
 
@@ -53,11 +56,14 @@ HRESULT InitPlayer(void)
 	ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
 
 	// 位置・回転・スケールの初期設定
-	g_posModel = XMFLOAT3(100.0f, 0.0f, 0.0f);
-	g_moveModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	g_gameObject.m_pos = XMFLOAT3(100.0f, 0.0f, 0.0f);
+	g_gameObject.m_move = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	g_rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	g_rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	g_size = XMFLOAT3(50.0f, 50.0f, 50.0f);
+	g_gameObject.m_size = XMFLOAT3(50.0f, 50.0f, 50.0f);
+
+
+	
 
 	// モデルデータの読み込み
 	if (!g_model.Load(pDevice, pDeviceContext, MODEL_PLAYER)) {
@@ -66,7 +72,7 @@ HRESULT InitPlayer(void)
 	}
 
 	// 丸影の生成
-	g_nShadow = CreateShadow(g_posModel, 12.0f);
+	g_nShadow = CreateShadow(g_gameObject.m_pos, 12.0f);
 
 	return hr;
 }
@@ -98,53 +104,53 @@ void UpdatePlayer(void)
 	if (GetKeyPress(VK_A)) {
 		if (GetKeyPress(VK_W)) {
 			// 左前移動
-			g_moveModel.x -= SinDeg(rotCamera.y + 135.0f) * VALUE_MOVE_PLAYER;
-			g_moveModel.z -= CosDeg(rotCamera.y + 135.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.x -= SinDeg(rotCamera.y + 135.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.z -= CosDeg(rotCamera.y + 135.0f) * VALUE_MOVE_PLAYER;
 
 			g_rotDestModel.y = rotCamera.y + 135.0f;
 		} else if (GetKeyPress(VK_S)) {
 			// 左後移動
-			g_moveModel.x -= SinDeg(rotCamera.y + 45.0f) * VALUE_MOVE_PLAYER;
-			g_moveModel.z -= CosDeg(rotCamera.y + 45.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.x -= SinDeg(rotCamera.y + 45.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.z -= CosDeg(rotCamera.y + 45.0f) * VALUE_MOVE_PLAYER;
 
 			g_rotDestModel.y = rotCamera.y + 45.0f;
 		} else {
 			// 左移動
-			g_moveModel.x -= SinDeg(rotCamera.y + 90.0f) * VALUE_MOVE_PLAYER;
-			g_moveModel.z -= CosDeg(rotCamera.y + 90.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.x -= SinDeg(rotCamera.y + 90.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.z -= CosDeg(rotCamera.y + 90.0f) * VALUE_MOVE_PLAYER;
 
 			g_rotDestModel.y = rotCamera.y + 90.0f;
 		}
 	} else if (GetKeyPress(VK_D)) {
 		if (GetKeyPress(VK_W)) {
 			// 右前移動
-			g_moveModel.x -= SinDeg(rotCamera.y - 135.0f) * VALUE_MOVE_PLAYER;
-			g_moveModel.z -= CosDeg(rotCamera.y - 135.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.x -= SinDeg(rotCamera.y - 135.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.z -= CosDeg(rotCamera.y - 135.0f) * VALUE_MOVE_PLAYER;
 
 			g_rotDestModel.y = rotCamera.y - 135.0f;
 		} else if (GetKeyPress(VK_S)) {
 			// 右後移動
-			g_moveModel.x -= SinDeg(rotCamera.y - 45.0f) * VALUE_MOVE_PLAYER;
-			g_moveModel.z -= CosDeg(rotCamera.y - 45.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.x -= SinDeg(rotCamera.y - 45.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.z -= CosDeg(rotCamera.y - 45.0f) * VALUE_MOVE_PLAYER;
 
 			g_rotDestModel.y = rotCamera.y - 45.0f;
 		} else {
 			// 右移動
-			g_moveModel.x -= SinDeg(rotCamera.y - 90.0f) * VALUE_MOVE_PLAYER;
-			g_moveModel.z -= CosDeg(rotCamera.y - 90.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.x -= SinDeg(rotCamera.y - 90.0f) * VALUE_MOVE_PLAYER;
+			g_gameObject.m_move.z -= CosDeg(rotCamera.y - 90.0f) * VALUE_MOVE_PLAYER;
 
 			g_rotDestModel.y = rotCamera.y - 90.0f;
 		}
 	} else if (GetKeyPress(VK_W)) {
 		// 前移動
-		g_moveModel.x -= SinDeg(180.0f + rotCamera.y) * VALUE_MOVE_PLAYER;
-		g_moveModel.z -= CosDeg(180.0f + rotCamera.y) * VALUE_MOVE_PLAYER;
+		g_gameObject.m_move.x -= SinDeg(180.0f + rotCamera.y) * VALUE_MOVE_PLAYER;
+		g_gameObject.m_move.z -= CosDeg(180.0f + rotCamera.y) * VALUE_MOVE_PLAYER;
 
 		g_rotDestModel.y = 180.0f + rotCamera.y;
 	} else if (GetKeyPress(VK_S)) {
 		// 後移動
-		g_moveModel.x -= SinDeg(rotCamera.y) * VALUE_MOVE_PLAYER;
-		g_moveModel.z -= CosDeg(rotCamera.y) * VALUE_MOVE_PLAYER;
+		g_gameObject.m_move.x -= SinDeg(rotCamera.y) * VALUE_MOVE_PLAYER;
+		g_gameObject.m_move.z -= CosDeg(rotCamera.y) * VALUE_MOVE_PLAYER;
 
 		g_rotDestModel.y = rotCamera.y;
 	}
@@ -183,32 +189,32 @@ void UpdatePlayer(void)
 	}
 
 	/// 位置移動
-	g_posModel.x += g_moveModel.x;
-	g_posModel.y += g_moveModel.y;
-	g_posModel.z += g_moveModel.z;
+	g_gameObject.m_pos.x += g_gameObject.m_move.x;
+	g_gameObject.m_pos.y += g_gameObject.m_move.y;
+	g_gameObject.m_pos.z += g_gameObject.m_move.z;
 
 	// 移動量に慣性をかける
-	g_moveModel.x += (0.0f - g_moveModel.x) * RATE_MOVE_PLAYER;
-	g_moveModel.y += (0.0f - g_moveModel.y) * RATE_MOVE_PLAYER;
-	g_moveModel.z += (0.0f - g_moveModel.z) * RATE_MOVE_PLAYER;
+	g_gameObject.m_move.x += (0.0f - g_gameObject.m_move.x) * RATE_MOVE_PLAYER;
+	g_gameObject.m_move.y += (0.0f - g_gameObject.m_move.y) * RATE_MOVE_PLAYER;
+	g_gameObject.m_move.z += (0.0f - g_gameObject.m_move.z) * RATE_MOVE_PLAYER;
 
-	if (g_posModel.x < -630.0f) {
-		g_posModel.x = -630.0f;
+	if (g_gameObject.m_pos.x < -630.0f) {
+		g_gameObject.m_pos.x = -630.0f;
 	}
-	if (g_posModel.x > 630.0f) {
-		g_posModel.x = 630.0f;
+	if (g_gameObject.m_pos.x > 630.0f) {
+		g_gameObject.m_pos.x = 630.0f;
 	}
-	if (g_posModel.z < -630.0f) {
-		g_posModel.z = -630.0f;
+	if (g_gameObject.m_pos.z < -630.0f) {
+		g_gameObject.m_pos.z = -630.0f;
 	}
-	if (g_posModel.z > 630.0f) {
-		g_posModel.z = 630.0f;
+	if (g_gameObject.m_pos.z > 630.0f) {
+		g_gameObject.m_pos.z = 630.0f;
 	}
-	if (g_posModel.y < 10.0f) {
-		g_posModel.y = 10.0f;
+	if (g_gameObject.m_pos.y < 10.0f) {
+		g_gameObject.m_pos.y = 10.0f;
 	}
-	if (g_posModel.y > 150.0f) {
-		g_posModel.y = 150.0f;
+	if (g_gameObject.m_pos.y > 150.0f) {
+		g_gameObject.m_pos.y = 150.0f;
 	}
 
 	//if (GetKeyPress(VK_RETURN)) {
@@ -225,7 +231,7 @@ void UpdatePlayer(void)
 	mtxWorld = XMMatrixIdentity();
 
 	// スケールを反映
-	mtxScale = XMMatrixScaling(g_size.x, g_size.y, g_size.z);
+	mtxScale = XMMatrixScaling(g_gameObject.m_size.x, g_gameObject.m_size.y, g_gameObject.m_size.z);
 	mtxWorld = XMMatrixMultiply(mtxScale, mtxWorld);
 
 	// 回転を反映
@@ -234,23 +240,23 @@ void UpdatePlayer(void)
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
 	// 移動を反映
-	mtxTranslate = XMMatrixTranslation(g_posModel.x, g_posModel.y, g_posModel.z);
+	mtxTranslate = XMMatrixTranslation(g_gameObject.m_pos.x, g_gameObject.m_pos.y, g_gameObject.m_pos.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
 	// ワールドマトリックス設定
-	XMStoreFloat4x4(&g_mtxWorld, mtxWorld);
+	XMStoreFloat4x4(&g_gameObject.m_mtxWorld, mtxWorld);
 
 	// 丸影の移動
-	MoveShadow(g_nShadow, g_posModel);
+	MoveShadow(g_nShadow, g_gameObject.m_pos);
 
-	if ((g_moveModel.x * g_moveModel.x
-		+ g_moveModel.y * g_moveModel.y
-		+ g_moveModel.z * g_moveModel.z) > 1.0f) {
+	if ((g_gameObject.m_move.x * g_gameObject.m_move.x
+		+ g_gameObject.m_move.y * g_gameObject.m_move.y
+		+ g_gameObject.m_move.z * g_gameObject.m_move.z) > 1.0f) {
 		XMFLOAT3 pos;
 
-		pos.x = g_posModel.x + SinDeg(g_rotModel.y) * 10.0f;
-		pos.y = g_posModel.y + 2.0f;
-		pos.z = g_posModel.z + CosDeg(g_rotModel.y) * 10.0f;
+		pos.x = g_gameObject.m_pos.x + SinDeg(g_rotModel.y) * 10.0f;
+		pos.y = g_gameObject.m_pos.y + 2.0f;
+		pos.z = g_gameObject.m_pos.z + CosDeg(g_rotModel.y) * 10.0f;
 
 		// エフェクトの設定
 		SetEffect(pos, XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -266,7 +272,7 @@ void UpdatePlayer(void)
 
 	// 弾発射
 	if (GetKeyRepeat(VK_SPACE)) {
-		FireBullet(g_posModel, XMFLOAT3(-g_mtxWorld._31, -g_mtxWorld._32, -g_mtxWorld._33),
+		FireBullet(g_gameObject.m_pos, XMFLOAT3(-g_gameObject.m_mtxWorld._31, -g_gameObject.m_mtxWorld._32, -g_gameObject.m_mtxWorld._33),
 			BULLETTYPE_PLAYER);
 	}
 
@@ -297,15 +303,18 @@ void DrawPlayer(void)
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 
 	// 不透明部分を描画
-	g_model.Draw(pDC, g_mtxWorld, eOpacityOnly);
+	g_model.Draw(pDC, g_gameObject.m_mtxWorld, eOpacityOnly);
 
 	// 半透明部分を描画
 	SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
 	SetZWrite(false);				// Zバッファ更新しない
-	g_model.Draw(pDC, g_mtxWorld, eTransparentOnly);
+	g_model.Draw(pDC, g_gameObject.m_mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
 
+
+
+	//DrawCollisionSphere(g_gameObject);
 
 }
 
@@ -316,7 +325,7 @@ void DrawPlayer(void)
 //====================================================================================
 XMFLOAT3& GetPlayerPos()
 {
-	return g_posModel;
+	return g_gameObject.m_pos;
 }
 
 //====================================================================================
@@ -326,36 +335,36 @@ XMFLOAT3& GetPlayerPos()
 //====================================================================================
 bool CollisionPlayer(XMFLOAT3 pos, float radius, float damage)
 {
-	bool hit = CollisionSphere(g_posModel, PLAYER_RADIUS, pos, radius);
+	bool hit = CollisionSphere(g_gameObject.m_pos, PLAYER_RADIUS, pos, radius);
 	if (hit) {
 		// 爆発開始
 		int nExp = -1;
 		if (damage > 0.0f) {
-			nExp = StartExplosion(g_posModel, XMFLOAT2(40.0f, 40.0f));
+			nExp = StartExplosion(g_gameObject.m_pos, XMFLOAT2(40.0f, 40.0f));
 			// 
 		} else {
-			nExp = StartExplosion(g_posModel, XMFLOAT2(20.0f, 20.0f));
+			nExp = StartExplosion(g_gameObject.m_pos, XMFLOAT2(20.0f, 20.0f));
 		}
 		SetExplosionColor(nExp, XMFLOAT4(1.0f, 0.7f, 0.7f, 1.0f));
 	}
 	return hit;
 }
 
-bool CollisionPlayer(XMFLOAT3 pos, float radius,XMFLOAT3 size) {
+bool CollisionPlayer(GameObject collision) {
 	GameObject *_GameObject;
 
-	bool isHit = CollisionSphere(g_posModel,PLAYER_RADIUS , pos, radius);
+	bool isHit = CollisionSphere(g_gameObject ,collision);
 
 	if (isHit) {
-		_GameObject = Push(g_posModel, g_size, g_moveModel, pos, size);
+		_GameObject = Push(g_gameObject.m_pos, XMFLOAT3(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS), g_gameObject.m_move, collision.m_pos, XMFLOAT3(collision.m_radius, collision.m_radius, collision.m_radius));
 	
 		if (_GameObject == nullptr) {
 			//　押し出しに失敗している
 			return isHit;
 		}
 
-		g_posModel = _GameObject->m_pos;
-		g_moveModel = _GameObject->m_move;
+		g_gameObject.m_pos = _GameObject->m_pos;
+		g_gameObject.m_move = _GameObject->m_move;
 	}
 
 	return isHit;

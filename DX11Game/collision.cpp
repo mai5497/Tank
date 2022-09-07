@@ -23,6 +23,23 @@ bool CollisionSphere(XMFLOAT3 Apos, float Ar, XMFLOAT3 Bpos, float Br)
 	return dx * dx + dy * dy + dz * dz <= dr * dr;
 }
 
+bool CollisionSphere(GameObject A, GameObject B) {
+	XMFLOAT3 vA, vB, vZero;
+	vZero = XMFLOAT3(0, 0, 0);
+
+	XMStoreFloat3(&vA, XMVector3TransformCoord(XMLoadFloat3(&vZero), XMLoadFloat4x4(&A.m_mtxWorld)));
+	XMStoreFloat3(&vB, XMVector3TransformCoord(XMLoadFloat3(&vZero), XMLoadFloat4x4(&B.m_mtxWorld)));
+
+
+	float dx = vA.x - vB.x;
+	float dy = vA.y - vB.y;
+	float dz = vA.z - vB.z;
+	float dr = A.m_radius + B.m_radius;
+	return dx * dx + dy * dy + dz * dz <= dr * dr;
+}
+
+
+
 //====================================================================================
 //
 //				AABB“¯Žm‚Ì“–‚½‚è”»’è

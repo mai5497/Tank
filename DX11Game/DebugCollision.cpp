@@ -11,18 +11,16 @@
 #define M_AMBIENT		XMFLOAT4(0.0f,1.0f,0.0f,0.3f)
 #define M_EMISSIVE		XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
 
-#define	VALUE_MOVE_PLAYER	(0.155f)	// ˆÚ“®‘¬“x
-#define	RATE_MOVE_PLAYER	(0.025f)	// ˆÚ“®Šµ«ŒW”
-#define	VALUE_ROTATE_PLAYER	(4.5f)		// ‰ñ“]‘¬“x
-#define	RATE_ROTATE_PLAYER	(0.1f)		// ‰ñ“]Šµ«ŒW”
-
-#define	PLAYER_RADIUS		(10.0f)		// ‹«ŠE‹…”¼Œa
+//#define	VALUE_MOVE_PLAYER	(0.155f)	// ˆÚ“®‘¬“x
+//#define	RATE_MOVE_PLAYER	(0.025f)	// ˆÚ“®Šµ«ŒW”
+//#define	VALUE_ROTATE_PLAYER	(4.5f)		// ‰ñ“]‘¬“x
+//#define	RATE_ROTATE_PLAYER	(0.1f)		// ‰ñ“]Šµ«ŒW”
+//
+//#define	PLAYER_RADIUS		(10.0f)		// ‹«ŠE‹…”¼Œa
 
 //-------------------- ƒOƒ[ƒoƒ‹•Ï”’è‹` --------------------
 static MESH			g_mesh;					// ƒƒbƒVƒ…î•ñ
 static MATERIAL		g_material;				// ƒ}ƒeƒŠƒAƒ‹
-
-void SetMaterial(const MATERIAL* pMaterial);
 
 //====================================================================================
 //	
@@ -53,9 +51,12 @@ void DrawCollisionSphere(GameObject gameobject) {
 			float th = XM_2PI * u;
 			float x = r * cosf(th);
 			float z = r * sinf(th);
-			pVtx->vtx.x = x * _GameObject.m_radius;
-			pVtx->vtx.y = y * _GameObject.m_radius;
-			pVtx->vtx.z = z * _GameObject.m_radius;
+			pVtx->vtx.x = x * 80 / _GameObject.m_size.x;
+			pVtx->vtx.y = y * 80 / _GameObject.m_size.y;
+			pVtx->vtx.z = z * 80 / _GameObject.m_size.z;
+			//pVtx->vtx.x = x * _GameObject.m_radius/2;
+			//pVtx->vtx.y = y * _GameObject.m_radius/2;
+			//pVtx->vtx.z = z * _GameObject.m_radius/2;
 			pVtx->nor.x = x;
 			pVtx->nor.y = y;
 			pVtx->nor.z = z;
@@ -106,7 +107,6 @@ void DrawCollisionSphere(GameObject gameobject) {
 	g_material.Power = 0.0f;
 	g_material.Emissive = M_EMISSIVE;
 
-
 	//InitMesh(pVertexWk, nVertex, pIndexWk, nFace * 3);
 
 	delete[] pIndexWk;
@@ -120,8 +120,6 @@ void DrawCollisionSphere(GameObject gameobject) {
 
 	g_mesh.pMaterial = &g_material;
 	g_mesh.nNumIndex = nFace * 3;
-
-
 
 	XMMATRIX mtxWorld, mtxTranslate, mtxScale;
 
