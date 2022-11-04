@@ -100,11 +100,11 @@ void UninitResult() {
 //====================================================================================
 void UpdateResult() {
 	//クリックまたは[Enter]押下
-	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_RETURN)) {
+	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_SPACE)) {
 		CSound::Play(SE_DECIDE);
 		//ランキング画面へ
 		//SetScene(SCENE_TITLE);
-		StartFadeOut(SCENE_TITLE);
+		StartFadeOut(Scene::SCENE_TITLE);
 		return;
 	}
 }

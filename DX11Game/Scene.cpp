@@ -15,21 +15,41 @@
 
 
 //-------------------- グローバル変数定義 --------------------
-static EScene g_eScene = SCENE_NONE;
+static Scene::eSCENE g_eScene = Scene::SCENE_NONE;
+
+//====================================================================================
+//
+//				コンストラクタ
+//
+//====================================================================================
+Scene::Scene() {
+
+}
+
+//====================================================================================
+//
+//				デストラクタ
+//
+//====================================================================================
+Scene::~Scene() {
+
+}
+
 
 //====================================================================================
 //
 //				初期化
 //
 //====================================================================================
-HRESULT InitScene() {
+void Scene::Init() {
 	HRESULT hr = S_OK;
 
 	SetScene(SCENE_TITLE);	// 最初はタイトル画面
 
-	InitFade();
+	pTitle = new Title;
+	pGame = new Game;
 
-	return hr;
+	InitFade();
 }
 
 
@@ -38,8 +58,12 @@ HRESULT InitScene() {
 //				終了
 //
 //====================================================================================
-void UninitScene() {
+void Scene::Uninit() {
 	SetScene(SCENE_NONE);	// 現在の画面を終了
+
+	delete pGame;
+	delete pTitle;
+
 	UninitFade();
 }
 
@@ -48,10 +72,10 @@ void UninitScene() {
 //				更新
 //
 //====================================================================================
-void UpdateScene() {
+void Scene::Update() {
 	switch (g_eScene) {
 	case SCENE_TITLE:	// タイトル画面
-		UpdateTitle();
+		pTitle->Update();
 		break;
 	//case SCENE_MODE:	// モード選択
 	//	UpdateMode();
@@ -60,7 +84,7 @@ void UpdateScene() {
 	//	UpdateHowToPlay();
 	//	break;
 	case SCENE_GAME:	// ゲーム画面
-		UpdateGame();
+		pGame->Update();
 		break;
 	case SCENE_RESULT:	// リザルト
 		UpdateResult();
@@ -79,10 +103,10 @@ void UpdateScene() {
 //				描画
 //
 //====================================================================================
-void DrawScene() {
+void Scene::Draw() {
 	switch (g_eScene) {
 	case SCENE_TITLE:	// タイトル画面
-		DrawTitle();
+		pTitle->Draw();
 		break;
 	//case SCENE_MODE:	// モード選択
 	//	DrawMode();
@@ -91,7 +115,7 @@ void DrawScene() {
 	//	DrawHowToPlay();
 	//	break;
 	case SCENE_GAME:	// ゲーム画面
-		DrawGame();
+		pGame->Draw();
 		break;
 	case SCENE_RESULT:
 		DrawResult();
@@ -111,11 +135,11 @@ void DrawScene() {
 //				切り替え
 //
 //====================================================================================
-void SetScene(EScene eScene) {
+void Scene::SetScene(eSCENE eScene) {
 	// 現在の画面を終了
 	switch (g_eScene) {
 	case SCENE_TITLE:		// タイトル画面
-		UninitTitle();
+		pTitle->Uninit();
 		break;
 	//case SCENE_MODE:	// モード選択
 	//	UninitMode();
@@ -124,7 +148,7 @@ void SetScene(EScene eScene) {
 	//	UninitHowToPlay();
 	//	break;
 	case SCENE_GAME:		// ゲーム画面
-		UninitGame();
+		pGame->Uninit();
 		break;
 	case SCENE_RESULT:		// リザルト
 		UninitResult();
@@ -141,7 +165,7 @@ void SetScene(EScene eScene) {
 	// 次の画面を初期化
 	switch (g_eScene) {
 	case SCENE_TITLE:		// タイトル画面
-		InitTitle();
+		pTitle->Init();
 		break;
 	//case SCENE_MODE:	// モード選択
 	//	InitMode();
@@ -150,7 +174,7 @@ void SetScene(EScene eScene) {
 	//	InitHowToPlay();
 	//	break;
 	case SCENE_GAME:		// ゲーム画面
-		InitGame();
+		pGame->Init();
 		break;
 	case SCENE_RESULT:
 		InitResult();
@@ -168,6 +192,6 @@ void SetScene(EScene eScene) {
 //				シーン番号取得
 //
 //====================================================================================
-int GetScene() {
+Scene::eSCENE Scene::GetScene() {
 	return g_eScene;
 }

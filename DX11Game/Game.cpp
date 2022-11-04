@@ -7,14 +7,13 @@
 
 //-------------------- インクルード部 --------------------
 #include "Game.h"
-#include "player.h"
 #include "shadow.h"
 #include "bg.h"
 #include "bullet.h"
 #include "explosion.h"
 #include "effect.h"
 #include "smoke.h"
-#include "meshwall.h"
+//#include "meshwall.h"
 #include "enemy.h"
 #include "meshfield.h"
 #include "timer.h"
@@ -24,100 +23,84 @@
 #include "WallObject.h"
 //#include "Boss.h"
 
+//====================================================================================
+//
+//				コンストラクタ
+//
+//====================================================================================
+Game::Game() {
+
+}
+
+//====================================================================================
+//
+//				デストラクタ
+//
+//====================================================================================
+Game::~Game() {
+
+}
 
 //====================================================================================
 //
 //				初期化
 //
 //====================================================================================
-HRESULT InitGame() {
-	HRESULT hr = S_OK;
-
+void Game::Init() {
 	// 丸影初期化
-	hr = InitShadow();
-	if (FAILED(hr))
-		return hr;
+	InitShadow();
 
 	// 自機初期化
-	hr = InitPlayer();
-	if (FAILED(hr))
-		return hr;
+	pPlayer = std::make_unique<Player>();
 
 	// 敵初期化
-	hr = InitEnemy();
-	if (FAILED(hr)) {
-		return hr;
-	}
-	//hr = InitBoss();
-	//if (FAILED(hr)) {
-	//	return hr;
-	//}
+	InitEnemy();
+
+	//InitBoss();
 
 	// フィールド初期化
-	hr = InitMeshField(16, 16, 80.0f, 80.0f);
-	if (FAILED(hr))
-		return hr;
+	InitMeshField(16, 14, 80.0f, 80.0f);
 
 	// 背景初期化
-	hr = InitBG();
-	if (FAILED(hr))
-		return hr;
+	InitBG();
 
 	// ビルボード弾初期化
-	hr = InitBullet();
-	if (FAILED(hr))
-		return hr;
+	InitBullet();
 
 	// 爆発初期化
-	hr = InitExplosion();
-	if (FAILED(hr))
-		return hr;
+	InitExplosion();
 
 	// エフェクト初期化
-	hr = InitEffect();
-	if (FAILED(hr))
-		return hr;
+	InitEffect();
 
-	hr = InitDwarfEffect();
-	if (FAILED(hr))
-		return hr;
+	InitDwarfEffect();
 
 
 	// 煙初期化
-	hr = InitSmoke();
-	if (FAILED(hr))
-		return hr;
+	InitSmoke();
 
 	// 壁初期化
-	hr = InitMeshWall();
-	if (FAILED(hr))
-		return hr;
+	//hr = InitMeshWall();
+	//if (FAILED(hr))
+	//	return hr;
 
 	// タイマー初期化
-	hr = InitTimer();
-	if (FAILED(hr))
-		return hr;
+	InitTimer();
 
 	// オブジェクトの壁初期化
-	hr = InitWallObj();
-	if (FAILED(hr)) {
-		return hr;
-	}
+	InitWallObj();
 
-	SetMeshWall(XMFLOAT3(0.0f, 0.0f, 640.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	SetMeshWall(XMFLOAT3(-640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, -90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	SetMeshWall(XMFLOAT3(640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	SetMeshWall(XMFLOAT3(0.0f, 0.0f, -640.0f), XMFLOAT3(0.0f, 180.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	
-	SetMeshWall(XMFLOAT3(0.0f, 0.0f, 640.0f), XMFLOAT3(0.0f, 180.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	SetMeshWall(XMFLOAT3(-640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	SetMeshWall(XMFLOAT3(640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, -90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	SetMeshWall(XMFLOAT3(0.0f, 0.0f, -640.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
+	//SetMeshWall(XMFLOAT3(0.0f, 0.0f, 640.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
+	//SetMeshWall(XMFLOAT3(-640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, -90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
+	//SetMeshWall(XMFLOAT3(640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
+	//SetMeshWall(XMFLOAT3(0.0f, 0.0f, -640.0f), XMFLOAT3(0.0f, 180.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
+	//
+	//SetMeshWall(XMFLOAT3(0.0f, 0.0f, 640.0f), XMFLOAT3(0.0f, 180.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
+	//SetMeshWall(XMFLOAT3(-640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
+	//SetMeshWall(XMFLOAT3(640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, -90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
+	//SetMeshWall(XMFLOAT3(0.0f, 0.0f, -640.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
 
 	CSound::Play(BGM_GAME);
-
-	return hr;
-
 }
 
 //====================================================================================
@@ -125,7 +108,7 @@ HRESULT InitGame() {
 //				終了
 //
 //====================================================================================
-void UninitGame() {
+void Game::Uninit() {
 	// オブジェクト壁終了
 	UninitWallObj();
 
@@ -133,7 +116,7 @@ void UninitGame() {
 	UninitTimer();
 
 	// 壁終了処理
-	UninitMeshWall();
+	//UninitMeshWall();
 
 	// 煙終了処理
 	UninitSmoke();
@@ -155,7 +138,7 @@ void UninitGame() {
 	UninitMeshField();
 
 	// 自機終了処理
-	UninitPlayer();
+	pPlayer.reset();
 
 	// 敵機終了処理
 	//UninitBoss();
@@ -173,9 +156,9 @@ void UninitGame() {
 //				更新
 //
 //====================================================================================
-void UpdateGame() {
+void Game::Update() {
 	// 自機更新
-	UpdatePlayer();
+	pPlayer->Update();
 
 	// 敵更新
 	UpdateEnemy();
@@ -210,7 +193,7 @@ void UpdateGame() {
 	UpdateSmoke();
 
 	// 壁更新
-	UpdateMeshWall();
+	//UpdateMeshWall();
 
 	// タイマー更新
 	UpdateTimer();
@@ -224,15 +207,12 @@ void UpdateGame() {
 //				描画
 //
 //====================================================================================
-void DrawGame() {
+void Game::Draw() {
 	// Zバッファ無効(Zチェック無&Z更新無)
 	SetZBuffer(false);
 
 	// 背景描画
 	DrawBG();
-
-	// タイマー描画
-	DrawTimer();
 
 	// Zバッファ有効(Zチェック有&Z更新有)
 	SetZBuffer(true);
@@ -241,10 +221,10 @@ void DrawGame() {
 	DrawMeshField();
 
 	// 壁描画 (不透明部分)
-	DrawMeshWall(DRAWPART_OPAQUE);
+	//DrawMeshWall(DRAWPART_OPAQUE);
 
 	// 自機描画
-	DrawPlayer();
+	pPlayer->Draw();
 
 	// 敵機描画
 	DrawEnemy();
@@ -272,6 +252,14 @@ void DrawGame() {
 	DrawExplosion();
 
 	// 壁描画 (半透明部分)
-	DrawMeshWall(DRAWPART_TRANSLUCENT);
+	//DrawMeshWall(DRAWPART_TRANSLUCENT);
+		// Zバッファ無効(Zチェック無&Z更新無)
+	SetZBuffer(false);
+
+	// タイマー描画
+	DrawTimer();
+
+	// Zバッファ有効(Zチェック有&Z更新有)
+	SetZBuffer(true);
 
 }

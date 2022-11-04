@@ -18,6 +18,7 @@
 #include "effect.h"
 #include "debugproc.h"
 #include "Boss.h"
+#include "WallObject.h"
 
 //-------------------- 定数定義 --------------------
 #define	PLAYERBULLET_FILENAME	L"data/texture/bullet_p.png"	// テクスチャ ファイル名
@@ -196,9 +197,31 @@ void UpdateBullet(void)
 					continue;
 				}
 			}
+			if (CollisionWalltoBullet(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH)) {
+				pBullet->use = false;
+				// 丸影解放
+				ReleaseShadow(pBullet->nShadow);
+				pBullet->nShadow = -1;
+				continue;
+			}
+
 		} else if (pBullet->type == BULLETTYPE_ENEMY) {
 			// プレイヤーとの当たり判定
-			if (CollisionPlayer(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH)) {
+
+
+
+			//if (CollisionPlayer(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH)) {
+			//	pBullet->use = false;
+			//	// 丸影解放
+			//	ReleaseShadow(pBullet->nShadow);
+			//	pBullet->nShadow = -1;
+			//	continue;
+			//}
+
+
+
+
+			if (CollisionWalltoBullet(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH)) {
 				pBullet->use = false;
 				// 丸影解放
 				ReleaseShadow(pBullet->nShadow);
@@ -206,6 +229,10 @@ void UpdateBullet(void)
 				continue;
 			}
 		}
+		if (!pBullet->use) {
+			continue;
+		}
+
 		// 丸影移動
 		MoveShadow(pBullet->nShadow, pBullet->pos);
 		// エフェクトの設定

@@ -27,14 +27,14 @@ bool CollisionSphere(GameObject A, GameObject B) {
 	XMFLOAT3 vA, vB, vZero;
 	vZero = XMFLOAT3(0, 0, 0);
 
-	XMStoreFloat3(&vA, XMVector3TransformCoord(XMLoadFloat3(&vZero), XMLoadFloat4x4(&A.m_mtxWorld)));
-	XMStoreFloat3(&vB, XMVector3TransformCoord(XMLoadFloat3(&vZero), XMLoadFloat4x4(&B.m_mtxWorld)));
+	XMStoreFloat3(&vA, XMVector3TransformCoord(XMLoadFloat3(&vZero), XMLoadFloat4x4(&A.mtxWorld)));
+	XMStoreFloat3(&vB, XMVector3TransformCoord(XMLoadFloat3(&vZero), XMLoadFloat4x4(&B.mtxWorld)));
 
 
 	float dx = vA.x - vB.x;
 	float dy = vA.y - vB.y;
 	float dz = vA.z - vB.z;
-	float dr = A.m_radius + B.m_radius;
+	float dr = A.collRadius + B.collRadius;
 	return dx * dx + dy * dy + dz * dz <= dr * dr;
 }
 
@@ -162,7 +162,7 @@ GameObject* Push(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 move, XMFLOAT3 Bpos, XM
 			Apos.x += Normal[i].x * dotE;
 			Apos.y += Normal[i].y * dotE;
 			Apos.z += Normal[i].z * dotE;
-			_GameObject.m_pos = Apos;
+			_GameObject.pos = Apos;
 			//すべての移動量を0にしてしまうと
 			//ほかのオブジェクトと押し出しの計算を
 			//する際に移動量がないことになるので
@@ -171,7 +171,7 @@ GameObject* Push(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 move, XMFLOAT3 Bpos, XM
 			move.x *= 1 - fabsf(Normal[i].x);
 			move.y *= 1 - fabsf(Normal[i].y);
 			move.z *= 1 - fabsf(Normal[i].z);
-			_GameObject.m_move = move;
+			_GameObject.moveVal = move;
 
 			return &_GameObject;
 		}

@@ -51,12 +51,12 @@ void DrawCollisionSphere(GameObject gameobject) {
 			float th = XM_2PI * u;
 			float x = r * cosf(th);
 			float z = r * sinf(th);
-			pVtx->vtx.x = x * 80 / _GameObject.m_size.x;
-			pVtx->vtx.y = y * 80 / _GameObject.m_size.y;
-			pVtx->vtx.z = z * 80 / _GameObject.m_size.z;
-			//pVtx->vtx.x = x * _GameObject.m_radius/2;
-			//pVtx->vtx.y = y * _GameObject.m_radius/2;
-			//pVtx->vtx.z = z * _GameObject.m_radius/2;
+			//pVtx->vtx.x = x * 80 / _GameObject.m_size.x/2;
+			//pVtx->vtx.y = y * 80 / _GameObject.m_size.y/2;
+			//pVtx->vtx.z = z * 80 / _GameObject.m_size.z/2;
+			pVtx->vtx.x = x * _GameObject.collRadius/20;
+			pVtx->vtx.y = y * _GameObject.collRadius/20;
+			pVtx->vtx.z = z * _GameObject.collRadius/20;
 			pVtx->nor.x = x;
 			pVtx->nor.y = y;
 			pVtx->nor.z = z;
@@ -127,7 +127,7 @@ void DrawCollisionSphere(GameObject gameobject) {
 	mtxWorld = XMMatrixIdentity();
 
 	// スケールを反映
-	mtxScale = XMMatrixScaling(_GameObject.m_size.x, _GameObject.m_size.y, _GameObject.m_size.z);
+	mtxScale = XMMatrixScaling(_GameObject.size.x, _GameObject.size.y, _GameObject.size.z);
 	mtxWorld = XMMatrixMultiply(mtxScale, mtxWorld);
 
 	// 回転を反映
@@ -136,12 +136,12 @@ void DrawCollisionSphere(GameObject gameobject) {
 	//mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
 
 	// 移動を反映
-	mtxTranslate = XMMatrixTranslation(_GameObject.m_pos.x, _GameObject.m_pos.y, _GameObject.m_pos.z);
+	mtxTranslate = XMMatrixTranslation(_GameObject.pos.x, _GameObject.pos.y, _GameObject.pos.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
 	// ワールドマトリックス設定
-	XMStoreFloat4x4(&_GameObject.m_mtxWorld, mtxWorld);	// 拡縮回転移動を反映させたワールド座標
-	g_mesh.mtxWorld = _GameObject.m_mtxWorld;	// 反映させたワールド座標をメッシュ情報に保存
+	XMStoreFloat4x4(&_GameObject.mtxWorld, mtxWorld);	// 拡縮回転移動を反映させたワールド座標
+	g_mesh.mtxWorld = _GameObject.mtxWorld;	// 反映させたワールド座標をメッシュ情報に保存
 
 
 	//----- 描画 -----

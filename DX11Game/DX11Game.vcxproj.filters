@@ -72,7 +72,7 @@
     <ClCompile Include="explosion.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
-    <ClCompile Include="fade.cpp">
+    <ClCompile Include="Fade.cpp">
       <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
@@ -99,7 +99,7 @@
     <ClCompile Include="number.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
-    <ClCompile Include="player.cpp">
+    <ClCompile Include="Player.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
     <ClCompile Include="polygon.cpp">
@@ -144,6 +144,9 @@
     <ClCompile Include="DebugCollision.cpp">
       <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
+    <ClCompile Include="Astar.cpp">
+      <Filter>ソース ファイル\GameSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssimpModel.h">
@@ -167,7 +170,7 @@
     <ClInclude Include="debugproc.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
-    <ClInclude Include="fade.h">
+    <ClInclude Include="Fade.h">
       <Filter>ヘッダー ファイル\GameSystem</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
@@ -206,7 +209,7 @@
     <ClInclude Include="explosion.h">
       <Filter>ヘッダー ファイル\Game</Filter>
     </ClInclude>
-    <ClInclude Include="player.h">
+    <ClInclude Include="Player.h">
       <Filter>ヘッダー ファイル\Game</Filter>
     </ClInclude>
     <ClInclude Include="polygon.h">
@@ -258,6 +261,9 @@
       <Filter>ヘッダー ファイル\Shader</Filter>
     </ClInclude>
     <ClInclude Include="DebugCollision.h">
+      <Filter>ヘッダー ファイル\GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Astar.h">
       <Filter>ヘッダー ファイル\GameSystem</Filter>
     </ClInclude>
   </ItemGroup>

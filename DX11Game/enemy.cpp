@@ -15,6 +15,9 @@
 #include "DwarfEffect.h"
 #include "Sound.h"
 #include "bullet.h"
+#include "GameObject.h"
+#include "collision.h"
+#include "Astar.h"
 
 //-------------------- 定数定義 --------------------
 #define MODEL_ENEMY			"data/model/kobitored.fbx"
@@ -25,18 +28,23 @@
 #define	RATE_ROTATE_ENEMY	(0.20f)		// 回転慣性係数
 #define ENEMY_RADIUS		(50.0f)		// 境界球半径
 
+#define BULLET_TIME			(300)		// 弾発射までの時間
+#define ROOT_TIME			(300)		// 次にルート検索するまでの時間
+
 
 //-------------------- 構造体定義 --------------------
 struct TEnemy {
-	XMFLOAT3	m_pos;			// 現在の位置
+	//XMFLOAT3	m_pos;			// 現在の位置
 	XMFLOAT3	m_rot;			// 現在の向き
 	XMFLOAT3	m_rotDest;		// 目的の向き
-	XMFLOAT3	m_move;			// 移動量
-	XMFLOAT3	m_size;			// 大きさ
+	//XMFLOAT3	m_move;			// 移動量
+	//XMFLOAT3	m_size;			// 大きさ
 	bool		m_use;			// 使用中かどうか
 	int			m_bulletTimer;	// 弾発射タイマー
+	int			m_rootTimer;	// ルート検索タイマー
+	XMINT2		*m_mapIndex;	// 座標をマップ番号で表したものyxの順に格納
 
-	XMFLOAT4X4	m_mtxWorld;		// ワールドマトリックス
+	//XMFLOAT4X4	m_mtxWorld;		// ワールドマトリックス
 
 	int			m_nShadow;		// 丸影番号
 };
@@ -45,6 +53,9 @@ struct TEnemy {
 static CAssimpModel	g_model;			// モデル
 static TEnemy		g_enemy[MAX_ENEMY];	// 敵機情報
 static int			g_enemyKillSum;		// 撃破数
+static GameObject	*g_GameObj[MAX_ENEMY];
+
+
 
 //====================================================================================
 //
@@ -66,19 +77,21 @@ HRESULT InitEnemy(void)
 	}
 
 	for (int i = 0; i < MAX_ENEMY; ++i) {
+		g_GameObj[i] = new GameObject;	// インスタンス化
+
 		// 位置・回転・スケール・サイズの初期設定
-		g_enemy[i].m_pos = XMFLOAT3(rand() % 620 - 310.0f,
+		g_GameObj[i]->pos = XMFLOAT3(rand() % 620 - 310.0f,
 									0.0f,
 									rand() % 620 - 310.0f);
 		g_enemy[i].m_rot = XMFLOAT3(0.0f, rand() % 360 - 180.0f, 0.0f);
 		g_enemy[i].m_rotDest = g_enemy[i].m_rot;
-		g_enemy[i].m_move = XMFLOAT3(
+		g_GameObj[i]->moveVal = XMFLOAT3(
 			-SinDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY,
 			0.0f,
 			-CosDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY);
-		g_enemy[i].m_size = XMFLOAT3(50.0f, 50.0f, 50.0f);
+		g_GameObj[i]->size = XMFLOAT3(50.0f, 50.0f, 50.0f);
 		// 丸影の生成
-		g_enemy[i].m_nShadow = CreateShadow(g_enemy[i].m_pos, 25.0f);
+		g_enemy[i].m_nShadow = CreateShadow(g_GameObj[i]->pos, 25.0f);
 		g_enemy[i].m_use = true;
 		g_enemy[i].m_bulletTimer = 300;
 	}
@@ -94,6 +107,7 @@ HRESULT InitEnemy(void)
 void UninitEnemy(void)
 {
 	for (int i = 0; i < MAX_ENEMY; ++i) {
+		delete g_GameObj[i];
 		// 丸影の解放
 		ReleaseShadow(g_enemy[i].m_nShadow);
 	}
@@ -116,44 +130,62 @@ void UpdateEnemy(void)
 		if (!g_enemy[i].m_use) {
 			continue;
 		}
+		g_GameObj[i]->moveVal = XMFLOAT3(
+			-SinDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY,
+			0.0f,
+			-CosDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY);
+
+		if (g_GameObj[i]->moveVal.x > 0.0f) {
+			ShadowMove.x += 25.0f;
+		} else if (g_GameObj[i]->moveVal.x < 0.0f) {
+			ShadowMove.x -= 25.0f;
+		}
+
+		if (g_GameObj[i]->moveVal.z > 0.0f) {
+			ShadowMove.z += 25.0f;
+		} else if (g_GameObj[i]->moveVal.z < 0.0f) {
+			ShadowMove.z -= 25.0f;
+		}
+
+
 		// 移動
-		g_enemy[i].m_pos.x += g_enemy[i].m_move.x;
-		g_enemy[i].m_pos.y += g_enemy[i].m_move.y;
-		g_enemy[i].m_pos.z += g_enemy[i].m_move.z;
+		g_GameObj[i]->pos.x += g_GameObj[i]->moveVal.x;
+		g_GameObj[i]->pos.y += g_GameObj[i]->moveVal.y;
+		g_GameObj[i]->pos.z += g_GameObj[i]->moveVal.z;
 
 		// 壁にぶつかった
 		bool lr = false, fb = false;
-		if (g_enemy[i].m_pos.x < -310.0f) {
-			g_enemy[i].m_pos.x = -310.0f;
+		if (g_GameObj[i]->pos.x < -310.0f) {
+			g_GameObj[i]->pos.x = -310.0f;
 			lr = true;
 		}
-		if (g_enemy[i].m_pos.x > 310.0f) {
-			g_enemy[i].m_pos.x = 310.0f;
+		if (g_GameObj[i]->pos.x > 310.0f) {
+			g_GameObj[i]->pos.x = 310.0f;
 			lr = true;
 		}
-		if (g_enemy[i].m_pos.z < -310.0f) {
-			g_enemy[i].m_pos.z = -310.0f;
+		if (g_GameObj[i]->pos.z < -310.0f) {
+			g_GameObj[i]->pos.z = -310.0f;
 			fb = true;
 		}
-		if (g_enemy[i].m_pos.z > 310.0f) {
-			g_enemy[i].m_pos.z = 310.0f;
+		if (g_GameObj[i]->pos.z > 310.0f) {
+			g_GameObj[i]->pos.z = 310.0f;
 			fb = true;
 		}
-		if (g_enemy[i].m_pos.y < 0.0f) {
-			g_enemy[i].m_pos.y = 0.0f;
+		if (g_GameObj[i]->pos.y < 0.0f) {
+			g_GameObj[i]->pos.y = 0.0f;
 		}
-		if (g_enemy[i].m_pos.y > 80.0f) {
-			g_enemy[i].m_pos.y = 80.0f;
+		if (g_GameObj[i]->pos.y > 80.0f) {
+			g_GameObj[i]->pos.y = 80.0f;
 		}
 		if (fabsf(g_enemy[i].m_rot.y - g_enemy[i].m_rotDest.y) < 0.0001f) {
 			if (lr) {
-				g_enemy[i].m_move.x *= -1.0f;
+				g_GameObj[i]->moveVal.x *= -1.0f;
 			}
 			if (fb) {
-				g_enemy[i].m_move.z *= -1.0f;
+				g_GameObj[i]->moveVal.z *= -1.0f;
 			}
 			if (lr || fb) {
-				g_enemy[i].m_rotDest.y = XMConvertToDegrees(atan2f(-g_enemy[i].m_move.x, -g_enemy[i].m_move.z));
+				g_enemy[i].m_rotDest.y = XMConvertToDegrees(atan2f(-g_GameObj[i]->moveVal.x, -g_GameObj[i]->moveVal.z));
 			}
 		}
 
@@ -174,22 +206,11 @@ void UpdateEnemy(void)
 		if (g_enemy[i].m_rot.y < -180.0f) {
 			g_enemy[i].m_rot.y += 360.0f;
 		}
-		g_enemy[i].m_move = XMFLOAT3(
-			-SinDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY,
-			0.0f,
-			-CosDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY);
 
-		if (g_enemy[i].m_move.x > 0.0f) {
-			ShadowMove.x += 25.0f;
-		} else if (g_enemy[i].m_move.x < 0.0f) {
-			ShadowMove.x -= 25.0f;
-		}
 
-		if (g_enemy[i].m_move.z > 0.0f) {
-			ShadowMove.z += 25.0f;
-		} else if (g_enemy[i].m_move.z < 0.0f) {
-			ShadowMove.z -= 25.0f;
-		}
+		// マップの要素番号であったら現在の位置がどこになるのかを求める
+		g_GameObj[i]->mapIndex.x = (g_GameObj[i]->pos.x + 640.0f) / 80.0f;
+		g_GameObj[i]->mapIndex.y = abs(g_GameObj[i]->pos.z - 480.0) / 80.0f;
 
 
 		// ワールドマトリックスの初期化
@@ -198,7 +219,7 @@ void UpdateEnemy(void)
 		/* ワールド座標の変換は必ず、拡大、回転、移動の順で行う */
 
 		// スケールを反映
-		mtxScale = XMMatrixScaling(g_enemy[i].m_size.x, g_enemy[i].m_size.y, g_enemy[i].m_size.z);
+		mtxScale = XMMatrixScaling(g_GameObj[i]->size.x, g_GameObj[i]->size.y, g_GameObj[i]->size.z);
 		mtxWorld = XMMatrixMultiply(mtxScale, mtxWorld);
 
 
@@ -211,29 +232,34 @@ void UpdateEnemy(void)
 
 		// 移動を反映
 		mtxTranslate = XMMatrixTranslation(
-			g_enemy[i].m_pos.x,
-			g_enemy[i].m_pos.y,
-			g_enemy[i].m_pos.z);
+			g_GameObj[i]->pos.x,
+			g_GameObj[i]->pos.y,
+			g_GameObj[i]->pos.z);
 		mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
 
 		// ワールドマトリックス設定
-		XMStoreFloat4x4(&g_enemy[i].m_mtxWorld, mtxWorld);
+		XMStoreFloat4x4(&g_GameObj[i]->mtxWorld, mtxWorld);
 
 		// 丸影の移動
-		MoveShadow(g_enemy[i].m_nShadow, XMFLOAT3(g_enemy[i].m_pos.x+ShadowMove.x,g_enemy[i].m_pos.y,g_enemy[i].m_pos.z+ShadowMove.z));
+		MoveShadow(g_enemy[i].m_nShadow, XMFLOAT3(g_GameObj[i]->pos.x+ShadowMove.x, g_GameObj[i]->pos.y, g_GameObj[i]->pos.z+ShadowMove.z));
 
 		int randomtime;
 		randomtime = rand() % 3;
 		g_enemy[i].m_bulletTimer -= randomtime;
 		if (g_enemy[i].m_bulletTimer < 0) {
 			FireBullet(
-				g_enemy[i].m_pos,
-				XMFLOAT3(-g_enemy[i].m_mtxWorld._31, -g_enemy[i].m_mtxWorld._32, -g_enemy[i].m_mtxWorld._33),
+				g_GameObj[i]->pos,
+				XMFLOAT3(-g_GameObj[i]->mtxWorld._31, -g_GameObj[i]->mtxWorld._32, -g_GameObj[i]->mtxWorld._33),
 				BULLETTYPE_ENEMY);
 
-			g_enemy[i].m_bulletTimer = 300;
+			g_enemy[i].m_bulletTimer = BULLET_TIME;
 		}
 		
+		//g_enemy[i].m_rootTimer--;
+		//if (g_enemy[i].m_rootTimer < 0) {
+		//	g_enemy[i].m_mapIndex = search_Root(i);
+		//	g_enemy[i].m_rootTimer = ROOT_TIME;
+		//}
 	}
 }
 
@@ -251,7 +277,7 @@ void DrawEnemy(void)
 		if (!g_enemy[i].m_use) {
 			continue;
 		}
-		g_model.Draw(pDC, g_enemy[i].m_mtxWorld, eOpacityOnly);
+		g_model.Draw(pDC, g_GameObj[i]->mtxWorld, eOpacityOnly);
 	}
 
 	// 半透明部分を描画
@@ -261,7 +287,7 @@ void DrawEnemy(void)
 		}
 		SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
 		SetZWrite(false);				// Zバッファ更新しない
-		g_model.Draw(pDC, g_enemy[i].m_mtxWorld, eTransparentOnly);
+		g_model.Draw(pDC, g_GameObj[i]->mtxWorld, eTransparentOnly);
 		SetZWrite(true);				// Zバッファ更新する
 		SetBlendState(BS_NONE);			// アルファブレンド無効
 	}
@@ -278,17 +304,17 @@ int CollisionEnemy(XMFLOAT3 pos, float radius, float damage) {
 		if (!g_enemy[i].m_use) {
 			continue;
 		}
-		bool hit = CollisionSphere(g_enemy[i].m_pos, ENEMY_RADIUS, pos, radius);
+		bool hit = CollisionSphere(g_GameObj[i]->pos, ENEMY_RADIUS, pos, radius);
 		if (hit) {
 			hitNum++;
 			// 爆発開始
 			int nExp = -1;
 			if (damage > 0.0f) {
-				StartDwarfEffect(g_enemy[i].m_pos);
+				StartDwarfEffect(g_GameObj[i]->pos);
 				//nExp = SetEffect(g_enemy[i].m_pos, XMFLOAT4(0.85f, 0.05f, 0.25f, 0.80f), XMFLOAT2(8.0f, 8.0f), 50);
 				 
 			} else {
-				nExp = StartExplosion(g_enemy[i].m_pos, XMFLOAT2(20.0f, 20.0f));
+				nExp = StartExplosion(g_GameObj[i]->pos, XMFLOAT2(20.0f, 20.0f));
 			}
 			SetExplosionColor(nExp, XMFLOAT4(1.0f, 0.7f, 0.7f, 1.0f));
 
@@ -301,6 +327,26 @@ int CollisionEnemy(XMFLOAT3 pos, float radius, float damage) {
 	return hitNum;
 }
 
+void CollisionEnemy(GameObject collision) {
+	GameObject* _GameObject;
+
+	for (int i = 0; i < MAX_ENEMY; i++) {
+		bool isHit = CollisionSphere(*g_GameObj[i], collision);
+
+		if (isHit) {
+			_GameObject = Push(g_GameObj[i]->pos, XMFLOAT3(10.0f,10.0f,10.0f), g_GameObj[i]->moveVal, collision.pos, XMFLOAT3(collision.collRadius, collision.collRadius, collision.collRadius));
+
+			if (_GameObject == nullptr) {
+				//　押し出しに失敗している
+				return;
+			}
+
+			g_GameObj[i]->pos = _GameObject->pos;
+			g_GameObj[i]->moveVal = _GameObject->moveVal;
+		}
+	}
+}
+
 //====================================================================================
 //
 //				撃破数取得
@@ -308,4 +354,23 @@ int CollisionEnemy(XMFLOAT3 pos, float radius, float damage) {
 //====================================================================================
 int GetEnemyKillSum() {
 	return g_enemyKillSum;
+}
+
+
+//====================================================================================
+//
+//				次に移動するべき場所を格納したindexを保存する
+//
+//====================================================================================
+void SetRootIndex(XMINT2* index,int enemyNo) {
+	g_enemy[enemyNo].m_mapIndex = index;
+}
+
+//====================================================================================
+//
+//				A*の開始地点をいれる
+//
+//====================================================================================
+XMINT2 SetStartIndex(int enemyNo) {
+	return g_GameObj[enemyNo]->mapIndex;
 }

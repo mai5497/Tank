@@ -13,8 +13,8 @@
 //-------------------- グローバル変数定義 --------------------
 namespace {
 	const float CAM_POS_P_X = 0.0f;					// カメラの視点初期位置(X座標)
-	const float CAM_POS_P_Y = 400.0f;				// カメラの視点初期位置(Y座標)
-	const float CAM_POS_P_Z = -500.0f;				// カメラの視点初期位置(Z座標)
+	const float CAM_POS_P_Y = 1100.0f;				// カメラの視点初期位置(Y座標)
+	const float CAM_POS_P_Z = -350.0f;				// カメラの視点初期位置(Z座標)
 	const float CAM_POS_R_X = 0.0f;					// カメラの注視点初期位置(X座標)
 	const float CAM_POS_R_Y = 50.0f;				// カメラの注視点初期位置(Y座標)
 	const float CAM_POS_R_Z = 0.0f;					// カメラの注視点初期位置(Z座標)
@@ -104,44 +104,44 @@ void CCamera::Update()
 	//	}
 	//}
 
-	// 目的の角度までの差分
-	float fDiffRotY = m_vDestAngle.y - m_vAngle.y;
-	if (fDiffRotY >= 180.0f) {
-		fDiffRotY -= 360.0f;
-	}
-	if (fDiffRotY < -180.0f) {
-		fDiffRotY += 360.0f;
-	}
+	//// 目的の角度までの差分
+	//float fDiffRotY = m_vDestAngle.y - m_vAngle.y;
+	//if (fDiffRotY >= 180.0f) {
+	//	fDiffRotY -= 360.0f;
+	//}
+	//if (fDiffRotY < -180.0f) {
+	//	fDiffRotY += 360.0f;
+	//}
 
-	// 目的の角度まで慣性をかける
-	m_vAngle.y += fDiffRotY * RATE_ROTATE_CAMERA;
-	if (m_vAngle.y >= 180.0f) {
-		m_vAngle.y -= 360.0f;
-	}
-	if (m_vAngle.y < -180.0f) {
-		m_vAngle.y += 360.0f;
-	}
-	m_vSrcPos.x = -SinDeg(m_vAngle.y) * m_fLengthInterval;
-	m_vSrcPos.z = -CosDeg(m_vAngle.y) * m_fLengthInterval;
+	//// 目的の角度まで慣性をかける
+	//m_vAngle.y += fDiffRotY * RATE_ROTATE_CAMERA;
+	//if (m_vAngle.y >= 180.0f) {
+	//	m_vAngle.y -= 360.0f;
+	//}
+	//if (m_vAngle.y < -180.0f) {
+	//	m_vAngle.y += 360.0f;
+	//}
+	//m_vSrcPos.x = -SinDeg(m_vAngle.y) * m_fLengthInterval;
+	//m_vSrcPos.z = -CosDeg(m_vAngle.y) * m_fLengthInterval;
 
-	// 追跡カメラ
-	XMFLOAT3& vModelPos = GetPlayerPos();	// 自機座標
-	// 視点座標移動先を算出
-	m_vDestPos.x = m_vSrcPos.x + vModelPos.x;
-	m_vDestPos.y = m_vSrcPos.y + vModelPos.y;
-	m_vDestPos.z = m_vSrcPos.z + vModelPos.z;
-	// 注視点座標移動先を算出
-	m_vDestTarget.x = CAM_POS_R_X + vModelPos.x;
-	m_vDestTarget.y = CAM_POS_R_Y + vModelPos.y;
-	m_vDestTarget.z = CAM_POS_R_Z + vModelPos.z;
-	// 視点を徐々に移動先に近づける
-	m_vPos.x = m_vPos.x * 0.9f + m_vDestPos.x * 0.1f;
-	m_vPos.y = m_vPos.y * 0.9f + m_vDestPos.y * 0.1f;
-	m_vPos.z = m_vPos.z * 0.9f + m_vDestPos.z * 0.1f;
-	// 注視点を徐々に移動先に近づける
-	m_vTarget.x = m_vTarget.x * 0.9f + m_vDestTarget.x * 0.1f;
-	m_vTarget.y = m_vTarget.y * 0.9f + m_vDestTarget.y * 0.1f;
-	m_vTarget.z = m_vTarget.z * 0.9f + m_vDestTarget.z * 0.1f;
+	//// 追跡カメラ
+	//XMFLOAT3& vModelPos = GetPlayerPos();	// 自機座標
+	//// 視点座標移動先を算出
+	//m_vDestPos.x = m_vSrcPos.x + vModelPos.x;
+	//m_vDestPos.y = m_vSrcPos.y + vModelPos.y;
+	//m_vDestPos.z = m_vSrcPos.z + vModelPos.z;
+	//// 注視点座標移動先を算出
+	//m_vDestTarget.x = CAM_POS_R_X + vModelPos.x;
+	//m_vDestTarget.y = CAM_POS_R_Y + vModelPos.y;
+	//m_vDestTarget.z = CAM_POS_R_Z + vModelPos.z;
+	//// 視点を徐々に移動先に近づける
+	//m_vPos.x = m_vPos.x * 0.9f + m_vDestPos.x * 0.1f;
+	//m_vPos.y = m_vPos.y * 0.9f + m_vDestPos.y * 0.1f;
+	//m_vPos.z = m_vPos.z * 0.9f + m_vDestPos.z * 0.1f;
+	//// 注視点を徐々に移動先に近づける
+	//m_vTarget.x = m_vTarget.x * 0.9f + m_vDestTarget.x * 0.1f;
+	//m_vTarget.y = m_vTarget.y * 0.9f + m_vDestTarget.y * 0.1f;
+	//m_vTarget.z = m_vTarget.z * 0.9f + m_vDestTarget.z * 0.1f;
 
 	//if (GetKeyTrigger(VK_HOME)) {
 	//	// リセット

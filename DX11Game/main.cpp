@@ -59,6 +59,8 @@ int							g_nCountFPS;			// FPSカウンタ
 
 //TPolyline					g_polyline[MAX_POLYLINE];	// ポリライン情報
 
+std::unique_ptr<Scene>		pScene;
+
 //====================================================================================
 //
 //				エントリポイント
@@ -421,10 +423,8 @@ HRESULT Init(HWND hWnd, BOOL bWindow)
 	CSound::Init();
 
 	// シーン初期化
-	hr = InitScene();
-	if (FAILED(hr)) {
-		return hr;
-	}
+	pScene = std::make_unique<Scene>();
+	pScene->Init();
 
 	// ボリライン初期化
 	//hr = InitPolyline();
@@ -493,7 +493,8 @@ void Uninit(void)
 	CSound::Fin();
 
 	// シーン終了処理
-	UninitScene();
+	pScene->Uninit();
+	pScene.reset();
 
 	// 数字終了処理
 	UninitNumber();
@@ -556,7 +557,7 @@ void Update(void)
 
 	// デバッグ文字列設定
 	StartDebugProc();
-	PrintDebugProc("FPS:%d\n\n", g_nCountFPS);
+	//PrintDebugProc("FPS:%d\n\n", g_nCountFPS);
 
 	// ポリゴン表示更新
 	UpdatePolygon();
@@ -568,7 +569,7 @@ void Update(void)
 	CSound::Update();
 
 	// シーン更新
-	UpdateScene();
+	pScene->Update();
 
 	// ポリライン更新
 	//for (int i = 0; i < MAX_POLYLINE; ++i) {
@@ -597,7 +598,7 @@ void Draw(void)
 	//}
 
 	// シーン描画
-	DrawScene();
+	pScene->Draw();
 
 
 	// Zバッファ無効(Zチェック無&Z更新無)

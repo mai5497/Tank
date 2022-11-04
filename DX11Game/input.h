@@ -1,9 +1,8 @@
-//=============================================================================
-//
-// 入力処理 [input.h]
-// Author : HIROHIKO HAMAYA
-//
-//=============================================================================
+//************************************************************************************
+// 
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
 #pragma once
 
 #include "main.h"
@@ -91,6 +90,7 @@ bool GetJoyTrigger(DWORD dwJoy, DWORD dwBtn);
 bool GetJoyRelease(DWORD dwJoy, DWORD dwBtn);
 
 POINT *GetMousePosition();
+
 bool GetMouseButton(DWORD dwBtn);
 bool GetMouseTrigger(DWORD dwBtn);
 bool GetMouseRelease(DWORD dwBtn);
