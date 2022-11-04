@@ -6,12 +6,12 @@
 //************************************************************************************
 
 //-------------------- インクルード部 --------------------
-#include "fade.h"
+#include "Fade.h"
 #include "polygon.h"
 //#include "Sound.h"
 
 //-------------------- 定数定義 --------------------
-#define FADE_RATE	0.02f		// フェードインフェードアウトの
+#define FADE_RATE	0.02f		// フェードインフェードアウトの速度
 
 //-------------------- グローバル変数定義 --------------------
 static float g_fRed = 1.0f;		// フェードアウト色
@@ -19,19 +19,38 @@ static float g_fGreen = 1.0f;
 static float g_fBlue = 1.0f;
 static float g_fAlpha = 1.0f;	// 透明度
 static EFade g_eFade = FADE_IN;
-static EScene g_eNext = SCENE_TITLE;
+static Scene::eSCENE g_eNext = Scene::SCENE_TITLE;
+
+//====================================================================================
+//
+//				コンストラクタ
+//
+//====================================================================================
+Fade::Fade() {
+
+}
+
+
+//====================================================================================
+//
+//				デストラクタ
+//
+//====================================================================================
+Fade::~Fade() {
+	
+}
+
+
 
 //====================================================================================
 //
 //				初期化
 //
 //====================================================================================
-HRESULT InitFade() {
+void Fade::Init() {
 	g_eFade = FADE_IN;
 	g_fAlpha = 1.0f;
-	g_eNext = SCENE_TITLE;
-
-	return S_OK;
+	g_eNext = Scene::SCENE_TITLE;
 }
 
 
@@ -40,7 +59,7 @@ HRESULT InitFade() {
 //				終了
 //
 //====================================================================================
-void UninitFade() {
+void Fade::Uninit() {
 	g_eFade = FADE_NONE;
 	g_fAlpha = 0.0f;
 }
@@ -51,7 +70,7 @@ void UninitFade() {
 //				更新
 //
 //====================================================================================
-void UpdateFade() {
+void Fade::Update() {
 	switch (g_eFade) {
 	case FADE_NONE:
 		break;
@@ -61,7 +80,7 @@ void UpdateFade() {
 			// フェードイン処理に切り替え
 			g_fAlpha = 1.0f;
 			g_eFade = FADE_IN;
-			SetScene(g_eNext);
+			pNowScene->SetScene(g_eNext);
 		}
 		//CSound::SetVolume(1.0f - g_fAlpha);
 		break;
@@ -86,7 +105,7 @@ void UpdateFade() {
 //				描画
 //
 //====================================================================================
-void DrawFade() {
+void Fade::Draw() {
 	SetBlendState(BS_ADDITIVE);		// 加算合成
 	SetZWrite(false);	// 半透明描画はZバッファを更新しない(Zチェックは行う)
 
@@ -114,11 +133,12 @@ void DrawFade() {
 //				フェードアウト開始
 //
 //====================================================================================
-void StartFadeOut(EScene eNext) {
+void Fade::StartFadeOut(std::shared_ptr<Scene> scene) {
 	if (g_eFade != FADE_OUT) {
+		pNowScene = scene;
 		g_eFade = FADE_OUT;
 		g_fAlpha = 0.0f;
-		g_eNext = eNext;
+		g_eNext = scene->GetScene();
 	}
 }
 
@@ -128,7 +148,7 @@ void StartFadeOut(EScene eNext) {
 //				状態取得
 //
 //====================================================================================
-EFade GetFade() {
+EFade Fade::GetFade() {
 	return g_eFade;
 }
 
@@ -138,7 +158,7 @@ EFade GetFade() {
 //				フェード色設定
 //
 //====================================================================================
-void SetFadeColor(float fR, float fG, float fB) {
+void Fade::SetFadeColor(float fR, float fG, float fB) {
 	g_fRed = fR;
 	g_fGreen = fG;
 	g_fBlue = fB;

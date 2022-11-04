@@ -6,7 +6,7 @@
 //************************************************************************************
 
 //-------------------- インクルード部 --------------------
-#include "title.h"
+#include "Title.h"
 #include "polygon.h"
 #include "Texture.h"
 #include "input.h"
@@ -29,22 +29,35 @@ static ID3D11ShaderResourceView *g_pTexture;
 
 //====================================================================================
 //
+//				コンストラクタ
+//
+//====================================================================================
+Title::Title() {
+
+}
+
+//====================================================================================
+//
+//				デストラクタ
+//
+//====================================================================================
+Title::~Title() {
+
+}
+
+
+//====================================================================================
+//
 //				初期化
 //
 //====================================================================================
-HRESULT	InitTitle() {
-	HRESULT hr = S_OK;
+void Title::Init() {
 	ID3D11Device *pDevice = GetDevice();
-	hr = CreateTextureFromFile(pDevice, g_pszTexFName, &g_pTexture);
-	if (FAILED(hr)) {
-		return hr;
-	}
+	CreateTextureFromFile(pDevice, g_pszTexFName, &g_pTexture);
 
 
 	// BGM再生
 	CSound::Play(BGM_TITLE);
-
-	return hr;
 }
 
 //====================================================================================
@@ -52,7 +65,7 @@ HRESULT	InitTitle() {
 //				終了
 //
 //====================================================================================
-void UninitTitle() {
+void Title::Uninit() {
 
 	// BGM再生停止
 	CSound::Stop(BGM_TITLE);
@@ -65,9 +78,9 @@ void UninitTitle() {
 //				更新
 //
 //====================================================================================
-void UpdateTitle() {
+void Title::Update() {
 	//クリックまたは[Enter]押下
-	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_RETURN)) {
+	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_SPACE)) {
 		CSound::Play(SE_DECIDE);
 		//モード選択画面へ
 		//SetScene(SCENE_GAME);
@@ -81,7 +94,7 @@ void UpdateTitle() {
 //				描画
 //
 //====================================================================================
-void DrawTitle() {
+void Title::Draw() {
 	// Zバッファ無効(Zチェック無&Z更新無)
 	SetZBuffer(false);
 

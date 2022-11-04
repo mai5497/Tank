@@ -1,17 +1,30 @@
+//************************************************************************************
+// 
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
+
 #ifndef __TITLE_H__
 #define __TITLE_H__
 
 #include "main.h"
+#include "Scene.h"
 
 //===========================
 //
-//	プロトタイプ宣言
+//	クラス定義
 //
 //===========================
-HRESULT	InitTitle();	// 初期化
-void	UninitTitle();	// 終了
-void	UpdateTitle();	// 更新
-void	DrawTitle();	// 描画
+class Title : public Scene {
+public:
+	Title();
+	~Title();
+
+	void	Init();	// 初期化
+	void	Uninit();	// 終了
+	void	Update();	// 更新
+	void	Draw();	// 描画
+};
 
 #endif // !__TITLE_H__
 

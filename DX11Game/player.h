@@ -4,20 +4,35 @@
 // Author : HIROHIKO HAMAYA
 //
 //=============================================================================
+//************************************************************************************
+// 
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
 #pragma once
 
 #include "main.h"
-
-class GameObject;
+#include "GameObject.h"
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-HRESULT InitPlayer(void);
-void UninitPlayer(void);
-void UpdatePlayer(void);
-void DrawPlayer(void);
+class Player : public GameObject {
+public:
+	Player();
+	~Player();
 
-XMFLOAT3& GetPlayerPos();
-bool CollisionPlayer(XMFLOAT3 pos, float radius, float damage);
-bool CollisionPlayer(GameObject collision);
+	void Init();
+	void Uninit();
+	void Update();
+	void Draw();
+
+	XMFLOAT3& GetPlayerPos();
+	bool CollisionPlayer(XMFLOAT3 pos, float radius, float damage);
+	bool CollisionPlayer(GameObject collision);
+	XMINT2 SetPlayerIndex();
+
+private:
+	XMFLOAT3 rotDestModel;	// 目的の向き
+
+};
