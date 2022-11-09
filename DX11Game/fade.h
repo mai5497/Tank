@@ -29,11 +29,11 @@ public:
 	void Update();									// 更新
 	void Draw();									// 描画
 
-	void StartFadeOut(std::shared_ptr<Scene> scene);						// フェードアウト開始
+	static void StartFadeOut(Scene::eSCENE eScene);						// フェードアウト開始
 
 	EFade GetFade();									// 状態取得
 	void SetFadeColor(float fR, float fG, float fB);	// フェードアウト色設定
 
 private:
-	std::shared_ptr<Scene> pNowScene;
+	static Scene::eSCENE eNowScene;
 };

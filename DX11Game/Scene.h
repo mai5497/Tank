@@ -8,11 +8,11 @@
 #define __SCENE_H__
 
 #include "main.h"
-#include <memory>
 
 class Game;
 class Title;
-
+class Result;
+class Fade;
 
 class Scene {
 public:
@@ -36,13 +36,23 @@ public:
 	void Update();			// 更新
 	void Draw();			// 描画
 
-	void SetScene(eSCENE eScene);	// 切り替え
+
+
+	static void SetScene(eSCENE eScene);	// 切り替え
+	void ChangeScene();
 	eSCENE GetScene();					// シーン番号返す
 
 private:
+
+	std::shared_ptr<Fade> pFade;
+
+protected:
+	eSCENE nowScene;
 	// とりあえずうごかすためにポインタ作っとく
-	Game* pGame;
+	Scene* pGame;
 	Title* pTitle;
+	Result* pResult;
+
 };
 
 #endif

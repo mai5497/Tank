@@ -10,7 +10,6 @@
 #include "polygon.h"
 #include "Texture.h"
 #include "input.h"
-#include "Scene.h"
 #include "Sound.h"
 #include "number.h"
 #include "timer.h"
@@ -58,23 +57,37 @@ static ID3D11ShaderResourceView *g_pTexture[MAX_TEXTURE];
 
 //====================================================================================
 //
+//				コンストラクタ
+//
+//====================================================================================
+Result::Result() {
+	Init();
+}
+
+//====================================================================================
+//
+//				デストラクタ
+//
+//====================================================================================
+Result::~Result() {
+	Uninit();
+}
+
+//====================================================================================
+//
 //				初期化
 //
 //====================================================================================
-HRESULT	InitResult() {
-	HRESULT hr = S_OK;
+void Result::Init() {
+	nowScene = Scene::SCENE_RESULT;
+
 	ID3D11Device *pDevice = GetDevice();
 	for (int i = 0; i < MAX_TEXTURE; i++) {
-		hr = CreateTextureFromFile(pDevice, g_pszTexFName[i], &g_pTexture[i]);
-		if (FAILED(hr)) {
-			return hr;
-		}
+		CreateTextureFromFile(pDevice, g_pszTexFName[i], &g_pTexture[i]);
 	}
 
 	// BGM再生
 	CSound::Play(BGM_RESULT);
-
-	return hr;
 }
 
 //====================================================================================
@@ -82,7 +95,7 @@ HRESULT	InitResult() {
 //				終了
 //
 //====================================================================================
-void UninitResult() {
+void Result::Uninit() {
 
 	// BGM再生停止
 	CSound::Stop(BGM_RESULT);
@@ -98,13 +111,13 @@ void UninitResult() {
 //				更新
 //
 //====================================================================================
-void UpdateResult() {
+void Result::Update() {
 	//クリックまたは[Enter]押下
 	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_SPACE)) {
 		CSound::Play(SE_DECIDE);
 		//ランキング画面へ
 		//SetScene(SCENE_TITLE);
-		StartFadeOut(Scene::SCENE_TITLE);
+		Fade::StartFadeOut(Scene::SCENE_TITLE);
 		return;
 	}
 }
@@ -114,7 +127,7 @@ void UpdateResult() {
 //				　描画
 //
 //====================================================================================
-void DrawResult() {
+void Result::Draw() {
 	int min;
 	int sec;
 
