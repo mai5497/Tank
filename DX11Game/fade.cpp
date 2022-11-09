@@ -10,6 +10,10 @@
 #include "polygon.h"
 //#include "Sound.h"
 
+//-------------------- 静的メンバ --------------------
+Scene::eSCENE Fade::eNowScene = Scene::SCENE_NONE;
+
+
 //-------------------- 定数定義 --------------------
 #define FADE_RATE	0.02f		// フェードインフェードアウトの速度
 
@@ -26,8 +30,9 @@ static Scene::eSCENE g_eNext = Scene::SCENE_TITLE;
 //				コンストラクタ
 //
 //====================================================================================
-Fade::Fade() {
-
+Fade::Fade(){
+	eNowScene = Scene::SCENE_NONE;
+	Init();
 }
 
 
@@ -37,7 +42,7 @@ Fade::Fade() {
 //
 //====================================================================================
 Fade::~Fade() {
-	
+	Uninit();
 }
 
 
@@ -80,7 +85,7 @@ void Fade::Update() {
 			// フェードイン処理に切り替え
 			g_fAlpha = 1.0f;
 			g_eFade = FADE_IN;
-			pNowScene->SetScene(g_eNext);
+			Scene::SetScene(g_eNext);
 		}
 		//CSound::SetVolume(1.0f - g_fAlpha);
 		break;
@@ -133,12 +138,12 @@ void Fade::Draw() {
 //				フェードアウト開始
 //
 //====================================================================================
-void Fade::StartFadeOut(std::shared_ptr<Scene> scene) {
+void Fade::StartFadeOut(Scene::eSCENE eScene) {
 	if (g_eFade != FADE_OUT) {
-		pNowScene = scene;
+		eNowScene = eScene;
 		g_eFade = FADE_OUT;
 		g_fAlpha = 0.0f;
-		g_eNext = scene->GetScene();
+		g_eNext = eScene;
 	}
 }
 

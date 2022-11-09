@@ -33,7 +33,7 @@ static ID3D11ShaderResourceView *g_pTexture;
 //
 //====================================================================================
 Title::Title() {
-
+	Init();
 }
 
 //====================================================================================
@@ -42,7 +42,7 @@ Title::Title() {
 //
 //====================================================================================
 Title::~Title() {
-
+	Uninit();
 }
 
 
@@ -54,7 +54,7 @@ Title::~Title() {
 void Title::Init() {
 	ID3D11Device *pDevice = GetDevice();
 	CreateTextureFromFile(pDevice, g_pszTexFName, &g_pTexture);
-
+	nowScene = Scene::SCENE_TITLE;
 
 	// BGMçƒê∂
 	CSound::Play(BGM_TITLE);
@@ -84,7 +84,7 @@ void Title::Update() {
 		CSound::Play(SE_DECIDE);
 		//ÉÇÅ[ÉhëIëâÊñ Ç÷
 		//SetScene(SCENE_GAME);
-		StartFadeOut(SCENE_GAME);
+		Fade::StartFadeOut(Scene::SCENE_GAME);
 		return;
 	}
 }

@@ -8,16 +8,22 @@
 #define __RESULT__H__
 
 #include "main.h"
+#include "Scene.h"
 
 //===========================
 //
 //	プロトタイプ宣言
 //
 //===========================
-HRESULT	InitResult();	// 初期化
-void	UninitResult();	// 終了
-void	UpdateResult();	// 更新
-void	DrawResult();	// 描画
+class Result : public Scene {
+public:
+	Result();
+	~Result();
 
+	void Init();	// 初期化
+	void Uninit();	// 終了
+	void Update();	// 更新
+	void Draw();	// 描画
+};
 #endif
 

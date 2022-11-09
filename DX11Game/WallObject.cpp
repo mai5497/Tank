@@ -228,8 +228,19 @@ void CollisionWallObj() {
 			}
 
 			//isHit = CollisionPlayer(g_wallobj[j * MAPNUM + i]->m_pos, g_wallobj[j * MAPNUM + i]->m_radius, g_wallobj[j * MAPNUM + i]->m_size);
-			CollisionPlayer(*g_wallobj[j * MAPWIDTH + i]);
+			
+			/*
+			* あとでオブジェクト同士の受け渡し書く！！！！！！
+			*/
+			
+			
+			//CollisionPlayer(*g_wallobj[j * MAPWIDTH + i]);
 			CollisionEnemy(*g_wallobj[j * MAPWIDTH + i]);
+			
+			
+			
+			
+			
 			//if (isHit) {
 			//	return;
 			//}

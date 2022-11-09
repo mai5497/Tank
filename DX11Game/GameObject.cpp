@@ -26,3 +26,7 @@ void GameObject::Uninit() {
 void GameObject::Update() {
 
 }
+
+void GameObject::Draw() {
+
+}
