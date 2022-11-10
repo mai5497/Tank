@@ -54,7 +54,7 @@ Title::~Title() {
 void Title::Init() {
 	ID3D11Device *pDevice = GetDevice();
 	CreateTextureFromFile(pDevice, g_pszTexFName, &g_pTexture);
-	nowScene = Scene::SCENE_TITLE;
+	//nowScene = Scene::SCENE_TITLE;
 
 	// BGMçƒê∂
 	CSound::Play(BGM_TITLE);

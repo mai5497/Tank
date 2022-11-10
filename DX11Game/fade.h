@@ -35,5 +35,5 @@ public:
 	void SetFadeColor(float fR, float fG, float fB);	// フェードアウト色設定
 
 private:
-	static Scene::eSCENE eNowScene;
+	//static Scene::eSCENE eNowScene;
 };

@@ -11,7 +11,7 @@
 //#include "Sound.h"
 
 //-------------------- ê√ìIÉÅÉìÉo --------------------
-Scene::eSCENE Fade::eNowScene = Scene::SCENE_NONE;
+//Scene::eSCENE Fade::eNowScene = Scene::SCENE_NONE;
 
 
 //-------------------- íËêîíËã` --------------------
@@ -31,7 +31,7 @@ static Scene::eSCENE g_eNext = Scene::SCENE_TITLE;
 //
 //====================================================================================
 Fade::Fade(){
-	eNowScene = Scene::SCENE_NONE;
+	//eNowScene = Scene::SCENE_NONE;
 	Init();
 }
 
@@ -140,7 +140,7 @@ void Fade::Draw() {
 //====================================================================================
 void Fade::StartFadeOut(Scene::eSCENE eScene) {
 	if (g_eFade != FADE_OUT) {
-		eNowScene = eScene;
+		//eNowScene = eScene;
 		g_eFade = FADE_OUT;
 		g_fAlpha = 0.0f;
 		g_eNext = eScene;

@@ -79,7 +79,7 @@ Result::~Result() {
 //
 //====================================================================================
 void Result::Init() {
-	nowScene = Scene::SCENE_RESULT;
+	//nowScene = Scene::SCENE_RESULT;
 
 	ID3D11Device *pDevice = GetDevice();
 	for (int i = 0; i < MAX_TEXTURE; i++) {

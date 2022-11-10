@@ -47,7 +47,7 @@ Game::~Game() {
 //
 //====================================================================================
 void Game::Init() {
-	nowScene = Scene::SCENE_GAME;
+	//nowScene = Scene::SCENE_GAME;
 
 	// ä€âeèâä˙âª
 	InitShadow();

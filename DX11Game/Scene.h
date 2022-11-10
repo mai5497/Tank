@@ -45,13 +45,17 @@ public:
 private:
 
 	std::shared_ptr<Fade> pFade;
+	static eSCENE nowScene;
+	eSCENE oldScene;
 
 protected:
-	eSCENE nowScene;
+
 	// Ç∆ÇËÇ†Ç¶Ç∏Ç§Ç≤Ç©Ç∑ÇΩÇﬂÇ…É|ÉCÉìÉ^çÏÇ¡Ç∆Ç≠
-	Scene* pGame;
-	Title* pTitle;
-	Result* pResult;
+	//std::shared_ptr <Scene> pGame;
+	//std::shared_ptr<Title> pTitle;
+	//std::shared_ptr<Result> pResult;
+
+	std::shared_ptr<Scene> pNowScene;
 
 };
 

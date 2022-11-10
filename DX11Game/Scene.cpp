@@ -15,7 +15,7 @@
 
 
 //-------------------- グローバル変数定義 --------------------
-Scene::eSCENE nowScene = Scene::SCENE_NONE;
+Scene::eSCENE Scene::nowScene = Scene::SCENE_NONE;
 
 //====================================================================================
 //
@@ -23,7 +23,7 @@ Scene::eSCENE nowScene = Scene::SCENE_NONE;
 //
 //====================================================================================
 Scene::Scene() {
-	
+	Init();
 }
 
 //====================================================================================
@@ -32,7 +32,7 @@ Scene::Scene() {
 //
 //====================================================================================
 Scene::~Scene() {
-
+	Uninit();
 }
 
 
@@ -45,12 +45,15 @@ void Scene::Init() {
 	HRESULT hr = S_OK;
 
 	// 最初はタイトル画面
-	nowScene = SCENE_TITLE;
+	oldScene = nowScene = SCENE_TITLE;
 	SetScene(nowScene);
+	pNowScene = std::make_shared<Title>();
 
-	pTitle = new Title;
-	pGame = new Game;
-	pResult = new Result;
+	//pTitle = std::make_shared<Title>();
+	//pGame = std::make_shared<Game>();
+	//pResult = std::make_shared<Result>();
+
+
 
 	pFade = std::make_shared<Fade>();
 }
@@ -64,9 +67,11 @@ void Scene::Init() {
 void Scene::Uninit() {
 	SetScene(SCENE_NONE);	// 現在の画面を終了
 
-	delete pResult;
-	delete pGame;
-	delete pTitle;
+	//pResult.reset();
+	//pGame.reset();
+	//pTitle.reset();
+
+	pNowScene.reset();
 
 	pFade.reset();
 }
@@ -77,28 +82,34 @@ void Scene::Uninit() {
 //
 //====================================================================================
 void Scene::Update() {
-	switch (nowScene) {
-	case SCENE_TITLE:	// タイトル画面
-		pTitle->Update();
-		break;
-		//case SCENE_MODE:	// モード選択
-		//	UpdateMode();
-		//	break;
-		//case SCENE_HOWTOPLAY:	// 遊び方
-		//	UpdateHowToPlay();
-		//	break;
-	case SCENE_GAME:	// ゲーム画面
-		pGame->Update();
-		break;
-	case SCENE_RESULT:	// リザルト
-		pResult->Update();
-		break;
-		//case SCENE_RANKING:	// ランキング
-		//	UpdateRanking();
-		//	break;
-	default:
-		break;
+	//switch (nowScene) {
+	//case SCENE_TITLE:	// タイトル画面
+	//	pTitle->Update();
+	//	break;
+	//	//case SCENE_MODE:	// モード選択
+	//	//	UpdateMode();
+	//	//	break;
+	//	//case SCENE_HOWTOPLAY:	// 遊び方
+	//	//	UpdateHowToPlay();
+	//	//	break;
+	//case SCENE_GAME:	// ゲーム画面
+	//	pGame->Update();
+	//	break;
+	//case SCENE_RESULT:	// リザルト
+	//	pResult->Update();
+	//	break;
+	//	//case SCENE_RANKING:	// ランキング
+	//	//	UpdateRanking();
+	//	//	break;
+	//default:
+	//	break;
+	//}
+	if (oldScene != nowScene) {
+		ChangeScene();
 	}
+
+	pNowScene->Update();
+
 	pFade->Update();
 }
 
@@ -108,28 +119,31 @@ void Scene::Update() {
 //
 //====================================================================================
 void Scene::Draw() {
-	switch (nowScene) {
-	case SCENE_TITLE:	// タイトル画面
-		pTitle->Draw();
-		break;
-		//case SCENE_MODE:	// モード選択
-		//	DrawMode();
-		//	break;
-		//case SCENE_HOWTOPLAY:	// 遊び方
-		//	DrawHowToPlay();
-		//	break;
-	case SCENE_GAME:	// ゲーム画面
-		pGame->Draw();
-		break;
-	case SCENE_RESULT:
-		pResult->Draw();
-		break;
-		//case SCENE_RANKING:
-		//	DrawRanking();
-		//	break;
-	default:
-		break;
-	}
+	//switch (nowScene) {
+	//case SCENE_TITLE:	// タイトル画面
+	//	pTitle->Draw();
+	//	break;
+	//	//case SCENE_MODE:	// モード選択
+	//	//	DrawMode();
+	//	//	break;
+	//	//case SCENE_HOWTOPLAY:	// 遊び方
+	//	//	DrawHowToPlay();
+	//	//	break;
+	//case SCENE_GAME:	// ゲーム画面
+	//	pGame->Draw();
+	//	break;
+	//case SCENE_RESULT:
+	//	pResult->Draw();
+	//	break;
+	//	//case SCENE_RANKING:
+	//	//	DrawRanking();
+	//	//	break;
+	//default:
+	//	break;
+	//}
+
+	pNowScene->Draw();
+
 	pFade->Draw();
 }
 
@@ -150,54 +164,75 @@ void Scene::SetScene(eSCENE eScene) {
 //====================================================================================
 void Scene::ChangeScene() {
 	// 現在の画面を終了
-	switch (nowScene) {
-	case SCENE_TITLE:		// タイトル画面
-		pTitle->Uninit();
-		break;
-		//case SCENE_MODE:	// モード選択
-		//	UninitMode();
-		//	break;
-		//case SCENE_HOWTOPLAY:	// 遊び方
-		//	UninitHowToPlay();
-		//	break;
-	case SCENE_GAME:		// ゲーム画面
-		pGame->Uninit();
-		break;
-	case SCENE_RESULT:		// リザルト
-		pResult->Uninit();
-		break;
-		//case SCENE_RANKING:		// ランキング
-		//	UninitRanking();
-		//	break;
-	default:
-		break;
+	//switch (nowScene) {
+	//case SCENE_TITLE:		// タイトル画面
+	//	pTitle->Uninit();
+	//	break;
+	//	//case SCENE_MODE:	// モード選択
+	//	//	UninitMode();
+	//	//	break;
+	//	//case SCENE_HOWTOPLAY:	// 遊び方
+	//	//	UninitHowToPlay();
+	//	//	break;
+	//case SCENE_GAME:		// ゲーム画面
+	//	pGame->Uninit();
+	//	break;
+	//case SCENE_RESULT:		// リザルト
+	//	pResult->Uninit();
+	//	break;
+	//	//case SCENE_RANKING:		// ランキング
+	//	//	UninitRanking();
+	//	//	break;
+	//default:
+	//	break;
 
-	}
+	//}
+	
+	pNowScene->Uninit();
+
 	// 画面を入れ替え
-	nowScene = nowScene;
+	//nowScene = nowScene;
 	// 次の画面を初期化
+	//switch (nowScene) {
+	//case SCENE_TITLE:		// タイトル画面
+	//	pTitle->Init();
+	//	break;
+	//	//case SCENE_MODE:	// モード選択
+	//	//	InitMode();
+	//	//	break;
+	//	//case SCENE_HOWTOPLAY:	// 遊び方
+	//	//	InitHowToPlay();
+	//	//	break;
+	//case SCENE_GAME:		// ゲーム画面
+	//	pGame->Init();
+	//	break;
+	//case SCENE_RESULT:
+	//	pResult->Init();
+	//	break;
+	//	//case SCENE_RANKING:
+	//	//	InitRanking();
+	//	//	break;
+	//default:
+	//	break;
+	//}
 	switch (nowScene) {
 	case SCENE_TITLE:		// タイトル画面
-		pTitle->Init();
+		pNowScene.reset();	// メモリ切り替えの為破棄
+		pNowScene = std::make_shared<Title>();
 		break;
-		//case SCENE_MODE:	// モード選択
-		//	InitMode();
-		//	break;
-		//case SCENE_HOWTOPLAY:	// 遊び方
-		//	InitHowToPlay();
-		//	break;
 	case SCENE_GAME:		// ゲーム画面
-		pGame->Init();
+		pNowScene.reset();	// メモリ切り替えの為破棄
+		pNowScene = std::make_shared<Game>();
 		break;
 	case SCENE_RESULT:
-		pResult->Init();
+		pNowScene.reset();	// メモリ切り替えの為破棄
+		pNowScene = std::make_shared<Result>();
 		break;
-		//case SCENE_RANKING:
-		//	InitRanking();
-		//	break;
 	default:
 		break;
 	}
+	oldScene = nowScene;
+	pNowScene->Init();
 }
 
 
