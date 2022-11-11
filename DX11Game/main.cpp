@@ -16,7 +16,7 @@
 #include "debugproc.h"
 #include "mesh.h"
 //#include "polyline.h"
-#include "Scene.h"
+#include "SceneManager.h"
 #include "number.h"
 #include "Sound.h"
 
@@ -59,7 +59,7 @@ int							g_nCountFPS;			// FPSカウンタ
 
 //TPolyline					g_polyline[MAX_POLYLINE];	// ポリライン情報
 
-std::unique_ptr<Scene>		pScene;
+std::shared_ptr<SceneManager>		pSceneManager;
 
 //====================================================================================
 //
@@ -423,8 +423,8 @@ HRESULT Init(HWND hWnd, BOOL bWindow)
 	CSound::Init();
 
 	// シーン初期化
-	pScene = std::make_unique<Scene>();
-	pScene->Init();
+	pSceneManager = std::make_shared<SceneManager>();
+	pSceneManager->Init();
 
 	// ボリライン初期化
 	//hr = InitPolyline();
@@ -493,8 +493,8 @@ void Uninit(void)
 	CSound::Fin();
 
 	// シーン終了処理
-	pScene->Uninit();
-	pScene.reset();
+	pSceneManager->Uninit();
+	pSceneManager.reset();
 
 	// 数字終了処理
 	UninitNumber();
@@ -569,7 +569,7 @@ void Update(void)
 	CSound::Update();
 
 	// シーン更新
-	pScene->Update();
+	pSceneManager->Update();
 
 	// ポリライン更新
 	//for (int i = 0; i < MAX_POLYLINE; ++i) {
@@ -598,7 +598,7 @@ void Draw(void)
 	//}
 
 	// シーン描画
-	pScene->Draw();
+	pSceneManager->Draw();
 
 
 	// Zバッファ無効(Zチェック無&Z更新無)

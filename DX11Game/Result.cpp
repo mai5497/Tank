@@ -13,7 +13,7 @@
 #include "Sound.h"
 #include "number.h"
 #include "timer.h"
-#include "fade.h"
+#include "Fade.h"
 
 
 //-------------------- ’è”’è‹` --------------------
@@ -117,7 +117,7 @@ void Result::Update() {
 		CSound::Play(SE_DECIDE);
 		//ƒ‰ƒ“ƒLƒ“ƒO‰æ–Ê‚Ö
 		//SetScene(SCENE_TITLE);
-		Fade::StartFadeOut(Scene::SCENE_TITLE);
+		Fade::StartFadeOut(SCENE_TITLE);
 		return;
 	}
 }

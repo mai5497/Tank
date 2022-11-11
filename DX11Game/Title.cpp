@@ -10,9 +10,8 @@
 #include "polygon.h"
 #include "Texture.h"
 #include "input.h"
-#include "Scene.h"
-#include "fade.h"
 #include "Sound.h"
+#include "Fade.h"
 
 //-------------------- 定数定義 --------------------
 #define TITLE_POS_X			0.0f
@@ -84,7 +83,7 @@ void Title::Update() {
 		CSound::Play(SE_DECIDE);
 		//モード選択画面へ
 		//SetScene(SCENE_GAME);
-		Fade::StartFadeOut(Scene::SCENE_GAME);
+		Fade::StartFadeOut(SCENE_GAME);
 		return;
 	}
 }
