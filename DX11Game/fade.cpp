@@ -11,7 +11,7 @@
 //#include "Sound.h"
 
 //-------------------- 静的メンバ --------------------
-Scene::eSCENE Fade::eNowScene = Scene::SCENE_NONE;
+//Scene::eSCENE Fade::eNowScene = Scene::SCENE_NONE;
 
 
 //-------------------- 定数定義 --------------------
@@ -23,7 +23,7 @@ static float g_fGreen = 1.0f;
 static float g_fBlue = 1.0f;
 static float g_fAlpha = 1.0f;	// 透明度
 static EFade g_eFade = FADE_IN;
-static Scene::eSCENE g_eNext = Scene::SCENE_TITLE;
+static eSCENE g_eNext = SCENE_TITLE;
 
 //====================================================================================
 //
@@ -31,7 +31,7 @@ static Scene::eSCENE g_eNext = Scene::SCENE_TITLE;
 //
 //====================================================================================
 Fade::Fade(){
-	eNowScene = Scene::SCENE_NONE;
+	//eNowScene = Scene::SCENE_NONE;
 	Init();
 }
 
@@ -55,7 +55,7 @@ Fade::~Fade() {
 void Fade::Init() {
 	g_eFade = FADE_IN;
 	g_fAlpha = 1.0f;
-	g_eNext = Scene::SCENE_TITLE;
+	g_eNext = SCENE_TITLE;
 }
 
 
@@ -85,7 +85,7 @@ void Fade::Update() {
 			// フェードイン処理に切り替え
 			g_fAlpha = 1.0f;
 			g_eFade = FADE_IN;
-			Scene::SetScene(g_eNext);
+			SceneManager::SetScene(g_eNext);
 		}
 		//CSound::SetVolume(1.0f - g_fAlpha);
 		break;
@@ -138,9 +138,9 @@ void Fade::Draw() {
 //				フェードアウト開始
 //
 //====================================================================================
-void Fade::StartFadeOut(Scene::eSCENE eScene) {
+void Fade::StartFadeOut(eSCENE eScene) {
 	if (g_eFade != FADE_OUT) {
-		eNowScene = eScene;
+		//eNowScene = eScene;
 		g_eFade = FADE_OUT;
 		g_fAlpha = 0.0f;
 		g_eNext = eScene;

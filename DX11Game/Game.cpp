@@ -17,11 +17,12 @@
 #include "enemy.h"
 #include "meshfield.h"
 #include "timer.h"
-#include "fade.h"
+#include "Fade.h"
 #include "Sound.h"
 #include "DwarfEffect.h"
 #include "WallObject.h"
 //#include "Boss.h"
+#include "input.h"
 
 //====================================================================================
 //
@@ -47,7 +48,7 @@ Game::~Game() {
 //
 //====================================================================================
 void Game::Init() {
-	nowScene = Scene::SCENE_GAME;
+	//nowScene = Scene::SCENE_GAME;
 
 	// ä€âeèâä˙âª
 	InitShadow();
@@ -164,10 +165,10 @@ void Game::Update() {
 
 	// ìGçXêV
 	UpdateEnemy();
-	if (GetEnemyKillSum() == MAX_ENEMY) {
+	if (GetEnemyKillSum() == MAX_ENEMY || GetKeyRelease(VK_SHIFT)) {
 		//bool isBossAlive = UpdateBoss();
 		//if (!isBossAlive) {
-			Fade::StartFadeOut(Scene::SCENE_RESULT);
+			Fade::StartFadeOut(SCENE_RESULT);
 		//}
 	}
 

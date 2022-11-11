@@ -147,6 +147,9 @@
     <ClCompile Include="Astar.cpp">
       <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssimpModel.h">
@@ -265,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="Astar.h">
       <Filter>ヘッダー ファイル\GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

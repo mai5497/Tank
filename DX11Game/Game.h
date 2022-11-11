@@ -17,10 +17,10 @@ public:
 	Game();
 	~Game();
 
-	void Init();
-	void Uninit();
-	void Update();
-	void Draw();
+	virtual void Init();
+	virtual void Uninit();
+	virtual void Update();
+	virtual void Draw();
 
 private:
 	std::unique_ptr<Player> pPlayer;	// プレイヤーインスタンス

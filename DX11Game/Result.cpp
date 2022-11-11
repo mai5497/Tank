@@ -13,7 +13,7 @@
 #include "Sound.h"
 #include "number.h"
 #include "timer.h"
-#include "fade.h"
+#include "Fade.h"
 
 
 //-------------------- íËêîíËã` --------------------
@@ -79,7 +79,7 @@ Result::~Result() {
 //
 //====================================================================================
 void Result::Init() {
-	nowScene = Scene::SCENE_RESULT;
+	//nowScene = Scene::SCENE_RESULT;
 
 	ID3D11Device *pDevice = GetDevice();
 	for (int i = 0; i < MAX_TEXTURE; i++) {
@@ -117,7 +117,7 @@ void Result::Update() {
 		CSound::Play(SE_DECIDE);
 		//ÉâÉìÉLÉìÉOâÊñ Ç÷
 		//SetScene(SCENE_TITLE);
-		Fade::StartFadeOut(Scene::SCENE_TITLE);
+		Fade::StartFadeOut(SCENE_TITLE);
 		return;
 	}
 }

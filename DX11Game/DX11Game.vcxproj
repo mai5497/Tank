@@ -173,6 +173,7 @@
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="Fade.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Result.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="shadow.h" />
     <ClInclude Include="smoke.h" />
