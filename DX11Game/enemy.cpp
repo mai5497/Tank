@@ -33,38 +33,39 @@
 
 
 //-------------------- 構造体定義 --------------------
-struct TEnemy {
-	//XMFLOAT3	m_pos;			// 現在の位置
-	XMFLOAT3	m_rot;			// 現在の向き
-	XMFLOAT3	m_rotDest;		// 目的の向き
-	//XMFLOAT3	m_move;			// 移動量
-	//XMFLOAT3	m_size;			// 大きさ
-	bool		m_use;			// 使用中かどうか
-	int			m_bulletTimer;	// 弾発射タイマー
-	int			m_rootTimer;	// ルート検索タイマー
-	XMINT2		*m_mapIndex;	// 座標をマップ番号で表したものyxの順に格納
-
-	//XMFLOAT4X4	m_mtxWorld;		// ワールドマトリックス
-
-	int			m_nShadow;		// 丸影番号
-};
 
 //-------------------- グローバル変数定義 --------------------
 static CAssimpModel	g_model;			// モデル
-static TEnemy		g_enemy[MAX_ENEMY];	// 敵機情報
+//static TEnemy		g_enemy[MAX_ENEMY];	// 敵機情報
 static int			g_enemyKillSum;		// 撃破数
-static GameObject	*g_GameObj[MAX_ENEMY];
+//static GameObject	*g_GameObj[MAX_ENEMY];
+
+//====================================================================================
+//
+//				コンストラクタ
+//
+//====================================================================================
+Enemy::Enemy() {
+	Init();
+}
 
 
+//====================================================================================
+//
+//				デストラクタ
+//
+//====================================================================================
+Enemy::~Enemy() {
+
+}
 
 //====================================================================================
 //
 //				初期化
 //
 //====================================================================================
-HRESULT InitEnemy(void)
+void Enemy::Init()
 {
-	HRESULT hr = S_OK;
 	ID3D11Device* pDevice = GetDevice();
 	ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
 
@@ -73,30 +74,42 @@ HRESULT InitEnemy(void)
 	// モデルデータの読み込み
 	if (!g_model.Load(pDevice, pDeviceContext, MODEL_ENEMY)) {
 		MessageBoxA(GetMainWnd(), "モデルデータ読み込みエラー", "InitEnemy", MB_OK);
-		return E_FAIL;
 	}
 
-	for (int i = 0; i < MAX_ENEMY; ++i) {
-		g_GameObj[i] = new GameObject;	// インスタンス化
+	//for (int i = 0; i < MAX_ENEMY; ++i) {
+	//	g_GameObj[i] = new GameObject;	// インスタンス化
 
-		// 位置・回転・スケール・サイズの初期設定
-		g_GameObj[i]->pos = XMFLOAT3(rand() % 620 - 310.0f,
-									0.0f,
-									rand() % 620 - 310.0f);
-		g_enemy[i].m_rot = XMFLOAT3(0.0f, rand() % 360 - 180.0f, 0.0f);
-		g_enemy[i].m_rotDest = g_enemy[i].m_rot;
-		g_GameObj[i]->moveVal = XMFLOAT3(
-			-SinDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY,
-			0.0f,
-			-CosDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY);
-		g_GameObj[i]->size = XMFLOAT3(50.0f, 50.0f, 50.0f);
-		// 丸影の生成
-		g_enemy[i].m_nShadow = CreateShadow(g_GameObj[i]->pos, 25.0f);
-		g_enemy[i].m_use = true;
-		g_enemy[i].m_bulletTimer = 300;
-	}
+	//	// 位置・回転・スケール・サイズの初期設定
+	//	g_GameObj[i]->pos = XMFLOAT3(rand() % 620 - 310.0f,
+	//								0.0f,
+	//								rand() % 620 - 310.0f);
+	//	g_enemy[i].m_rot = XMFLOAT3(0.0f, rand() % 360 - 180.0f, 0.0f);
+	//	g_enemy[i].m_rotDest = g_enemy[i].m_rot;
+	//	g_GameObj[i]->moveVal = XMFLOAT3(
+	//		-SinDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY,
+	//		0.0f,
+	//		-CosDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY);
+	//	g_GameObj[i]->size = XMFLOAT3(50.0f, 50.0f, 50.0f);
+	//	// 丸影の生成
+	//	g_enemy[i].m_nShadow = CreateShadow(g_GameObj[i]->pos, 25.0f);
+	//	g_enemy[i].m_use = true;
+	//	g_enemy[i].m_bulletTimer = 300;
+	//}
 
-	return hr;
+	// 位置・回転・スケール・サイズの初期設定
+	pos = XMFLOAT3(rand() % 620 - 310.0f,0.0f,	rand() % 620 - 310.0f);
+	rot = XMFLOAT3(0.0f, rand() % 360 - 180.0f, 0.0f);
+	rotDest = rot;
+	moveVal = XMFLOAT3(
+	-SinDeg(rot.y) * VALUE_MOVE_ENEMY,
+	0.0f,
+	-CosDeg(rot.y) * VALUE_MOVE_ENEMY);
+	size = XMFLOAT3(50.0f, 50.0f, 50.0f);
+	// 丸影の生成
+	shadowNum = CreateShadow(pos, 25.0f);
+	use = true;
+	bulletTimer = 300;
+
 }
 
 //====================================================================================
@@ -104,12 +117,12 @@ HRESULT InitEnemy(void)
 //				終了
 //
 //====================================================================================
-void UninitEnemy(void)
+void Enemy::Uninit()
 {
 	for (int i = 0; i < MAX_ENEMY; ++i) {
-		delete g_GameObj[i];
+		//delete g_GameObj[i];
 		// 丸影の解放
-		ReleaseShadow(g_enemy[i].m_nShadow);
+		ReleaseShadow(shadowNum);
 	}
 
 	// モデルの解放
@@ -121,19 +134,19 @@ void UninitEnemy(void)
 //				更新
 //
 //====================================================================================
-void UpdateEnemy(void)
+void Enemy::Update()
 {
 	XMMATRIX mtxWorld, mtxRot, mtxTranslate ,mtxScale;
 	XMFLOAT3 ShadowMove = XMFLOAT3(0.0f,0.0f,0.0f);
 
 	for (int i = 0; i < MAX_ENEMY; ++i) {
-		if (!g_enemy[i].m_use) {
+		if (!use) {
 			continue;
 		}
 		g_GameObj[i]->moveVal = XMFLOAT3(
-			-SinDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY,
+			-SinDeg(rot.y) * VALUE_MOVE_ENEMY,
 			0.0f,
-			-CosDeg(g_enemy[i].m_rot.y) * VALUE_MOVE_ENEMY);
+			-CosDeg(rot.y) * VALUE_MOVE_ENEMY);
 
 		if (g_GameObj[i]->moveVal.x > 0.0f) {
 			ShadowMove.x += 25.0f;
@@ -268,7 +281,7 @@ void UpdateEnemy(void)
 //				描画
 //
 //====================================================================================
-void DrawEnemy(void)
+void Enemy::Draw()
 {
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 

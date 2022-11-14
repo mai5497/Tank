@@ -170,6 +170,7 @@
     <ClCompile Include="DwarfEffect.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="Fade.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="DwarfEffect.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="enemy.h" />
+    <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="Fade.h" />
     <ClInclude Include="Game.h" />
