@@ -1,3 +1,9 @@
+//************************************************************************************
+// 
+// シーン管理[SceneManager.cpp]
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
 #include "SceneManager.h"
 #include "Scene.h"
 #include "Title.h"
@@ -14,6 +20,7 @@ eSCENE SceneManager::nextScene = SCENE_NONE;
 //
 //====================================================================================
 SceneManager::SceneManager() {
+	Init();
 }
 
 //====================================================================================
@@ -22,6 +29,7 @@ SceneManager::SceneManager() {
 //
 //====================================================================================
 SceneManager::~SceneManager() {
+	Uninit();
 }
 
 //====================================================================================
@@ -32,9 +40,10 @@ SceneManager::~SceneManager() {
 void SceneManager::Init() {
 	// 最初はタイトル画面
 	nowScene = nextScene = SCENE_TITLE;
-	pNowScene = std::make_shared<Title>();
+	if(!pNowScene)pNowScene = std::make_shared<Title>();
 
-	pFade = std::make_shared<Fade>();
+	// フェードの初期化
+	if(!pFade)pFade = std::make_shared<Fade>();
 }
 
 //====================================================================================
@@ -45,9 +54,9 @@ void SceneManager::Init() {
 void SceneManager::Uninit() {
 	SetScene(SCENE_NONE);	// 現在の画面を終了
 
-	pNowScene.reset();
-
-	pFade.reset();
+	//----- メモリの開放 -----
+	if(pNowScene)pNowScene.reset();
+	if(pFade)pFade.reset();
 }
 
 //====================================================================================
@@ -56,10 +65,15 @@ void SceneManager::Uninit() {
 //
 //====================================================================================
 void SceneManager::Update() {
+	//----- シーン切り替え -----
 	if (nowScene != nextScene) {
 		ChangeScene();
 	}
 
+	//----- 各種更新処理 -----
+	if (!pNowScene) {
+		MessageBox(NULL, _T("シーン消失エラー"), _T("error"), MB_OK);
+	}
 	pNowScene->Update();
 
 	pFade->Update();
@@ -82,7 +96,7 @@ void SceneManager::Draw() {
 //
 //====================================================================================
 void SceneManager::SetScene(eSCENE eScene) {
-	nextScene = eScene;
+	nextScene = eScene;	// 次のシーンとして格納しておく、Updateで切り替えの関数を呼ぶ
 }
 
 //====================================================================================
@@ -91,7 +105,7 @@ void SceneManager::SetScene(eSCENE eScene) {
 //
 //====================================================================================
 eSCENE SceneManager::GetScene() {
-	return nextScene;
+	return nowScene;
 }
 
 
@@ -101,8 +115,10 @@ eSCENE SceneManager::GetScene() {
 //
 //====================================================================================
 void SceneManager::ChangeScene() {
+	// 現在のシーンの終了処理
 	pNowScene->Uninit();
 
+	// 次のシーンによって格納するものをかえる
 	switch (nextScene) {
 	case SCENE_TITLE:		// タイトル画面
 		pNowScene.reset();	// メモリ切り替えの為破棄
@@ -117,10 +133,13 @@ void SceneManager::ChangeScene() {
 		pNowScene = std::make_shared<Result>();
 		break;
 	default:
+		MessageBox(NULL, _T("シーンの切り替えに失敗しました。"), _T("error"), MB_OK);
 		break;
 	}
 
+	// 新しいメモリになったので初期化
 	pNowScene->Init();
 
+	// 現在のシーン番号を初期化しておく
 	nowScene = nextScene;
 }
