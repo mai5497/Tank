@@ -11,19 +11,13 @@
 //#include "Sound.h"
 
 //-------------------- 静的メンバ --------------------
-//Scene::eSCENE Fade::eNowScene = Scene::SCENE_NONE;
-
+eSCENE Fade::nextScene = SCENE_NONE;
+eFade Fade::stateFade = FADE_NONE;
 
 //-------------------- 定数定義 --------------------
 #define FADE_RATE	0.02f		// フェードインフェードアウトの速度
 
 //-------------------- グローバル変数定義 --------------------
-static float g_fRed = 1.0f;		// フェードアウト色
-static float g_fGreen = 1.0f;
-static float g_fBlue = 1.0f;
-static float g_fAlpha = 1.0f;	// 透明度
-static EFade g_eFade = FADE_IN;
-static eSCENE g_eNext = SCENE_TITLE;
 
 //====================================================================================
 //
@@ -53,9 +47,12 @@ Fade::~Fade() {
 //
 //====================================================================================
 void Fade::Init() {
-	g_eFade = FADE_IN;
-	g_fAlpha = 1.0f;
-	g_eNext = SCENE_TITLE;
+	red = 1.0f;		// フェードアウト色
+	green = 1.0f;
+	blue = 1.0f;
+	alpha = 1.0f;	// 透明度
+	stateFade = FADE_IN;
+	nextScene = SCENE_TITLE;
 }
 
 
@@ -65,8 +62,8 @@ void Fade::Init() {
 //
 //====================================================================================
 void Fade::Uninit() {
-	g_eFade = FADE_NONE;
-	g_fAlpha = 0.0f;
+	stateFade = FADE_NONE;
+	alpha = 0.0f;
 }
 
 
@@ -76,25 +73,25 @@ void Fade::Uninit() {
 //
 //====================================================================================
 void Fade::Update() {
-	switch (g_eFade) {
+	switch (stateFade) {
 	case FADE_NONE:
 		break;
 	case FADE_OUT:
-		g_fAlpha += FADE_RATE;		// 不透明度を増す
-		if (g_fAlpha >= 1.0f) {
+		alpha += FADE_RATE;		// 不透明度を増す
+		if (alpha >= 1.0f) {
 			// フェードイン処理に切り替え
-			g_fAlpha = 1.0f;
-			g_eFade = FADE_IN;
-			SceneManager::SetScene(g_eNext);
+			alpha = 1.0f;
+			stateFade = FADE_IN;
+			SceneManager::SetScene(nextScene);
 		}
 		//CSound::SetVolume(1.0f - g_fAlpha);
 		break;
 	case FADE_IN:
-		g_fAlpha -= FADE_RATE;		// 透明度を増す
-		if (g_fAlpha <= 0.0f) {
+		alpha -= FADE_RATE;		// 透明度を増す
+		if (alpha <= 0.0f) {
 			// フェードインを終了する
-			g_fAlpha = 0.0f;
-			g_eFade = FADE_NONE;
+			alpha = 0.0f;
+			stateFade = FADE_NONE;
 		}
 		// ボリュームもフェードイン
 		//CSound::SetVolume(1.0f - g_fAlpha);
@@ -120,8 +117,8 @@ void Fade::Draw() {
 	SetPolygonUV(0.0f, 0.0f);
 	SetPolygonFrameSize(1.0f, 1.0f);
 	SetPolygonTexture(nullptr);
-	SetPolygonColor(g_fRed, g_fGreen, g_fBlue);
-	SetPolygonAlpha(g_fAlpha);
+	SetPolygonColor(red, green, blue);
+	SetPolygonAlpha(alpha);
 	DrawPolygon(GetDeviceContext());
 	// 元に戻す
 	SetPolygonColor(1.0f, 1.0f, 1.0f);
@@ -139,11 +136,11 @@ void Fade::Draw() {
 //
 //====================================================================================
 void Fade::StartFadeOut(eSCENE eScene) {
-	if (g_eFade != FADE_OUT) {
+	if (stateFade != FADE_OUT) {
 		//eNowScene = eScene;
-		g_eFade = FADE_OUT;
-		g_fAlpha = 0.0f;
-		g_eNext = eScene;
+		stateFade = FADE_OUT;
+		alpha = 0.0f;
+		nextScene = eScene;
 	}
 }
 
@@ -153,8 +150,8 @@ void Fade::StartFadeOut(eSCENE eScene) {
 //				状態取得
 //
 //====================================================================================
-EFade Fade::GetFade() {
-	return g_eFade;
+eFade Fade::GetFade() {
+	return stateFade;
 }
 
 
@@ -164,7 +161,7 @@ EFade Fade::GetFade() {
 //
 //====================================================================================
 void Fade::SetFadeColor(float fR, float fG, float fB) {
-	g_fRed = fR;
-	g_fGreen = fG;
-	g_fBlue = fB;
+	red = fR;
+	green = fG;
+	blue = fB;
 }

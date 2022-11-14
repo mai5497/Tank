@@ -165,7 +165,7 @@ void Game::Update() {
 
 	// ìGçXêV
 	UpdateEnemy();
-	if (GetEnemyKillSum() == MAX_ENEMY || GetKeyRelease(VK_SHIFT)) {
+	if (GetEnemyKillSum() == MAX_ENEMY) {
 		//bool isBossAlive = UpdateBoss();
 		//if (!isBossAlive) {
 			Fade::StartFadeOut(SCENE_RESULT);
