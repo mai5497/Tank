@@ -18,6 +18,7 @@ eFade Fade::stateFade = FADE_NONE;
 #define FADE_RATE	0.02f		// フェードインフェードアウトの速度
 
 //-------------------- グローバル変数定義 --------------------
+float g_alpha;
 
 //====================================================================================
 //
@@ -50,7 +51,7 @@ void Fade::Init() {
 	red = 1.0f;		// フェードアウト色
 	green = 1.0f;
 	blue = 1.0f;
-	alpha = 1.0f;	// 透明度
+	g_alpha = 1.0f;	// 透明度
 	stateFade = FADE_IN;
 	nextScene = SCENE_TITLE;
 }
@@ -63,7 +64,7 @@ void Fade::Init() {
 //====================================================================================
 void Fade::Uninit() {
 	stateFade = FADE_NONE;
-	alpha = 0.0f;
+	g_alpha = 0.0f;
 }
 
 
@@ -77,20 +78,20 @@ void Fade::Update() {
 	case FADE_NONE:
 		break;
 	case FADE_OUT:
-		alpha += FADE_RATE;		// 不透明度を増す
-		if (alpha >= 1.0f) {
+		g_alpha += FADE_RATE;		// 不透明度を増す
+		if (g_alpha >= 1.0f) {
 			// フェードイン処理に切り替え
-			alpha = 1.0f;
+			g_alpha = 1.0f;
 			stateFade = FADE_IN;
 			SceneManager::SetScene(nextScene);
 		}
 		//CSound::SetVolume(1.0f - g_fAlpha);
 		break;
 	case FADE_IN:
-		alpha -= FADE_RATE;		// 透明度を増す
-		if (alpha <= 0.0f) {
+		g_alpha -= FADE_RATE;		// 透明度を増す
+		if (g_alpha <= 0.0f) {
 			// フェードインを終了する
-			alpha = 0.0f;
+			g_alpha = 0.0f;
 			stateFade = FADE_NONE;
 		}
 		// ボリュームもフェードイン
@@ -118,7 +119,7 @@ void Fade::Draw() {
 	SetPolygonFrameSize(1.0f, 1.0f);
 	SetPolygonTexture(nullptr);
 	SetPolygonColor(red, green, blue);
-	SetPolygonAlpha(alpha);
+	SetPolygonAlpha(g_alpha);
 	DrawPolygon(GetDeviceContext());
 	// 元に戻す
 	SetPolygonColor(1.0f, 1.0f, 1.0f);
@@ -139,7 +140,7 @@ void Fade::StartFadeOut(eSCENE eScene) {
 	if (stateFade != FADE_OUT) {
 		//eNowScene = eScene;
 		stateFade = FADE_OUT;
-		alpha = 0.0f;
+		g_alpha = 0.0f;
 		nextScene = eScene;
 	}
 }

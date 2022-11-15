@@ -226,8 +226,9 @@ void DrawBoss(void) {
 //
 //====================================================================================
 int CollisionBoss(XMFLOAT3 pos, float radius, float damage) {
+	Collision _collision;
 	int hitNum = 0;
-	bool hit = CollisionSphere(g_boss.m_pos, BOSS_RADIUS, pos, radius);
+	bool hit = _collision.CollisionSphere(g_boss.m_pos, BOSS_RADIUS, pos, radius);
 	if (hit) {
 		hitNum++;
 		// ”š”­ŠJŽn

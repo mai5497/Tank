@@ -148,7 +148,7 @@ XMINT2* search_Root(int enemyNo) {
     //    }
     //}
 
-    XMINT2 enemyIndex = SetStartIndex(enemyNo);
+    XMINT2 enemyIndex /*= SetStartIndex(enemyNo)*/;
     s.i = enemyIndex.y;
     s.j = enemyIndex.x;
     open.node[open.index++] = &s;

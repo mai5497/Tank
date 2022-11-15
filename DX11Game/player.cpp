@@ -40,7 +40,7 @@ static int			g_nShadow;		// 丸影番号
 //
 //====================================================================================
 Player::Player() {
-
+	Init();
 }
 
 //====================================================================================
@@ -49,7 +49,7 @@ Player::Player() {
 //
 //====================================================================================
 Player::~Player() {
-
+	Uninit();
 }
 
 
@@ -59,7 +59,6 @@ Player::~Player() {
 //
 //====================================================================================
 void Player::Init() {
-	HRESULT hr = S_OK;
 	ID3D11Device* pDevice = GetDevice();
 	ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
 
@@ -75,7 +74,7 @@ void Player::Init() {
 
 	// モデルデータの読み込み
 	if (!g_model.Load(pDevice, pDeviceContext, MODEL_PLAYER)) {
-		MessageBoxA(GetMainWnd(), "自機モデルデータ読み込みエラー", "InitModel", MB_OK);
+		MessageBoxA(GetMainWnd(), "プレイヤーモデルデータ読み込みエラー", "InitModel", MB_OK);
 	}
 
 	// 丸影の生成
@@ -102,9 +101,9 @@ void Player::Uninit() {
 //
 //====================================================================================
 void Player::Update() {
-	moveVal.x = 0.0f;
-	moveVal.y = 0.0f;
-	moveVal.z = 0.0f;
+	//moveVal.x = 0.0f;
+	//moveVal.y = 0.0f;
+	//moveVal.z = 0.0f;
 
 
 	// カメラの向き取得
@@ -203,9 +202,9 @@ void Player::Update() {
 	pos.z += moveVal.z;
 
 	// 移動量に慣性をかける
-	//g_gameObject.m_move.x += (0.0f - g_gameObject.m_move.x) * RATE_MOVE_PLAYER;
-	//g_gameObject.m_move.y += (0.0f - g_gameObject.m_move.y) * RATE_MOVE_PLAYER;
-	//g_gameObject.m_move.z += (0.0f - g_gameObject.m_move.z) * RATE_MOVE_PLAYER;
+	moveVal.x += (0.0f - moveVal.x) * RATE_MOVE_PLAYER;
+	moveVal.y += (0.0f - moveVal.y) * RATE_MOVE_PLAYER;
+	moveVal.z += (0.0f - moveVal.z) * RATE_MOVE_PLAYER;
 
 
 	if (pos.x < -630.0f) {
@@ -265,20 +264,20 @@ void Player::Update() {
 	if ((moveVal.x * moveVal.x
 		+ moveVal.y * moveVal.y
 		+ moveVal.z * moveVal.z) > 1.0f) {
-		XMFLOAT3 pos;
+		XMFLOAT3 effPos;
 
-		pos.x = pos.x + SinDeg(rotModel.y) * 10.0f;
-		pos.y = pos.y + 2.0f;
-		pos.z = pos.z + CosDeg(rotModel.y) * 10.0f;
+		effPos.x = pos.x + SinDeg(rotModel.y) * 10.0f;
+		effPos.y = pos.y + 2.0f;
+		effPos.z = pos.z + CosDeg(rotModel.y) * 10.0f;
 
 		// エフェクトの設定
-		SetEffect(pos, XMFLOAT3(0.0f, 0.0f, 0.0f),
+		SetEffect(effPos, XMFLOAT3(0.0f, 0.0f, 0.0f),
 			XMFLOAT4(0.85f, 0.05f, 0.65f, 0.50f),
 			XMFLOAT2(14.0f, 14.0f), 20);
-		SetEffect(pos, XMFLOAT3(0.0f, 0.0f, 0.0f),
+		SetEffect(effPos, XMFLOAT3(0.0f, 0.0f, 0.0f),
 			XMFLOAT4(0.65f, 0.85f, 0.05f, 0.30f),
 			XMFLOAT2(10.0f, 10.0f), 20);
-		SetEffect(pos, XMFLOAT3(0.0f, 0.0f, 0.0f),
+		SetEffect(effPos, XMFLOAT3(0.0f, 0.0f, 0.0f),
 			XMFLOAT4(0.45f, 0.45f, 0.05f, 0.15f),
 			XMFLOAT2(5.0f, 5.0f), 20);
 	}
@@ -347,7 +346,8 @@ XMFLOAT3& Player::GetPlayerPos() {
 //
 //====================================================================================
 bool Player::CollisionPlayer(XMFLOAT3 pos, float radius, float damage) {
-	bool hit = CollisionSphere(pos, PLAYER_RADIUS, pos, radius);
+	Collision _collision;
+	bool hit = _collision.CollisionSphere(pos, PLAYER_RADIUS, pos, radius);
 	if (hit) {
 		// 爆発開始
 		int nExp = -1;
@@ -364,13 +364,14 @@ bool Player::CollisionPlayer(XMFLOAT3 pos, float radius, float damage) {
 
 bool Player::CollisionPlayer(GameObject collision) {
 	GameObject* _GameObject;
+	Collision _collision;
 
 	_GameObject = this;
 
-	bool isHit = CollisionSphere(*_GameObject, collision);
+	bool isHit = _collision.CollisionSphere(*_GameObject, collision);
 
 	if (isHit) {
-		_GameObject = Push(pos, XMFLOAT3(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS), moveVal, collision.pos, XMFLOAT3(collision.collRadius, collision.collRadius, collision.collRadius));
+		_GameObject = _collision.Push(pos, XMFLOAT3(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS), moveVal, collision.pos, XMFLOAT3(collision.collRadius, collision.collRadius, collision.collRadius));
 
 		if (_GameObject == nullptr) {
 			//　押し出しに失敗している

@@ -14,7 +14,6 @@
 #include "effect.h"
 #include "smoke.h"
 //#include "meshwall.h"
-#include "enemy.h"
 #include "meshfield.h"
 #include "timer.h"
 #include "Fade.h"
@@ -55,9 +54,11 @@ void Game::Init() {
 
 	// ©‹@‰Šú‰»
 	pPlayer = std::make_unique<Player>();
+	pPlayer->Init();
 
 	// “G‰Šú‰»
-	InitEnemy();
+	pEnemys = std::make_shared<EnemyManager>();
+	pEnemys->Init();
 
 	//InitBoss();
 
@@ -141,11 +142,13 @@ void Game::Uninit() {
 	UninitMeshField();
 
 	// ©‹@I—¹ˆ—
+	pPlayer->Uninit();
 	pPlayer.reset();
 
 	// “G‹@I—¹ˆ—
 	//UninitBoss();
-	UninitEnemy();
+	pEnemys->Uninit();
+	pEnemys.reset();
 
 	// ŠÛ‰eI—¹ˆ—
 	UninitShadow();
@@ -164,13 +167,13 @@ void Game::Update() {
 	pPlayer->Update();
 
 	// “GXV
-	UpdateEnemy();
-	if (GetEnemyKillSum() == MAX_ENEMY) {
+	pEnemys->Update();
+	//if (pEnemys->GetEnemyKillSum() == MAX_ENEMY) {
 		//bool isBossAlive = UpdateBoss();
 		//if (!isBossAlive) {
-			Fade::StartFadeOut(SCENE_RESULT);
+			//Fade::StartFadeOut(SCENE_RESULT);
 		//}
-	}
+	//}
 
 
 	// ”wŒiXV
@@ -230,8 +233,8 @@ void Game::Draw() {
 	pPlayer->Draw();
 
 	// “G‹@•`‰æ
-	DrawEnemy();
-	if (GetEnemyKillSum() == MAX_ENEMY) {
+	pEnemys->Draw();
+	if (pEnemys->GetEnemyKillSum() == MAX_ENEMY) {
 		//DrawBoss();
 	}
 
