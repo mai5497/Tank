@@ -178,25 +178,31 @@ void UpdateBullet(void)
 		}
 		if (pBullet->type == BULLETTYPE_PLAYER) {
 			// “G‚Æ‚Ì“–‚½‚è”»’è
-			int nEnemy = CollisionEnemy(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH);
-			if (nEnemy > 0) {
-				pBullet->use = false;
-				// ŠÛ‰e‰ð•ú
-				ReleaseShadow(pBullet->nShadow);
-				pBullet->nShadow = -1;
-				continue;
-			}
-			// ƒ{ƒX‚Æ‚Ì“–‚½‚è”»’è
-			if (GetEnemyKillSum() == MAX_ENEMY) {
-				int nBoss = CollisionBoss(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH);
-				if (nBoss > 0) {
-					pBullet->use = false;
-					// ŠÛ‰eŠJ•ú
-					ReleaseShadow(pBullet->nShadow);
-					pBullet->nShadow = -1;
-					continue;
-				}
-			}
+			
+			/*
+			* «ì‚è’¼‚µ’†ƒRƒƒ“ƒgƒAƒEƒg
+			*/
+
+
+			//int nEnemy = CollisionEnemy(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH);			
+			//if (nEnemy > 0) {
+			//	pBullet->use = false;
+			//	// ŠÛ‰e‰ð•ú
+			//	ReleaseShadow(pBullet->nShadow);
+			//	pBullet->nShadow = -1;
+			//	continue;
+			//}
+			//// ƒ{ƒX‚Æ‚Ì“–‚½‚è”»’è
+			//if (GetEnemyKillSum() == MAX_ENEMY) {
+			//	int nBoss = CollisionBoss(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH);
+			//	if (nBoss > 0) {
+			//		pBullet->use = false;
+			//		// ŠÛ‰eŠJ•ú
+			//		ReleaseShadow(pBullet->nShadow);
+			//		pBullet->nShadow = -1;
+			//		continue;
+			//	}
+			//}
 			if (CollisionWalltoBullet(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH)) {
 				pBullet->use = false;
 				// ŠÛ‰e‰ð•ú

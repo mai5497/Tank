@@ -235,7 +235,7 @@ void CollisionWallObj() {
 			
 			
 			//CollisionPlayer(*g_wallobj[j * MAPWIDTH + i]);
-			CollisionEnemy(*g_wallobj[j * MAPWIDTH + i]);
+			//CollisionEnemy(*g_wallobj[j * MAPWIDTH + i]);
 			
 			
 			
@@ -257,12 +257,13 @@ void CollisionWallObj() {
 /// <returns></returns>
 bool CollisionWalltoBullet(XMFLOAT3 pos, float radius, float damage) {
 	bool hit;
+	Collision _collision;
 	for (int j = 0; j < MAPHEIGHT; j++) {
 		for (int i = 0; i < MAPWIDTH; i++) {
 			if (g_wallMap[j][i] == 0) {
 				continue;
 			}
-			hit = CollisionSphere(g_wallobj[j][i].pos, 45, pos, radius);
+			hit = _collision.CollisionSphere(g_wallobj[j][i].pos, 45, pos, radius);
 			if (hit) {
 				// ”š”­ŠJŽn
 				int nExp = -1;

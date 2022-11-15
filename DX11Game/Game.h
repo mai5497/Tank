@@ -11,6 +11,7 @@
 #include "main.h"
 #include "Scene.h"
 #include "Player.h"
+#include "EnemyManager.h"
 
 class Game : public Scene {
 public:
@@ -24,7 +25,7 @@ public:
 
 private:
 	std::unique_ptr<Player> pPlayer;	// プレイヤーインスタンス
-
+	std::shared_ptr<EnemyManager> pEnemys;
 };
 
 #endif

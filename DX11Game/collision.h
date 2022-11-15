@@ -17,11 +17,15 @@
 class GameObject;
 
 //-------------------- プロトタイプ宣言 --------------------
-bool CollisionSphere(XMFLOAT3 Apos, float Ar, XMFLOAT3 Bpos, float Br);
-bool CollisionSphere(GameObject A, GameObject B);
-bool CollisionAABB(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 Bpos, XMFLOAT3 Bsize);
+class Collision {
+public:
+	bool CollisionSphere(XMFLOAT3 Apos, float Ar, XMFLOAT3 Bpos, float Br);
+	bool CollisionSphere(GameObject A, GameObject B);
+	bool CollisionAABB(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 Bpos, XMFLOAT3 Bsize);
+	bool CollisionAABB(GameObject A, GameObject B);
 
-GameObject* Push(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 move,XMFLOAT3 Bpos, XMFLOAT3 Bsize);
-
+	GameObject* Push(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 move, XMFLOAT3 Bpos, XMFLOAT3 Bsize);
+	GameObject* Push(GameObject A, GameObject B);
+};
 
 #endif

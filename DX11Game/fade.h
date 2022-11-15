@@ -38,7 +38,6 @@ private:
 	float red;		// フェードアウト色
 	float green;
 	float blue;
-	float alpha;	// 透明度
 	static eFade stateFade;
 	eFade oldStateFade;
 	static eSCENE nextScene;
