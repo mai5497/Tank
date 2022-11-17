@@ -5,12 +5,9 @@
 // 
 //************************************************************************************
 //-------------------- インクルード部 --------------------
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
 
-#include "AssimpModel.h"
 #include "main.h"
+#include "AssimpModel.h"
 #include "input.h"
 #include "polygon.h"
 #include "debugproc.h"
@@ -19,6 +16,7 @@
 #include "SceneManager.h"
 #include "number.h"
 #include "Sound.h"
+
 
 //-------------------- ライブラリのリンク --------------------
 #pragma comment(lib, "winmm")

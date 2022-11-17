@@ -162,7 +162,7 @@
   <ItemGroup>
     <ClCompile Include="AssimpModel.cpp" />
     <ClCompile Include="Astar.cpp" />
-    <ClCompile Include="bg.cpp" />
+    <ClCompile Include="BG.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -171,7 +171,7 @@
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="DwarfEffect.cpp" />
     <ClCompile Include="effect.cpp" />
-    <ClCompile Include="enemy.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="Fade.cpp" />
@@ -182,8 +182,7 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mesh.cpp" />
-    <ClCompile Include="meshfield.cpp" />
-    <ClCompile Include="meshwall.cpp" />
+    <ClCompile Include="Meshfield.cpp" />
     <ClCompile Include="number.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="polygon.cpp" />
@@ -202,7 +201,7 @@
   <ItemGroup>
     <ClInclude Include="AssimpModel.h" />
     <ClInclude Include="Astar.h" />
-    <ClInclude Include="bg.h" />
+    <ClInclude Include="BG.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="Camera.h" />
@@ -211,7 +210,7 @@
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="DwarfEffect.h" />
     <ClInclude Include="effect.h" />
-    <ClInclude Include="enemy.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="Fade.h" />
@@ -221,8 +220,7 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="mesh.h" />
-    <ClInclude Include="meshfield.h" />
-    <ClInclude Include="meshwall.h" />
+    <ClInclude Include="Meshfield.h" />
     <ClInclude Include="number.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="polygon.h" />

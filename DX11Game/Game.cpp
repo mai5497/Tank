@@ -7,21 +7,23 @@
 
 //-------------------- インクルード部 --------------------
 #include "Game.h"
+#include "Sound.h"
 #include "shadow.h"
-#include "bg.h"
+#include "effect.h"
+#include "DwarfEffect.h"
+#include "smoke.h"
+#include "timer.h"
+#include "input.h"
+
+#include "BG.h"
 #include "bullet.h"
 #include "explosion.h"
-#include "effect.h"
-#include "smoke.h"
-//#include "meshwall.h"
-#include "meshfield.h"
-#include "timer.h"
+#include "Meshfield.h"
 #include "Fade.h"
-#include "Sound.h"
-#include "DwarfEffect.h"
 #include "WallObject.h"
 //#include "Boss.h"
-#include "input.h"
+#include "player.h"
+#include "EnemyManager.h"
 
 //====================================================================================
 //
@@ -63,10 +65,12 @@ void Game::Init() {
 	//InitBoss();
 
 	// フィールド初期化
-	InitMeshField(16, 14, 80.0f, 80.0f);
+	pMeshField = std::make_unique<MeshField>();
+	pMeshField->Init(16, 14, 80.0f, 80.0f);
 
 	// 背景初期化
-	InitBG();
+	pBG = std::make_unique<BG>();
+	pBG->Init();
 
 	// ビルボード弾初期化
 	InitBullet();
@@ -136,10 +140,12 @@ void Game::Uninit() {
 	UninitBullet();
 
 	// 背景終了処理
-	UninitBG();
+	pBG->Uninit();
+	pBG.reset();
 
 	// フィールド終了処理
-	UninitMeshField();
+	pMeshField->Uninit();
+	pMeshField.reset();
 
 	// 自機終了処理
 	pPlayer->Uninit();
@@ -177,10 +183,10 @@ void Game::Update() {
 
 
 	// 背景更新
-	UpdateBG();
+	pBG->Update();
 
 	// フィールド更新
-	UpdateMeshField();
+	pMeshField->Update();
 
 	// 丸影更新
 	UpdateShadow();
@@ -218,13 +224,13 @@ void Game::Draw() {
 	SetZBuffer(false);
 
 	// 背景描画
-	DrawBG();
+	pBG->Draw();
 
 	// Zバッファ有効(Zチェック有&Z更新有)
 	SetZBuffer(true);
 
 	// フィールド描画
-	DrawMeshField();
+	pMeshField->Draw();
 
 	// 壁描画 (不透明部分)
 	//DrawMeshWall(DRAWPART_OPAQUE);

@@ -2,7 +2,7 @@
 #define __ENEMYMANAGER_H__
 
 #include "main.h"
-#include "enemy.h"
+#include "Enemy.h"
 
 #ifdef _DEBUG
 #define MAX_ENEMY			(1)		// 敵最大(デバッグ用)

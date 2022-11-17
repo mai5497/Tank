@@ -38,9 +38,10 @@ public:
 	/*
 	collisiontype
 	*/
-private:
+protected:
 
 	CAssimpModel model;
+	int	shadowNum;		// ä€âeî‘çÜ
 
 };
 

@@ -42,7 +42,7 @@
     <ClCompile Include="AssimpModel.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
-    <ClCompile Include="bg.cpp">
+    <ClCompile Include="BG.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
     <ClCompile Include="Boss.cpp">
@@ -66,7 +66,7 @@
     <ClCompile Include="effect.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
-    <ClCompile Include="enemy.cpp">
+    <ClCompile Include="Enemy.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
     <ClCompile Include="explosion.cpp">
@@ -90,10 +90,7 @@
     <ClCompile Include="mesh.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
-    <ClCompile Include="meshfield.cpp">
-      <Filter>ソース ファイル\GameSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="meshwall.cpp">
+    <ClCompile Include="Meshfield.cpp">
       <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
     <ClCompile Include="number.cpp">
@@ -158,7 +155,7 @@
     <ClInclude Include="AssimpModel.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
-    <ClInclude Include="bg.h">
+    <ClInclude Include="BG.h">
       <Filter>ヘッダー ファイル\Game</Filter>
     </ClInclude>
     <ClInclude Include="Boss.h">
@@ -194,10 +191,7 @@
     <ClInclude Include="mesh.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
-    <ClInclude Include="meshfield.h">
-      <Filter>ヘッダー ファイル\GameSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="meshwall.h">
+    <ClInclude Include="Meshfield.h">
       <Filter>ヘッダー ファイル\GameSystem</Filter>
     </ClInclude>
     <ClInclude Include="number.h">
@@ -209,7 +203,7 @@
     <ClInclude Include="DwarfEffect.h">
       <Filter>ヘッダー ファイル\Game</Filter>
     </ClInclude>
-    <ClInclude Include="enemy.h">
+    <ClInclude Include="Enemy.h">
       <Filter>ヘッダー ファイル\Game</Filter>
     </ClInclude>
     <ClInclude Include="explosion.h">
