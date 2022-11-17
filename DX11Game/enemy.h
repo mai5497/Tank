@@ -36,7 +36,6 @@ private:
 
 	//XMFLOAT4X4	m_mtxWorld;		// ワールドマトリックス
 
-	int	shadowNum;		// 丸影番号
 
 };
 

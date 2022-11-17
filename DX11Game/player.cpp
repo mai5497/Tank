@@ -6,17 +6,14 @@
 //************************************************************************************
 
 //-------------------- インクルード部 --------------------
-#include "player.h"
-#include "main.h"
+#include "Player.h"
 #include "input.h"
-#include "AssimpModel.h"
 #include "debugproc.h"
 #include "shadow.h"
 #include "bullet.h"
 #include "effect.h"
 #include "collision.h"
 #include "explosion.h"
-#include "GameObject.h"
 #include "DebugCollision.h"
 
 //-------------------- マクロ定義 --------------------
@@ -29,18 +26,12 @@
 
 #define	PLAYER_RADIUS		(10.0f)		// 境界球半径
 
-//-------------------- グローバル変数定義 --------------------
-static CAssimpModel	g_model;		// モデル
-
-static int			g_nShadow;		// 丸影番号
-
 //====================================================================================
 //
 //				コンストラクタ
 //
 //====================================================================================
 Player::Player() {
-	Init();
 }
 
 //====================================================================================
@@ -49,7 +40,6 @@ Player::Player() {
 //
 //====================================================================================
 Player::~Player() {
-	Uninit();
 }
 
 
@@ -69,16 +59,13 @@ void Player::Init() {
 	rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	size = XMFLOAT3(50.0f, 50.0f, 50.0f);
 
-
-
-
 	// モデルデータの読み込み
-	if (!g_model.Load(pDevice, pDeviceContext, MODEL_PLAYER)) {
+	if (!model.Load(pDevice, pDeviceContext, MODEL_PLAYER)) {
 		MessageBoxA(GetMainWnd(), "プレイヤーモデルデータ読み込みエラー", "InitModel", MB_OK);
 	}
 
 	// 丸影の生成
-	g_nShadow = CreateShadow(pos, 12.0f);
+	shadowNum = CreateShadow(pos, 12.0f);
 
 }
 
@@ -89,10 +76,10 @@ void Player::Init() {
 //====================================================================================
 void Player::Uninit() {
 	// 丸影の解放
-	ReleaseShadow(g_nShadow);
+	ReleaseShadow(shadowNum);
 
 	// モデルの解放
-	g_model.Release();
+	model.Release();
 }
 
 //====================================================================================
@@ -101,11 +88,6 @@ void Player::Uninit() {
 //
 //====================================================================================
 void Player::Update() {
-	//moveVal.x = 0.0f;
-	//moveVal.y = 0.0f;
-	//moveVal.z = 0.0f;
-
-
 	// カメラの向き取得
 	XMFLOAT3 rotCamera = CCamera::Get()->GetAngle();
 
@@ -226,14 +208,6 @@ void Player::Update() {
 		pos.y = 150.0f;
 	}
 
-	//if (GetKeyPress(VK_RETURN)) {
-	//	// リセット
-	//	g_posModel = XMFLOAT3(0.0f, 40.0f, 0.0f);
-	//	g_moveModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//	g_rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//	g_rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//}
-
 	mapIndex.x = (pos.x + 640.0f) / 80.0f;
 	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
 
@@ -259,7 +233,7 @@ void Player::Update() {
 	XMStoreFloat4x4(&mtxWorld, _mtxWorld);
 
 	// 丸影の移動
-	MoveShadow(g_nShadow, pos);
+	MoveShadow(shadowNum, pos);
 
 	if ((moveVal.x * moveVal.x
 		+ moveVal.y * moveVal.y
@@ -287,22 +261,6 @@ void Player::Update() {
 		FireBullet(pos, XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
 			BULLETTYPE_PLAYER);
 	}
-
-	//PrintDebugProc("[ﾋｺｳｷ ｲﾁ : (%f : %f : %f)]\n", g_posModel.x, g_posModel.y, g_posModel.z);
-	//PrintDebugProc("[ﾋｺｳｷ ﾑｷ : (%f) < ﾓｸﾃｷ ｲﾁ:(%f) >]\n", g_rotModel.y, g_rotDestModel.y);
-	//PrintDebugProc("\n");
-
-	//PrintDebugProc("*** ﾋｺｳｷ ｿｳｻ ***\n");
-	//PrintDebugProc("ﾏｴ   ｲﾄﾞｳ : \x1e\n");//↑
-	//PrintDebugProc("ｳｼﾛ  ｲﾄﾞｳ : \x1f\n");//↓
-	//PrintDebugProc("ﾋﾀﾞﾘ ｲﾄﾞｳ : \x1d\n");//←
-	//PrintDebugProc("ﾐｷﾞ  ｲﾄﾞｳ : \x1c\n");//→
-	//PrintDebugProc("ｼﾞｮｳｼｮｳ   : I\n");
-	//PrintDebugProc("ｶｺｳ       : K\n");
-	//PrintDebugProc("ﾋﾀﾞﾘ ｾﾝｶｲ : J\n");
-	//PrintDebugProc("ﾐｷﾞ  ｾﾝｶｲ : L\n");
-	//PrintDebugProc("ﾀﾏ   ﾊｯｼｬ : Space\n");
-	//PrintDebugProc("\n");
 }
 
 //====================================================================================
@@ -314,12 +272,12 @@ void Player::Draw() {
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 
 	// 不透明部分を描画
-	g_model.Draw(pDC, mtxWorld, eOpacityOnly);
+	model.Draw(pDC, mtxWorld, eOpacityOnly);
 
 	// 半透明部分を描画
 	SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
 	SetZWrite(false);				// Zバッファ更新しない
-	g_model.Draw(pDC, mtxWorld, eTransparentOnly);
+	model.Draw(pDC, mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
 

@@ -5,8 +5,7 @@
 // 
 //************************************************************************************
 //-------------------- インクルード部 --------------------
-#include "enemy.h"
-#include "AssimpModel.h"
+#include "Enemy.h"
 #include "debugproc.h"
 #include "shadow.h"
 #include "explosion.h"
@@ -29,18 +28,12 @@
 #define ROOT_TIME			(300)		// 次にルート検索するまでの時間
 
 
-//-------------------- 構造体定義 --------------------
-
-//-------------------- グローバル変数定義 --------------------
-static CAssimpModel	g_model;			// モデル
-
 //====================================================================================
 //
 //				コンストラクタ
 //
 //====================================================================================
 Enemy::Enemy() {
-	Init();
 }
 
 
@@ -64,7 +57,7 @@ void Enemy::Init() {
 
 
 	// モデルデータの読み込み
-	if (!g_model.Load(pDevice, pDeviceContext, MODEL_ENEMY)) {
+	if (!model.Load(pDevice, pDeviceContext, MODEL_ENEMY)) {
 		MessageBoxA(GetMainWnd(), "モデルデータ読み込みエラー", "InitEnemy", MB_OK);
 	}
 
@@ -97,7 +90,7 @@ void Enemy::Uninit() {
 	//}
 
 	// モデルの解放
-	g_model.Release();
+	model.Release();
 }
 
 //====================================================================================
@@ -248,12 +241,12 @@ void Enemy::Draw() {
 	}
 
 	// 不透明部分を描画
-	g_model.Draw(pDC, mtxWorld, eOpacityOnly);
+	model.Draw(pDC, mtxWorld, eOpacityOnly);
 
 	// 半透明部分を描画
 	SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
 	SetZWrite(false);				// Zバッファ更新しない
-	g_model.Draw(pDC, mtxWorld, eTransparentOnly);
+	model.Draw(pDC, mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
 }
