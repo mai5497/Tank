@@ -11,10 +11,6 @@
 #include "main.h"
 #include "Scene.h"
 
-class Player;
-class EnemyManager;
-class MeshField;
-class BG;
 
 class Game : public Scene {
 public:
@@ -27,7 +23,7 @@ public:
 	virtual void Draw();
 
 private:
-	std::unique_ptr<Player> pPlayer;		// プレイヤーインスタンス
+	//std::unique_ptr<Player> pPlayer;		// プレイヤーインスタンス
 	std::shared_ptr<EnemyManager> pEnemys;	// 敵管理クラス
 	std::unique_ptr<MeshField> pMeshField;	// フィールド
 	std::unique_ptr<BG> pBG;				// 背景

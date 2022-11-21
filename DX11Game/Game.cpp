@@ -22,7 +22,6 @@
 #include "Fade.h"
 #include "WallObject.h"
 //#include "Boss.h"
-#include "player.h"
 #include "EnemyManager.h"
 
 //====================================================================================
@@ -54,9 +53,6 @@ void Game::Init() {
 	// ŠÛ‰e‰Šú‰»
 	InitShadow();
 
-	// ©‹@‰Šú‰»
-	pPlayer = std::make_unique<Player>();
-	pPlayer->Init();
 
 	// “G‰Šú‰»
 	pEnemys = std::make_shared<EnemyManager>();
