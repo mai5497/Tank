@@ -39,6 +39,7 @@ void SceneManager::Init() {
 	// 最初はタイトル画面
 	nowScene = nextScene = SCENE_TITLE;
 	if(!pNowScene)pNowScene = std::make_shared<Title>();
+	pNowScene->Init();
 
 	// フェードの初期化
 	if(!pFade)pFade = std::make_shared<Fade>();
@@ -137,7 +138,7 @@ void SceneManager::ChangeScene() {
 
 	/*↓コンストラクタにInitを書いているのでいらない*/
 	// 新しいメモリになったので初期化
-	//pNowScene->Init();
+	pNowScene->Init();
 
 	// 現在のシーン番号を初期化しておく
 	nowScene = nextScene;

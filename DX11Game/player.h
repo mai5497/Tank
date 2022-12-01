@@ -6,7 +6,6 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
-#include "main.h"
 #include "GameObject.h"
 
 //-------------------- クラス定義 --------------------
@@ -26,8 +25,9 @@ public:
 	XMINT2 SetPlayerIndex();
 
 private:
+	static std::unique_ptr<CAssimpModel> pMyModel;
 	XMFLOAT3 rotDestModel;	// 目的の向き
-
+	double m_animTime;
 };
 
 #endif

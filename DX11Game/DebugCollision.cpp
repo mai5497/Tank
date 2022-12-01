@@ -27,10 +27,10 @@ static MATERIAL		g_material;				// マテリアル
 //			境界球表示
 //
 //====================================================================================
-void DrawCollisionSphere(GameObject gameobject) {
+void DrawCollisionSphere(GameObject* gameobject) {
 	ID3D11Device* pDevice = GetDevice();
 	
-	GameObject _GameObject = gameobject;		// 境界球用ゲームオブジェクト
+	GameObject _GameObject = *gameobject;		// 境界球用ゲームオブジェクト
 
 	// 位置・回転・スケールの初期設定はそれぞれのオブジェクトと同じ位置に描画するので
 	// 別途記述はなし

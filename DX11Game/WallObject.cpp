@@ -13,7 +13,6 @@
 #include "bullet.h"
 #include "effect.h"
 #include "collision.h"
-//#include "explosion.h"
 #include "player.h"
 #include "DebugCollision.h"
 #include "enemy.h"
@@ -24,13 +23,8 @@
 #define MODEL_WALLOBJ		"data/model/rubikcube.fbx"
 #define	WALLOBJ_RADIUS		(55.0f)		// 境界球半径
 
-//-------------------- グローバル変数定義 --------------------
-static XMFLOAT3		g_rotModel;		// 現在の向き
-static XMFLOAT3		g_rotDestModel;	// 目的の向き
-
-GameObject *g_wallobj[MAPWIDTH * MAPHEIGHT];
-
-int g_wallMap[MAPHEIGHT][MAPWIDTH] = {
+std::unique_ptr<CAssimpModel> WallObj::pMyModel;
+int WallObj::wallMap[MAPHEIGHT][MAPWIDTH] = {
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
@@ -44,7 +38,6 @@ int g_wallMap[MAPHEIGHT][MAPWIDTH] = {
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 };
-
 //====================================================================================
 //
 //				コンストラクタ
@@ -52,6 +45,11 @@ int g_wallMap[MAPHEIGHT][MAPWIDTH] = {
 //====================================================================================
 WallObj::WallObj() {
 
+}
+
+WallObj::WallObj(int x, int y) {
+	mapIndex.x = x;
+	mapIndex.y = y;
 }
 
 
@@ -71,76 +69,54 @@ WallObj::~WallObj() {
 //
 //====================================================================================
 void WallObj::Init() {
-	ID3D11Device* pDevice = GetDevice();
-	ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
-
-	for (int j = 0; j < MAPHEIGHT; j++) {
-		for (int i = 0; i < MAPWIDTH; i++) {
-			g_wallobj[j* MAPWIDTH +i] = new GameObject;
-			g_wallobj[j* MAPWIDTH +i]->size = XMFLOAT3(25.0f, 25.0f, 25.0f);
-			g_wallobj[j* MAPWIDTH +i]->moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
-			g_wallobj[j* MAPWIDTH +i]->collRadius = WALLOBJ_RADIUS;
-
-			if (g_wallMap[j][i] == 0) {
-				continue;
-			}
-			g_wallobj[j* MAPWIDTH +i]->pos = XMFLOAT3(i*80.0f - 640.0f, 0.0f, -j*80.0f + 480.0f);
-			g_wallobj[j * MAPWIDTH + i]->mapIndex.x = i;
-			g_wallobj[j * MAPWIDTH + i]->mapIndex.y = j;
-		}
-	}
-
-	// 位置・回転・スケールの初期設定
-	//g_posModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//g_moveModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	g_rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	g_rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//g_size = XMFLOAT3(25.0f, 25.0f, 25.0f);
-
-	XMMATRIX mtxWorld, mtxRot, mtxTranslate, mtxScale;
-
-	for (int j = 0; j < MAPHEIGHT; j++) {
-		for (int i = 0; i < MAPWIDTH; i++) {
-			if (g_wallMap[j][i] == 0) {
-				continue;
-			}
-			// ワールドマトリックスの初期化
-			mtxWorld = XMMatrixIdentity();
-
-			// スケールを反映
-			mtxScale = XMMatrixScaling(
-				g_wallobj[j * MAPWIDTH + i]->size.x,
-				g_wallobj[j * MAPWIDTH + i]->size.y,
-				g_wallobj[j * MAPWIDTH + i]->size.z);
-
-			mtxWorld = XMMatrixMultiply(mtxScale, mtxWorld);
-
-			// 回転を反映
-			mtxRot = XMMatrixRotationRollPitchYaw(XMConvertToRadians(g_rotModel.x),
-				XMConvertToRadians(g_rotModel.y), XMConvertToRadians(g_rotModel.z));
-			mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
-
-			// 移動を反映
-			mtxTranslate = XMMatrixTranslation(
-				g_wallobj[j * MAPWIDTH + i]->pos.x,
-				g_wallobj[j * MAPWIDTH + i]->pos.y,
-				g_wallobj[j * MAPWIDTH + i]->pos.z);
-
-			mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
-
-			// ワールドマトリックス設定
-			XMStoreFloat4x4(&g_wallobj[j * MAPWIDTH + i]->mtxWorld, mtxWorld);
-		}
-	}
-
-
 	// モデルデータの読み込み
-	if (!model.Load(pDevice, pDeviceContext, MODEL_WALLOBJ)) {
-		MessageBoxA(GetMainWnd(), "壁モデルデータ読み込みエラー", "InitModel", MB_OK);
+	if (!pMyModel) {
+		pMyModel = std::make_unique<CAssimpModel>();
+		ID3D11Device* pDevice = GetDevice();
+		ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
+
+		if (!pMyModel->Load(pDevice, pDeviceContext, MODEL_WALLOBJ)) {
+			MessageBoxA(GetMainWnd(), "壁モデルデータ読み込みエラー", "InitModel", MB_OK);
+		}
+
+
+		// マップの設定も一度行えばよいためモデル読込と同居させとく
+		int* pMap = (int*)wallMap;
+		SetMap(pMap);
 	}
 
-	int* pMap = (int*)g_wallMap;
-	SetMap(pMap);
+	if (wallMap[mapIndex.y][mapIndex.x] != 0) {
+		// 位置・回転・スケールの初期設定
+		size = XMFLOAT3(25.0f, 25.0f, 25.0f);
+		moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		collRadius = WALLOBJ_RADIUS;
+		collSize = XMFLOAT3(100.0f, 100.0f, 100.0f);
+
+		rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+		XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
+
+		pos = XMFLOAT3(mapIndex.x * 80.0f - 640.0f, 0.0f, -mapIndex.y * 80.0f + 480.0f);
+		// ワールドマトリックスの初期化
+		_mtxWorld = XMMatrixIdentity();
+
+		// スケールを反映
+		_mtxScale = XMMatrixScaling(size.x, size.y, size.z);
+		_mtxWorld = XMMatrixMultiply(_mtxScale, _mtxWorld);
+
+		// 回転を反映
+		_mtxRot = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotModel.x), XMConvertToRadians(rotModel.y), XMConvertToRadians(rotModel.z));
+		_mtxWorld = XMMatrixMultiply(_mtxWorld, _mtxRot);
+
+		// 移動を反映
+		_mtxTranslate = XMMatrixTranslation(pos.x, pos.y, pos.z);
+		_mtxWorld = XMMatrixMultiply(_mtxWorld, _mtxTranslate);
+
+		// ワールドマトリックス設定
+		XMStoreFloat4x4(&mtxWorld, _mtxWorld);
+	}
+	collType = Collision::STATIC;
+	myTag = WALL;
 }
 
 //====================================================================================
@@ -149,15 +125,11 @@ void WallObj::Init() {
 //
 //====================================================================================
 void WallObj::Uninit() {
-	// 壁オブジェクトの解放
-	for (int j = 0; j < MAPHEIGHT; j++) {
-		for (int i = 0; i < MAPWIDTH; i++) {
-			delete g_wallobj[j * MAPWIDTH + i];
-		}
-	}
-
 	// モデルの解放
-	model.Release();
+	if (pMyModel) {
+		pMyModel->Release();
+		pMyModel.reset();
+	}
 }
 
 //====================================================================================
@@ -166,8 +138,6 @@ void WallObj::Uninit() {
 //
 //====================================================================================
 void WallObj::Update() {
-	// 当たり判定
-	//CollisionWallObj();
 }
 
 //====================================================================================
@@ -177,27 +147,23 @@ void WallObj::Update() {
 //====================================================================================
 void WallObj::Draw() {
 	ID3D11DeviceContext* pDC = GetDeviceContext();
-
-	for (int j = 0; j < MAPHEIGHT; j++) {
-		for (int i = 0; i < MAPWIDTH; i++) {
-			if (g_wallMap[j][i] == 0) {
-				continue;
-			}
-
-			// 不透明部分を描画
-			model.Draw(pDC, g_wallobj[j * MAPWIDTH + i]->mtxWorld, eOpacityOnly);
-
-			// 半透明部分を描画
-			SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
-			SetZWrite(false);				// Zバッファ更新しない
-			model.Draw(pDC, g_wallobj[j * MAPWIDTH + i]->mtxWorld, eTransparentOnly);
-			SetZWrite(true);				// Zバッファ更新する
-			SetBlendState(BS_NONE);			// アルファブレンド無効
-
-			// デバッグ表示
-			DrawCollisionSphere(*g_wallobj[j * MAPWIDTH + i]);
-		}
+	
+	if (wallMap[mapIndex.y][mapIndex.x] == 0) {
+		return;
 	}
+
+	// 不透明部分を描画
+	pMyModel->Draw(pDC, mtxWorld, eOpacityOnly);
+
+	// 半透明部分を描画
+	SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
+	SetZWrite(false);				// Zバッファ更新しない
+	pMyModel->Draw(pDC, mtxWorld, eTransparentOnly);
+	SetZWrite(true);				// Zバッファ更新する
+	SetBlendState(BS_NONE);			// アルファブレンド無効
+
+	// デバッグ表示
+	DrawCollisionSphere(this);
 }
 
 //====================================================================================

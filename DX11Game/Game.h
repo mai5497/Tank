@@ -7,10 +7,12 @@
 #ifndef __GAME_H__
 #define __GAME_H__
 
-#include <memory>
 #include "main.h"
 #include "Scene.h"
 
+class GameObjManager;
+class MeshField;
+class BG;
 
 class Game : public Scene {
 public:
@@ -23,10 +25,9 @@ public:
 	virtual void Draw();
 
 private:
-	//std::unique_ptr<Player> pPlayer;		// プレイヤーインスタンス
-	std::shared_ptr<EnemyManager> pEnemys;	// 敵管理クラス
-	std::unique_ptr<MeshField> pMeshField;	// フィールド
-	std::unique_ptr<BG> pBG;				// 背景
+	std::unique_ptr<GameObjManager> pGameObjects;	// ゲームオブジェクト管理クラス
+	std::unique_ptr<MeshField> pMeshField;			// フィールド
+	std::unique_ptr<BG> pBG;						// 背景
 };
 
 #endif

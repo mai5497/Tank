@@ -6,8 +6,108 @@
 //************************************************************************************
 
 //-------------------- インクルード部 --------------------
-#include "collision.h"
+#include "Collision.h"
 #include "GameObject.h"
+
+std::vector<std::shared_ptr<GameObject>> Collision::pObjects;
+
+//====================================================================================
+//
+//				コンストラクタ
+//
+//====================================================================================
+Collision::Collision() {
+	
+}
+
+//====================================================================================
+//
+//				デストラクタ
+//
+//====================================================================================
+Collision::~Collision() {
+	int delCnt = pObjects.size();
+	for (int i = 0; i < delCnt; i++) {
+		pObjects[i].reset();
+	}
+}
+
+
+//====================================================================================
+//
+//				コリジョンリストへのオブジェクトの追加
+//
+//====================================================================================
+void Collision::AddList(const std::shared_ptr<GameObject>& _gameObject) {
+	pObjects.emplace_back(_gameObject);
+}
+
+
+//====================================================================================
+//
+//				コリジョンリストからオブジェクトの削除
+//
+//====================================================================================
+void Collision::DelList(int _index) {
+	pObjects[_index]->hitList.clear();
+	pObjects.erase(pObjects.begin() + _index);
+}
+
+//====================================================================================
+//
+//				当たり判定の更新
+//
+//====================================================================================
+void Collision::Update() {
+	// それぞれのオブジェクトの当たっているものリスト更新のために
+	// 当たっているものリストを初期化する
+	for (int i = 0; i < pObjects.size(); i++) {
+		pObjects[i]->hitList.clear();
+	}
+
+	// 当たり判定
+	for (int j = 0; j < pObjects.size(); j++) {
+		for (int i = j + 1; i < pObjects.size(); i++) {
+			if (pObjects[j]->collType == Collision::STATIC &&
+				pObjects[i]->collType == Collision::STATIC) {
+				/*
+				* 当たり判定のチェックをするオブジェクトが両方うごかないオブジェクトなら
+				* チェックの必要がないためスキップする
+				*/
+				continue;
+			} else if (pObjects[j]->isCollision == false ||
+				pObjects[i]->isCollision == false) {
+				/*
+				* 当たり判定が無効になっているオブジェクトは当たり判定を無視する
+				*/
+				continue;
+			}
+
+			if (CollisionAABB(*pObjects[j], *pObjects[i])) {
+				if (pObjects[j]->collType == Collision::DYNAMIC &&
+					pObjects[i]->collType == Collision::STATIC) {
+					Push(pObjects[j], pObjects[i]);
+				} else if (pObjects[j]->collType == Collision::STATIC &&
+					pObjects[i]->collType == Collision::DYNAMIC) {
+					Push(pObjects[i], pObjects[j]);
+				} else if (pObjects[j]->collType == Collision::DYNAMIC &&
+					pObjects[i]->collType == Collision::DYNAMIC) {
+					Push(pObjects[j], pObjects[i]);
+					Push(pObjects[i], pObjects[j]);
+				}
+
+				// 当たっているものリストへの追加
+				pObjects[i]->hitList.emplace_back(pObjects[j]->myTag);
+				pObjects[j]->hitList.emplace_back(pObjects[i]->myTag);
+			} /*else {
+				pObjects[i]->isHit = false;
+				pObjects[j]->isHit = false;
+			}*/
+		}
+
+	}
+}
+
 
 //====================================================================================
 //
@@ -189,16 +289,13 @@ GameObject* Collision::Push(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 move, XMFLOA
 
 	return nullptr;	// 押し出し失敗
 }
-GameObject* Collision::Push(GameObject A, GameObject B) {
+void Collision::Push(std::shared_ptr<GameObject> A, std::shared_ptr<GameObject> B) {
 	//---事前に各オブジェクトの情報を抜き取る
-	DirectX::XMFLOAT3 APos = A.pos;
-	DirectX::XMFLOAT3 BPos = B.pos;
-	DirectX::XMFLOAT3 ASize = A.size;
-	DirectX::XMFLOAT3 BSize = B.size;
-	DirectX::XMFLOAT3 AMove = A.moveVal;
-
-	// 戻り値用ゲームオブジェクト定義
-	GameObject _GameObject;
+	DirectX::XMFLOAT3 APos = A->pos;
+	DirectX::XMFLOAT3 BPos = B->pos;
+	DirectX::XMFLOAT3 ASize = A->collSize;
+	DirectX::XMFLOAT3 BSize = B->collSize;
+	DirectX::XMFLOAT3 AMove = A->moveVal;
 
 
 	//---計算情報を抜き出す
@@ -290,7 +387,7 @@ GameObject* Collision::Push(GameObject A, GameObject B) {
 			APos.x += Normal[i].x * dotE;
 			APos.y += Normal[i].y * dotE;
 			APos.z += Normal[i].z * dotE;
-			_GameObject.pos = APos;
+			A->pos = APos;
 			//すべての移動量を0にしてしまうと
 			//ほかのオブジェクトと押し出しの計算を
 			//する際に移動量がないことになるので
@@ -299,11 +396,7 @@ GameObject* Collision::Push(GameObject A, GameObject B) {
 			AMove.x *= 1 - fabsf(Normal[i].x);
 			AMove.y *= 1 - fabsf(Normal[i].y);
 			AMove.z *= 1 - fabsf(Normal[i].z);
-			_GameObject.moveVal = AMove;
-
-			return &_GameObject;
+			A->moveVal = AMove;
 		}
 	}
-
-	return nullptr;	// 押し出し失敗
 }

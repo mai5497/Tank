@@ -6,7 +6,6 @@
 #ifndef __ENEMY_H__
 #define __ENEMY_H__
 
-#include "main.h"
 #include "GameObject.h"
 
 //-------------------- クラス定義 --------------------
@@ -25,18 +24,11 @@ public:
 	XMINT2 SetStartIndex();
 	bool GetUse();
 private:
-	//XMFLOAT3	pos;	// 現在の位置
+	static std::unique_ptr<CAssimpModel> pMyModel;
+
 	XMFLOAT3 rotDest;	// 目的の向き
-	//XMFLOAT3	move;	// 移動量
-	//XMFLOAT3	size;	// 大きさ
-	bool use;			// 使用中かどうか
 	int	bulletTimer;	// 弾発射タイマー
 	int	rootTimer;		// ルート検索タイマー
-	//XMINT2	mapIndex;	// 座標をマップ番号で表したものyxの順に格納
-
-	//XMFLOAT4X4	m_mtxWorld;		// ワールドマトリックス
-
-
 };
 
 #endif

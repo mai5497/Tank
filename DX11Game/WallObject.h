@@ -7,15 +7,15 @@
 #ifndef __WALL_OBJECT_H__
 #define __WALL_OBJECT_H__
 
-#include "main.h"
 #include "GameObject.h"
 
-#define MAPWIDTH			(16)		// 壁を置ける縦横共通の最大数
-#define MAPHEIGHT			(12)		// 壁を置ける縦横共通の最大数
+#define MAPWIDTH			(16)		// 壁を置ける横の最大数
+#define MAPHEIGHT			(12)		// 壁を置ける縦最大数
 
 class  WallObj : public GameObject {
 public:
 	WallObj();
+	WallObj(int x,int y);
 	~WallObj();
 
 	void Init();
@@ -27,6 +27,10 @@ public:
 
 	//void CollisionWallObj();
 	//bool CollisionWalltoBullet(XMFLOAT3 pos, float radius, float damage);
+	static int wallMap[MAPHEIGHT][MAPWIDTH];
+private:
+	static std::unique_ptr<CAssimpModel> pMyModel;
+
 };
 
 #endif

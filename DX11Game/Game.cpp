@@ -16,13 +16,10 @@
 #include "input.h"
 
 #include "BG.h"
-#include "bullet.h"
 #include "explosion.h"
 #include "Meshfield.h"
 #include "Fade.h"
-#include "WallObject.h"
-//#include "Boss.h"
-#include "EnemyManager.h"
+#include "GameObjManager.h"
 
 //====================================================================================
 //
@@ -30,7 +27,7 @@
 //
 //====================================================================================
 Game::Game() {
-	Init();
+	//Init();
 }
 
 //====================================================================================
@@ -39,7 +36,7 @@ Game::Game() {
 //
 //====================================================================================
 Game::~Game() {
-	Uninit();
+	//Uninit();
 }
 
 //====================================================================================
@@ -48,17 +45,12 @@ Game::~Game() {
 //
 //====================================================================================
 void Game::Init() {
-	//nowScene = Scene::SCENE_GAME;
-
 	// 丸影初期化
 	InitShadow();
 
-
-	// 敵初期化
-	pEnemys = std::make_shared<EnemyManager>();
-	pEnemys->Init();
-
-	//InitBoss();
+	// ゲームオブジェクト管理クラス初期化
+	pGameObjects = std::make_unique<GameObjManager>();
+	pGameObjects->Init();
 
 	// フィールド初期化
 	pMeshField = std::make_unique<MeshField>();
@@ -67,9 +59,6 @@ void Game::Init() {
 	// 背景初期化
 	pBG = std::make_unique<BG>();
 	pBG->Init();
-
-	// ビルボード弾初期化
-	InitBullet();
 
 	// 爆発初期化
 	InitExplosion();
@@ -83,26 +72,8 @@ void Game::Init() {
 	// 煙初期化
 	InitSmoke();
 
-	// 壁初期化
-	//hr = InitMeshWall();
-	//if (FAILED(hr))
-	//	return hr;
-
 	// タイマー初期化
 	InitTimer();
-
-	// オブジェクトの壁初期化
-	InitWallObj();
-
-	//SetMeshWall(XMFLOAT3(0.0f, 0.0f, 640.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	//SetMeshWall(XMFLOAT3(-640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, -90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	//SetMeshWall(XMFLOAT3(640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	//SetMeshWall(XMFLOAT3(0.0f, 0.0f, -640.0f), XMFLOAT3(0.0f, 180.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	//
-	//SetMeshWall(XMFLOAT3(0.0f, 0.0f, 640.0f), XMFLOAT3(0.0f, 180.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	//SetMeshWall(XMFLOAT3(-640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	//SetMeshWall(XMFLOAT3(640.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, -90.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
-	//SetMeshWall(XMFLOAT3(0.0f, 0.0f, -640.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 0.2f), 16, 2, XMFLOAT2(80.0f, 80.0f));
 
 	CSound::Play(BGM_GAME);
 }
@@ -113,14 +84,8 @@ void Game::Init() {
 //
 //====================================================================================
 void Game::Uninit() {
-	// オブジェクト壁終了
-	UninitWallObj();
-
 	// タイマー終了処理
 	UninitTimer();
-
-	// 壁終了処理
-	//UninitMeshWall();
 
 	// 煙終了処理
 	UninitSmoke();
@@ -132,9 +97,6 @@ void Game::Uninit() {
 	// 爆発終了処理
 	UninitExplosion();
 
-	// ビルボード弾終了処理
-	UninitBullet();
-
 	// 背景終了処理
 	pBG->Uninit();
 	pBG.reset();
@@ -143,14 +105,9 @@ void Game::Uninit() {
 	pMeshField->Uninit();
 	pMeshField.reset();
 
-	// 自機終了処理
-	pPlayer->Uninit();
-	pPlayer.reset();
-
-	// 敵機終了処理
-	//UninitBoss();
-	pEnemys->Uninit();
-	pEnemys.reset();
+	// ゲームオブジェクト管理クラス終了
+	pGameObjects->Uninit();
+	pGameObjects.reset();
 
 	// 丸影終了処理
 	UninitShadow();
@@ -165,18 +122,8 @@ void Game::Uninit() {
 //
 //====================================================================================
 void Game::Update() {
-	// 自機更新
-	pPlayer->Update();
-
-	// 敵更新
-	pEnemys->Update();
-	//if (pEnemys->GetEnemyKillSum() == MAX_ENEMY) {
-		//bool isBossAlive = UpdateBoss();
-		//if (!isBossAlive) {
-			//Fade::StartFadeOut(SCENE_RESULT);
-		//}
-	//}
-
+	// ゲームオブジェクト管理クラス更新
+	pGameObjects->Update();
 
 	// 背景更新
 	pBG->Update();
@@ -186,9 +133,6 @@ void Game::Update() {
 
 	// 丸影更新
 	UpdateShadow();
-
-	// ビルボード弾更新
-	UpdateBullet();
 
 	// 爆発更新
 	UpdateExplosion();
@@ -200,14 +144,8 @@ void Game::Update() {
 	// 煙更新
 	UpdateSmoke();
 
-	// 壁更新
-	//UpdateMeshWall();
-
 	// タイマー更新
 	UpdateTimer();
-
-	// オブジェクトの壁更新
-	UpdateWallObj();
 }
 
 //====================================================================================
@@ -228,26 +166,11 @@ void Game::Draw() {
 	// フィールド描画
 	pMeshField->Draw();
 
-	// 壁描画 (不透明部分)
-	//DrawMeshWall(DRAWPART_OPAQUE);
-
-	// 自機描画
-	pPlayer->Draw();
-
-	// 敵機描画
-	pEnemys->Draw();
-	if (pEnemys->GetEnemyKillSum() == MAX_ENEMY) {
-		//DrawBoss();
-	}
-
-	// オブジェクトの壁描画
-	DrawWallObj();
+	// ゲームオブジェクト管理クラス描画
+	pGameObjects->Draw();
 
 	// 丸影描画
 	DrawShadow();
-
-	// ビルボード弾描画
-	DrawBullet();
 
 	// 煙描画
 	DrawSmoke();
@@ -259,9 +182,7 @@ void Game::Draw() {
 	// 爆発描画
 	DrawExplosion();
 
-	// 壁描画 (半透明部分)
-	//DrawMeshWall(DRAWPART_TRANSLUCENT);
-		// Zバッファ無効(Zチェック無&Z更新無)
+	// Zバッファ無効(Zチェック無&Z更新無)
 	SetZBuffer(false);
 
 	// タイマー描画

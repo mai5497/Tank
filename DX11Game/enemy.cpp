@@ -28,6 +28,8 @@
 #define ROOT_TIME			(300)		// 次にルート検索するまでの時間
 
 
+std::unique_ptr<CAssimpModel> Enemy::pMyModel;
+
 //====================================================================================
 //
 //				コンストラクタ
@@ -52,13 +54,16 @@ Enemy::~Enemy() {
 //
 //====================================================================================
 void Enemy::Init() {
-	ID3D11Device* pDevice = GetDevice();
-	ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
-
-
 	// モデルデータの読み込み
-	if (!model.Load(pDevice, pDeviceContext, MODEL_ENEMY)) {
-		MessageBoxA(GetMainWnd(), "モデルデータ読み込みエラー", "InitEnemy", MB_OK);
+	if (!pMyModel) {
+		pMyModel = std::make_unique<CAssimpModel>();
+		ID3D11Device* pDevice = GetDevice();
+		ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
+
+
+		if (!pMyModel->Load(pDevice, pDeviceContext, MODEL_ENEMY)) {
+			MessageBoxA(GetMainWnd(), "モデルデータ読み込みエラー", "InitEnemy", MB_OK);
+		}
 	}
 
 	// 位置・回転・スケール・サイズの初期設定
@@ -76,6 +81,8 @@ void Enemy::Init() {
 	bulletTimer = 300;
 
 	mapIndex = XMINT2(0, 0);
+
+	collType = Collision::DYNAMIC;
 }
 
 //====================================================================================
@@ -90,7 +97,10 @@ void Enemy::Uninit() {
 	//}
 
 	// モデルの解放
-	model.Release();
+	if (pMyModel) {
+		pMyModel->Release();
+		pMyModel.reset();
+	}
 }
 
 //====================================================================================
@@ -220,7 +230,7 @@ void Enemy::Update() {
 	randomtime = rand() % 3;
 	bulletTimer -= randomtime;
 	if (bulletTimer < 0) {
-		FireBullet(
+		Bullet::FireBullet(
 			pos,
 			XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
 			BULLETTYPE_ENEMY);
@@ -241,12 +251,12 @@ void Enemy::Draw() {
 	}
 
 	// 不透明部分を描画
-	model.Draw(pDC, mtxWorld, eOpacityOnly);
+	pMyModel->Draw(pDC, mtxWorld, eOpacityOnly);
 
 	// 半透明部分を描画
 	SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
 	SetZWrite(false);				// Zバッファ更新しない
-	model.Draw(pDC, mtxWorld, eTransparentOnly);
+	pMyModel->Draw(pDC, mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
 }

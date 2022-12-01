@@ -26,6 +26,8 @@
 
 #define	PLAYER_RADIUS		(10.0f)		// 境界球半径
 
+std::unique_ptr<CAssimpModel> Player::pMyModel;
+
 //====================================================================================
 //
 //				コンストラクタ
@@ -49,24 +51,28 @@ Player::~Player() {
 //
 //====================================================================================
 void Player::Init() {
-	ID3D11Device* pDevice = GetDevice();
-	ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
-
 	// 位置・回転・スケールの初期設定
 	pos = XMFLOAT3(100.0f, 0.0f, 0.0f);
 	moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	size = XMFLOAT3(50.0f, 50.0f, 50.0f);
+	collSize = XMFLOAT3(100.0f, 100.0f, 100.0f);
 
 	// モデルデータの読み込み
-	if (!model.Load(pDevice, pDeviceContext, MODEL_PLAYER)) {
-		MessageBoxA(GetMainWnd(), "プレイヤーモデルデータ読み込みエラー", "InitModel", MB_OK);
-	}
+	if (!pMyModel) {
+		pMyModel = std::make_unique<CAssimpModel>();
+		ID3D11Device* pDevice = GetDevice();
+		ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
 
+		if (!pMyModel->Load(pDevice, pDeviceContext, MODEL_PLAYER)) {
+			MessageBoxA(GetMainWnd(), "プレイヤーモデルデータ読み込みエラー", "InitModel", MB_OK);
+		}
+	}
 	// 丸影の生成
 	shadowNum = CreateShadow(pos, 12.0f);
 
+	collType = Collision::DYNAMIC;
 }
 
 //====================================================================================
@@ -79,7 +85,10 @@ void Player::Uninit() {
 	ReleaseShadow(shadowNum);
 
 	// モデルの解放
-	model.Release();
+	if (pMyModel) {
+		pMyModel->Release();
+		pMyModel.reset();
+	}
 }
 
 //====================================================================================
@@ -256,9 +265,19 @@ void Player::Update() {
 			XMFLOAT2(5.0f, 5.0f), 20);
 	}
 
+	//static double dLastTime = clock() / double(CLOCKS_PER_SEC);
+	//double dNowTime = clock() / double(CLOCKS_PER_SEC);
+	//double dSlice = dNowTime - dLastTime;
+	//dLastTime = dNowTime;
+	//m_animTime += dSlice;
+	//if (m_animTime >= myModel.GetAnimDuration(0)) {
+	//	m_animTime = 0.0;
+	//}
+
+
 	// 弾発射
 	if (GetKeyRepeat(VK_SPACE)) {
-		FireBullet(pos, XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
+		Bullet::FireBullet(pos, XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
 			BULLETTYPE_PLAYER);
 	}
 }
@@ -272,12 +291,14 @@ void Player::Draw() {
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 
 	// 不透明部分を描画
-	model.Draw(pDC, mtxWorld, eOpacityOnly);
+	pMyModel->Draw(pDC, mtxWorld, eOpacityOnly);
 
 	// 半透明部分を描画
+	//myModel.SetAnimIndex(1);
+	//myModel.SetAnimTime(m_animTime);
 	SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
 	SetZWrite(false);				// Zバッファ更新しない
-	model.Draw(pDC, mtxWorld, eTransparentOnly);
+	pMyModel->Draw(pDC, mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
 
