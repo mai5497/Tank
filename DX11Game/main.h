@@ -26,6 +26,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <memory>
+#include <vector>
 #include "resource.h"
 
 // –{—ˆ‚Íƒwƒbƒ_‚É‘‚©‚È‚¢•û‚ª—Ç‚¢

@@ -10,6 +10,6 @@
 
 class GameObject;
 
-void DrawCollisionSphere(GameObject gameobject);
+void DrawCollisionSphere(GameObject* gameobject);
 
 #endif

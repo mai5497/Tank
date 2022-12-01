@@ -773,7 +773,7 @@ bool CAssimpModel::Load(ID3D11Device* pDevice, ID3D11DeviceContext* pDC, std::st
 
 	aiPropertyStore* props = aiCreatePropertyStore();
 	aiSetImportPropertyInteger(props, AI_CONFIG_IMPORT_TER_MAKE_UVS, 1);
-	//aiSetImportPropertyFloat(props, AI_CONFIG_PP_GSN_MAX_SMOOTHING_ANGLE, g_smoothAngle);
+	aiSetImportPropertyFloat(props, AI_CONFIG_PP_GSN_MAX_SMOOTHING_ANGLE, 59.5f);
 	//aiSetImportPropertyInteger(props, AI_CONFIG_PP_SBP_REMOVE, nopointslines ? aiPrimitiveType_LINE | aiPrimitiveType_POINT : 0);
 	aiSetImportPropertyInteger(props, AI_CONFIG_GLOB_MEASURE_TIME, 1);
 	m_pScene = (aiScene*)aiImportFileExWithProperties(filename.c_str(),

@@ -54,7 +54,7 @@
     <ClCompile Include="Camera.cpp">
       <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
-    <ClCompile Include="collision.cpp">
+    <ClCompile Include="Collision.cpp">
       <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
     <ClCompile Include="debugproc.cpp">
@@ -147,9 +147,6 @@
     <ClCompile Include="SceneManager.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyManager.cpp">
-      <Filter>ソース ファイル\Game</Filter>
-    </ClCompile>
     <ClCompile Include="GameObjManager.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
@@ -170,7 +167,7 @@
     <ClInclude Include="Camera.h">
       <Filter>ヘッダー ファイル\GameSystem</Filter>
     </ClInclude>
-    <ClInclude Include="collision.h">
+    <ClInclude Include="Collision.h">
       <Filter>ヘッダー ファイル\GameSystem</Filter>
     </ClInclude>
     <ClInclude Include="debugproc.h">
@@ -271,9 +268,6 @@
     </ClInclude>
     <ClInclude Include="SceneManager.h">
       <Filter>ヘッダー ファイル\System</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyManager.h">
-      <Filter>ヘッダー ファイル\Game</Filter>
     </ClInclude>
     <ClInclude Include="GameObjManager.h">
       <Filter>ヘッダー ファイル\Game</Filter>

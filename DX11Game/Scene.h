@@ -11,7 +11,7 @@
 class Scene {
 public:
 	Scene();
-	~Scene();
+	virtual ~Scene();
 
 	virtual void Init();			// ‰Šú‰»
 	virtual void Uninit();			// I—¹ˆ—
