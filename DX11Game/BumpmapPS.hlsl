@@ -1,9 +1,9 @@
 struct PS_IN {
 	float4 pos : SV_POSITION;
+	float3 normal : NORMAL0;
 	float2 uv : TEXCOORD0;
-	float3 normal : TEXCOORD1;
-	float4 wPos : TEXCOORD2;
-	//float3 tangentL : TANGENT0;
+	float4 wPos : TEXCOORD1;
+	float3 tangentL : TANGENT0;
 };
 
 cbuffer Light : register(b0) {

@@ -711,10 +711,10 @@ XMFLOAT4X4& CAssimpModel::GetTextureMatrix()
 bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 {
 	// シェーダ読み込み
-	//HRESULT hr = LoadShader("AssimpVertex", "AssimpPixel",
-	//	&m_pVertexShader, &m_pVertexLayout, &m_pPixelShader);
-	HRESULT hr = LoadShader("BumpmapVS", "BumpmapPS",
+	HRESULT hr = LoadShader("AssimpVertex", "AssimpPixel",
 		&m_pVertexShader, &m_pVertexLayout, &m_pPixelShader);
+	//HRESULT hr = LoadShader("Vertex", "Pixel",
+	//	&m_pVertexShader, &m_pVertexLayout, &m_pPixelShader);
 
 	if (FAILED(hr)) {
 		MessageBoxW(0, L"hlsl読み込み失敗", nullptr, MB_OK);
