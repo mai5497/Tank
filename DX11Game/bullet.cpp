@@ -194,26 +194,6 @@ void Bullet::Update() {
 		//		}
 		//	}
 		//}
-
-
-		//if (CollisionPlayer(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH)) {
-		//	pBullet->use = false;
-		//	// ŠÛ‰e‰ð•ú
-		//	ReleaseShadow(pBullet->nShadow);
-		//	pBullet->nShadow = -1;
-		//	continue;
-		//}
-
-
-
-
-		//if (CollisionWalltoBullet(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH)) {
-		//	pBullet->use = false;
-		//	// ŠÛ‰e‰ð•ú
-		//	ReleaseShadow(pBullet->nShadow);
-		//	pBullet->nShadow = -1;
-		//	continue;
-		//}
 	}
 
 	// ŠÛ‰eˆÚ“®

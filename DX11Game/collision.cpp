@@ -156,12 +156,12 @@ bool Collision::CollisionAABB(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 Bpos, XMFL
 }
 
 bool Collision::CollisionAABB(GameObject A, GameObject B) {
-	return (A.pos.x - A.size.x <= B.pos.x + B.size.x) &&
-		(B.pos.x - B.size.x <= A.pos.x + A.size.x) &&
-		(A.pos.y - A.size.y <= B.pos.y + B.size.y) &&
-		(B.pos.y - B.size.y <= A.pos.y + A.size.y) &&
-		(A.pos.z - A.size.z <= B.pos.z + B.size.z) &&
-		(B.pos.z - B.size.z <= A.pos.z + A.size.z);
+	return (A.pos.x - A.collSize.x <= B.pos.x + B.collSize.x) &&
+		(B.pos.x - B.collSize.x <= A.pos.x + A.collSize.x) &&
+		(A.pos.y - A.collSize.y <= B.pos.y + B.collSize.y) &&
+		(B.pos.y - B.collSize.y <= A.pos.y + A.collSize.y) &&
+		(A.pos.z - A.collSize.z <= B.pos.z + B.collSize.z) &&
+		(B.pos.z - B.collSize.z <= A.pos.z + A.collSize.z);
 }
 
 
