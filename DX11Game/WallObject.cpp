@@ -8,7 +8,6 @@
 //-------------------- インクルード部 --------------------
 #include "WallObject.h"
 #include "input.h"
-#include "AssimpModel.h"
 #include "debugproc.h"
 #include "bullet.h"
 #include "effect.h"
@@ -18,9 +17,11 @@
 #include "enemy.h"
 #include "Astar.h"
 #include "DwarfEffect.h"
+#include "Texture.h"
 
 //-------------------- マクロ定義 --------------------
 #define MODEL_WALLOBJ		"data/model/rubikcube.fbx"
+#define BUMP_WALLOBJ		"data/model/rubikcube_bump.png"
 #define	WALLOBJ_RADIUS		(55.0f)		// 境界球半径
 
 std::unique_ptr<CAssimpModel> WallObj::pMyModel;
@@ -75,10 +76,20 @@ void WallObj::Init() {
 		ID3D11Device* pDevice = GetDevice();
 		ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
 
+		// バンプマップ読込
+		ID3D11ShaderResourceView* _pTexture = nullptr;		// テクスチャ
+		CreateTextureFromFile(pDevice, BUMP_WALLOBJ, &_pTexture);
+		pMyModel->SetShaderMode(CAssimpModel::SM_BUMP);	// バンプマップする
+		if (_pTexture) {
+			pDeviceContext->PSSetShaderResources(4, 1, &_pTexture);
+		} else {
+			MessageBoxA(GetMainWnd(), "バンプマップ画像読み込みエラー", "InitModel", MB_OK);
+		}
+
+		// モデルデータ読込
 		if (!pMyModel->Load(pDevice, pDeviceContext, MODEL_WALLOBJ)) {
 			MessageBoxA(GetMainWnd(), "壁モデルデータ読み込みエラー", "InitModel", MB_OK);
 		}
-
 
 		// マップの設定も一度行えばよいためモデル読込と同居させとく
 		int* pMap = (int*)wallMap;

@@ -4,7 +4,8 @@
 // 
 //************************************************************************************
 
-#pragma once
+#ifndef __SHADER_H__
+#define __SHADER_H__
 
 // åxçêîÒï\é¶
 //#pragma warning(disable : 4996)
@@ -26,3 +27,6 @@ HRESULT LoadShader(LPCSTR pszVSFName, LPCSTR pszPSFName,
 	ID3D11VertexShader** ppVertexShader, ID3D11InputLayout** ppVertexLayout,
 	ID3D11PixelShader** ppPixelShader,
 	const D3D11_INPUT_ELEMENT_DESC* pInpElemDesc = nullptr, UINT uNumElem = 0);
+
+
+#endif

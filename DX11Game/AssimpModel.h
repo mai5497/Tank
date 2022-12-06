@@ -237,9 +237,17 @@ private:
 	static ID3D11InputLayout* m_pVertexLayout;
 	static ID3D11VertexShader* m_pVertexShader;
 	static ID3D11PixelShader* m_pPixelShader;
+	static ID3D11PixelShader* m_pBumpmapPS;
+	static ID3D11PixelShader* m_pToonPS;
 	static ID3D11SamplerState* m_pSampleLinear;
 
 public:
+	enum ShaderMode {
+		SM_DEFAULT = 0,
+		SM_BUMP,
+		SM_TOON
+	};
+
 	CAssimpModel();
 	virtual ~CAssimpModel();
 
@@ -261,6 +269,8 @@ public:
 
 	void Release();
 
+	void SetShaderMode(ShaderMode _shaderMode);
+
 	DirectX::XMFLOAT3& GetBBox() { return m_vBBox; }
 	DirectX::XMFLOAT3& GetCenter() { return m_vCenter; }
 
@@ -275,4 +285,6 @@ private:
 	ID3D11ShaderResourceView* getTextureFromModel(ID3D11Device* pDevice, int textureindex);
 	void LoadTexture(ID3D11Device* pDevice, aiString& szPath, ID3D11ShaderResourceView** ppTexture);
 	bool HasAlphaPixels(ID3D11ShaderResourceView* pTexture);
+
+	ShaderMode eMode;
 };

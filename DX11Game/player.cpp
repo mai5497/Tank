@@ -15,9 +15,11 @@
 #include "collision.h"
 #include "explosion.h"
 #include "DebugCollision.h"
+#include "Texture.h"
 
 //-------------------- マクロ定義 --------------------
-#define MODEL_PLAYER		"data/model/kobitoblue.fbx"
+#define MODEL_PLAYER	"data/model/kobitoblue.fbx"
+#define TOON_TEXTURE	"data/model/ramp.png"
 
 #define	VALUE_MOVE_PLAYER	(5.0f)	// 移動速度
 #define	RATE_MOVE_PLAYER	(0.25f)	// 移動慣性係数
@@ -64,6 +66,17 @@ void Player::Init() {
 		pMyModel = std::make_unique<CAssimpModel>();
 		ID3D11Device* pDevice = GetDevice();
 		ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
+
+
+		// トゥーンシェーダー
+		ID3D11ShaderResourceView* _pTexture = nullptr;		// テクスチャ
+		CreateTextureFromFile(pDevice, TOON_TEXTURE, &_pTexture);
+		pMyModel->SetShaderMode(CAssimpModel::SM_TOON);	// トゥーンシェーダーにする
+		if (_pTexture) {
+			pDeviceContext->PSSetShaderResources(4, 1, &_pTexture);
+		} else {
+			MessageBoxA(GetMainWnd(), "トゥーン用画像読み込みエラー", "InitModel", MB_OK);
+		}
 
 		if (!pMyModel->Load(pDevice, pDeviceContext, MODEL_PLAYER)) {
 			MessageBoxA(GetMainWnd(), "プレイヤーモデルデータ読み込みエラー", "InitModel", MB_OK);

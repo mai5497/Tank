@@ -43,6 +43,7 @@ struct SHADER_GLOBAL {
 	XMVECTOR	vLs;		// 光源色(スペキュラ)
 };
 
+
 // マテリアル (シェーダ用)
 struct SHADER_MATERIAL {
 	XMVECTOR	vAmbient;	// アンビエント色
@@ -660,6 +661,8 @@ void CAssimpMesh::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World, EByOpacit
 ID3D11InputLayout* CAssimpModel::m_pVertexLayout;
 ID3D11VertexShader* CAssimpModel::m_pVertexShader;
 ID3D11PixelShader* CAssimpModel::m_pPixelShader;
+ID3D11PixelShader* CAssimpModel::m_pBumpmapPS;
+ID3D11PixelShader* CAssimpModel::m_pToonPS;
 ID3D11SamplerState* CAssimpModel::m_pSampleLinear;
 
 //====================================================================================
@@ -672,6 +675,8 @@ CAssimpModel::CAssimpModel() : m_pMaterial(nullptr), m_pScene(nullptr), m_pAnima
 	XMStoreFloat4x4(&m_mtxTexture, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_mtxWorld, XMMatrixIdentity());
 	m_dCurrent = m_dLastPlaying = 0.0;
+
+	eMode = SM_DEFAULT;	// どのシェーダーを使うかの変数。初期値はデフォルト
 }
 
 //====================================================================================
@@ -713,13 +718,25 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 	// シェーダ読み込み
 	HRESULT hr = LoadShader("AssimpVertex", "AssimpPixel",
 		&m_pVertexShader, &m_pVertexLayout, &m_pPixelShader);
-	//HRESULT hr = LoadShader("Vertex", "Pixel",
-	//	&m_pVertexShader, &m_pVertexLayout, &m_pPixelShader);
-
 	if (FAILED(hr)) {
 		MessageBoxW(0, L"hlsl読み込み失敗", nullptr, MB_OK);
 		return false;
 	}
+
+	hr = LoadShader("AssimpVertex", "BumpmapPS",
+		&m_pVertexShader, &m_pVertexLayout, &m_pBumpmapPS);
+	if (FAILED(hr)) {
+		MessageBoxW(0, L"hlsl読み込み失敗", nullptr, MB_OK);
+		return false;
+	}
+
+	hr = LoadShader("AssimpVertex", "ToonPS",
+		&m_pVertexShader, &m_pVertexLayout, &m_pToonPS);
+	if (FAILED(hr)) {
+		MessageBoxW(0, L"hlsl読み込み失敗", nullptr, MB_OK);
+		return false;
+	}
+
 
 	// テクスチャ用サンプラ作成
 	CD3D11_DEFAULT def;
@@ -745,6 +762,7 @@ void CAssimpModel::UninitShader()
 {
 	SAFE_RELEASE(m_pSampleLinear);
 	SAFE_RELEASE(m_pPixelShader);
+	SAFE_RELEASE(m_pBumpmapPS);
 	SAFE_RELEASE(m_pVertexLayout);
 	SAFE_RELEASE(m_pVertexShader);
 }
@@ -838,8 +856,15 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 
 	m_mtxWorld = mtxWorld;
 	// 使用するシェーダーの登録	
+	// どのシェーダーを使うか分岐
 	pDC->VSSetShader(m_pVertexShader, nullptr, 0);
-	pDC->PSSetShader(m_pPixelShader, nullptr, 0);
+	if (eMode == SM_DEFAULT) {
+		pDC->PSSetShader(m_pPixelShader, nullptr, 0);
+	}else if(eMode == SM_BUMP){
+		pDC->PSSetShader(m_pBumpmapPS, nullptr, 0);
+	} else if (eMode == SM_TOON) {
+		pDC->PSSetShader(m_pToonPS, nullptr, 0);
+	}
 	// 頂点インプットレイアウトをセット
 	pDC->IASetInputLayout(m_pVertexLayout);
 	// プリミティブ形状をセット
@@ -1361,4 +1386,13 @@ double CAssimpModel::GetAnimDuration(int nAnimIndex)
 		}
 	}
 	return 0.0;
+}
+
+//====================================================================================
+//
+//				シェーダーモードの設定
+//
+//====================================================================================
+void CAssimpModel::SetShaderMode(ShaderMode _shaderMode) {
+	eMode = _shaderMode;
 }
