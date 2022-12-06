@@ -105,6 +105,8 @@ void WallObj::Init() {
 
 		rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
+		isCollision = true;
+
 		XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
 
 		pos = XMFLOAT3(mapIndex.x * 80.0f - 640.0f, 0.0f, -mapIndex.y * 80.0f + 480.0f);
