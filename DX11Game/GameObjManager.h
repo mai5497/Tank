@@ -6,7 +6,7 @@
 #ifdef _DEBUG
 #define MAX_ENEMY			(5)		// 敵最大(デバッグ用)
 #else
-#define MAX_ENEMY			(1)	// 敵最大(ほんちゃん)
+#define MAX_ENEMY			(10)	// 敵最大(ほんちゃん)
 #endif
 
 class GameObject;

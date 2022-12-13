@@ -151,49 +151,27 @@ void Bullet::Update() {
 		return;
 	}
 	if (type == BULLETTYPE_PLAYER) {
-		// 敵との当たり判定
-
-		/*
-		* ↓作り直し中コメントアウト
-		*/
-
-
-		//int nEnemy = CollisionEnemy(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH);			
-		//if (nEnemy > 0) {
-		//	pBullet->use = false;
-		//	// 丸影解放
-		//	ReleaseShadow(pBullet->nShadow);
-		//	pBullet->nShadow = -1;
-		//	continue;
-		//}
-		//// ボスとの当たり判定
-		//if (GetEnemyKillSum() == MAX_ENEMY) {
-		//	int nBoss = CollisionBoss(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH);
-		//	if (nBoss > 0) {
-		//		pBullet->use = false;
-		//		// 丸影開放
-		//		ReleaseShadow(pBullet->nShadow);
-		//		pBullet->nShadow = -1;
-		//		continue;
-		//	}
-		//}
-		//if (CollisionWalltoBullet(pBullet->pos, BULLET_RADIUS, BULLET_STRENGTH)) {
-		//	pBullet->use = false;
-		//	// 丸影解放
-		//	ReleaseShadow(pBullet->nShadow);
-		//	pBullet->nShadow = -1;
-		//	continue;
-		//}
-
+		if (hitList.size() > 0) {
+			for (int i = 0; i < hitList.size(); i++) {
+				if (hitList[i] == ENEMY) {	// プレイヤーとの当たり判定
+					Destroy();
+				} else if (hitList[i] == WALL) {	// 壁との当たり判定
+					Destroy();
+				}
+			}
+		}
 	} else if (type == BULLETTYPE_ENEMY) {
-		// プレイヤーとの当たり判定
-		//if (hitList.size() > 0) {
-		//	for (int i = 0; i < hitList.size(); i++) {
-		//		if (hitList[i] == PLAYER) {
-		//			Destroy();
-		//		}
-		//	}
-		//}
+		if (hitList.size() > 0) {
+			for (int i = 0; i < hitList.size(); i++) {
+				if (hitList[i] == PLAYER) {	// プレイヤーとの当たり判定
+					Destroy();
+				}else if (hitList[i] == WALL) {	// 壁との当たり判定
+					Destroy();
+				}
+			}
+		}
+
+
 	}
 
 	// 丸影移動

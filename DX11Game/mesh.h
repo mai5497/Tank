@@ -28,6 +28,11 @@ enum eTranslucentType {
 	MAX_TRANSLUCENTTYPE
 };
 
+enum MeshShaderMode {
+	MSM_DEFAULT = 0,
+	MSM_BUMP
+};
+
 //**************************************
 // ç\ë¢ëÃíËã`
 //**************************************
@@ -65,7 +70,7 @@ HRESULT InitMesh(void);
 HRESULT InitMesh(const VERTEX_3D vertexWk[], int nVertex, const int indexWk[], int nIndex);
 void UninitMesh(void);
 void UpdateMesh(MESH* pMesh);
-void DrawMesh(ID3D11DeviceContext* pDeviceContext, MESH* pMesh, int nTranslucntType = TT_NOAFFECT);
+void DrawMesh(ID3D11DeviceContext* pDeviceContext, MESH* pMesh, MeshShaderMode _shadermode = MSM_DEFAULT, ID3D11ShaderResourceView* _pShaderTex = nullptr,int nTranslucntType = TT_NOAFFECT);
 HRESULT MakeMeshVertex(ID3D11Device* pDevice, MESH* pMesh, VERTEX_3D vertexWk[], int indexWk[]);
 void ReleaseMesh(MESH* pMesh);
 HRESULT UpdateMeshVertex(ID3D11DeviceContext* pDeviceContext, MESH* pMesh, VERTEX_3D vertex[]);

@@ -53,7 +53,7 @@ float4 main(PS_IN pin) : SV_TARGET
 	diffuse = diffuse * 0.5f + 0.5f;
 	float shadow = rampTex.Sample(samp, float2(diffuse,0.0f));
 
-	color.rgb *= shadow*2;
+	color.rgb *= shadow;
 
 	return color;
 }

@@ -48,7 +48,7 @@ float4 main(PS_IN pin) : SV_TARGET
 	// ‹¾–Ê”½Ë
 	float specular = max(0, dot(R, V));
 	// ‚»‚Ì‚Ü‚Ü‚¾‚Æ‘S‘Ì‚ª–¾‚é‚¢‚Ì‚ÅA—İæ‚·‚é‚Æ‚¢‚¢Š´‚¶‚É‚È‚é
-	specular = pow(specular, 10.0f);
+	//specular = pow(specular, 5.0f);
 
 	color.rgb = diffuse * 0.5f + ambient + specular;
 	color = color * color1;

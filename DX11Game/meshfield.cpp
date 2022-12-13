@@ -11,6 +11,7 @@
 
 //-------------------- 定数定義 --------------------
 #define	TEXTURE_FILENAME	L"data/texture/field004.jpg"	// テクスチャファイル名
+#define	BUMP_TEXTURE		L"data/texture/field004_bump.png"	// テクスチャファイル名
 
 #define M_DIFFUSE			XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
 #define M_SPECULAR			XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
@@ -48,9 +49,9 @@ MeshField::~MeshField() {
 //
 //====================================================================================
 HRESULT MeshField::Init(int nNumBlockX, int nNumBlockZ,
-	float fSizeBlockX, float fSizeBlockZ, float fTexSizeX, float fTexSizeZ)
-{
+	float fSizeBlockX, float fSizeBlockZ, float fTexSizeX, float fTexSizeZ) {
 	ID3D11Device* pDevice = GetDevice();
+	ID3D11DeviceContext* pDC = GetDeviceContext();
 	HRESULT hr;
 
 	// 位置・回転の初期設定
@@ -69,7 +70,19 @@ HRESULT MeshField::Init(int nNumBlockX, int nNumBlockZ,
 	hr = CreateTextureFromFile(pDevice, TEXTURE_FILENAME, &mesh.pTexture);
 	if (FAILED(hr))
 		return hr;
+
 	XMStoreFloat4x4(&mesh.mtxTexture, XMMatrixIdentity());
+
+	hr = CreateTextureFromFile(pDevice, BUMP_TEXTURE, &pShaderTex);
+	if (FAILED(hr))
+		return hr;
+
+	//if (_pTexture) {
+	//	pDC->PSSetShaderResources(4, 1, &_pTexture);
+	//} else {
+	//	MessageBoxA(GetMainWnd(), "バンプマップ画像読み込みエラー", "MeshFieldDraw", MB_OK);
+	//}
+
 
 	// 頂点情報の作成
 	hr = MakeVertexField(pDevice, nNumBlockX, nNumBlockZ,
@@ -83,8 +96,7 @@ HRESULT MeshField::Init(int nNumBlockX, int nNumBlockZ,
 //				終了
 //
 //====================================================================================
-void MeshField::Uninit(void)
-{
+void MeshField::Uninit(void) {
 	// メッシュ解放
 	ReleaseMesh(&mesh);
 }
@@ -94,8 +106,7 @@ void MeshField::Uninit(void)
 //				更新
 //
 //====================================================================================
-void MeshField::Update(void)
-{
+void MeshField::Update(void) {
 	// メッシュ更新
 	UpdateMesh(&mesh);
 }
@@ -105,12 +116,11 @@ void MeshField::Update(void)
 //				描画
 //
 //====================================================================================
-void MeshField::Draw(void)
-{
+void MeshField::Draw(void) {
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 
 	// メッシュの描画
-	DrawMesh(pDC, &mesh);
+	DrawMesh(pDC, &mesh/*, MSM_BUMP, pShaderTex*/);
 }
 
 //====================================================================================
@@ -120,8 +130,7 @@ void MeshField::Draw(void)
 //====================================================================================
 HRESULT MeshField::MakeVertexField(ID3D11Device* pDevice,
 	int nNumBlockX, int nNumBlockZ, float fSizeBlockX, float fSizeBlockZ,
-	float fTexSizeX, float fTexSizeZ)
-{
+	float fTexSizeX, float fTexSizeZ) {
 	// プリミティブ種別設定
 	mesh.primitiveType = PT_TRIANGLESTRIP;
 

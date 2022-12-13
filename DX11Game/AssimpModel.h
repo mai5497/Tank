@@ -50,6 +50,7 @@ struct TAssimpMaterial {
 	ID3D11ShaderResourceView*	pTexSpecular;	// 鏡面反射テクスチャ
 	ID3D11ShaderResourceView*	pTexEmmisive;	// 発光テクスチャ
 	ID3D11ShaderResourceView*	pTexTransparent;// 透過テクスチャ
+	ID3D11ShaderResourceView*	pTexShader;		//	シェーダー用テクスチャ
 	TAssimpMaterial()
 	{
 		Ka = DirectX::XMFLOAT4(0, 0, 0, 0);
@@ -241,6 +242,8 @@ private:
 	static ID3D11PixelShader* m_pToonPS;
 	static ID3D11SamplerState* m_pSampleLinear;
 
+	ID3D11ShaderResourceView* m_pShaderTex;
+
 public:
 	enum ShaderMode {
 		SM_DEFAULT = 0,
@@ -261,6 +264,8 @@ public:
 	void DrawNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMatrix4x4& piMatrix, EByOpacity byOpacity);
 	DirectX::XMFLOAT4X4& GetWorldMatrix() { return m_mtxWorld; }
 	void SetMaterial(TAssimpMaterial* pMaterial = nullptr) { m_pMaterial = pMaterial; }
+	void SetShaderMat(ID3D11ShaderResourceView* _pTexture);
+	ID3D11ShaderResourceView* GetShaderMat() { return m_pShaderTex; }
 	TAssimpMaterial* GetMaterial() { return m_pMaterial; }
 	void SetAnimIndex(int nAnimIndex);
 	UINT GetAnimCount();
