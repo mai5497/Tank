@@ -25,6 +25,14 @@ struct SHADER_GLOBAL {
 	XMMATRIX	mW;			// ワールド行列(転置行列)
 	XMMATRIX	mTex;		// テクスチャ行列(転置行列)
 };
+struct BumpVertex {
+	DirectX::XMFLOAT3 pos;
+	DirectX::XMFLOAT3 normal;
+	DirectX::XMFLOAT2 uv;
+	DirectX::XMFLOAT3 tangent;	// 接ベクトル(タンジェントベクトル)
+	// ワールド空間上でてくくすちゃを張り付ける横の方向
+};
+
 struct SHADER_GLOBAL2 {
 	XMVECTOR	vEye;		// 視点座標
 	// 光源
@@ -48,6 +56,7 @@ static ID3D11SamplerState*			g_pSamplerState;		// テクスチャ サンプラ
 static ID3D11VertexShader*			g_pVertexShader;		// 頂点シェーダ
 static ID3D11InputLayout*			g_pInputLayout;			// 頂点フォーマット
 static ID3D11PixelShader*			g_pPixelShader;			// ピクセルシェーダ
+static ID3D11PixelShader*			g_pBumpmapPS;			// ピクセルシェーダ
 
 static MATERIAL						g_material;				// マテリアル
 
@@ -69,6 +78,10 @@ HRESULT InitMesh(void)
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 	hr = LoadShader("Vertex", "Pixel", &g_pVertexShader, &g_pInputLayout, &g_pPixelShader, layout, _countof(layout));
+	if (FAILED(hr)) {
+		return hr;
+	}
+	hr = LoadShader("Vertex", "MeshBumpPS", &g_pVertexShader, &g_pInputLayout, &g_pBumpmapPS, layout, _countof(layout));
 	if (FAILED(hr)) {
 		return hr;
 	}
@@ -200,7 +213,7 @@ void UpdateMesh(MESH* pMesh)
 //				描画
 //
 //====================================================================================
-void DrawMesh(ID3D11DeviceContext* pDeviceContext, MESH* pMesh, int nTranslucntType)
+void DrawMesh(ID3D11DeviceContext* pDeviceContext, MESH* pMesh, MeshShaderMode _shadermode, ID3D11ShaderResourceView* _pShaderTex,int nTranslucntType)
 {
 	MATERIAL* pMaterial = pMesh->pMaterial;
 	if (!pMaterial) pMaterial = &g_material;
@@ -220,7 +233,11 @@ void DrawMesh(ID3D11DeviceContext* pDeviceContext, MESH* pMesh, int nTranslucntT
 	}
 	// シェーダ設定
 	pDeviceContext->VSSetShader(g_pVertexShader, nullptr, 0);
-	pDeviceContext->PSSetShader(g_pPixelShader, nullptr, 0);
+	if (_shadermode == MSM_DEFAULT) {
+		pDeviceContext->PSSetShader(g_pPixelShader, nullptr, 0);
+	} else if (_shadermode == MSM_BUMP) {
+		pDeviceContext->PSSetShader(g_pBumpmapPS, nullptr, 0);
+	}
 	pDeviceContext->IASetInputLayout(g_pInputLayout);
 
 	// 頂点バッファをセット
@@ -231,7 +248,13 @@ void DrawMesh(ID3D11DeviceContext* pDeviceContext, MESH* pMesh, int nTranslucntT
 	pDeviceContext->IASetIndexBuffer(pMesh->pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	pDeviceContext->PSSetSamplers(0, 1, &g_pSamplerState);
+	// テクスチャをセット
 	pDeviceContext->PSSetShaderResources(0, 1, &pMesh->pTexture);
+	if (_shadermode == MSM_BUMP) {
+		if (_pShaderTex) {
+			pDeviceContext->PSSetShaderResources(4, 1, &_pShaderTex);
+		}
+	}
 
 	SHADER_GLOBAL cb;
 	XMMATRIX mtxWorld = XMLoadFloat4x4(&pMesh->mtxWorld);

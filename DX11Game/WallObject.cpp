@@ -79,16 +79,17 @@ void WallObj::Init() {
 		// バンプマップ読込
 		ID3D11ShaderResourceView* _pTexture = nullptr;		// テクスチャ
 		CreateTextureFromFile(pDevice, BUMP_WALLOBJ, &_pTexture);
-		pMyModel->SetShaderMode(CAssimpModel::SM_BUMP);	// バンプマップする
-		if (_pTexture) {
-			pDeviceContext->PSSetShaderResources(4, 1, &_pTexture);
-		} else {
-			MessageBoxA(GetMainWnd(), "バンプマップ画像読み込みエラー", "InitModel", MB_OK);
-		}
+		pMyModel->SetShaderMode(CAssimpModel::SM_BUMP);	// バンプマップする		
+		pMyModel->SetShaderMat(_pTexture);
+		//if (_pTexture) {
+		//	pDeviceContext->PSSetShaderResources(4, 1, &_pTexture);
+		//} else {
+		//	MessageBoxA(GetMainWnd(), "バンプマップ画像読み込みエラー", "InitWallObj", MB_OK);
+		//}
 
 		// モデルデータ読込
 		if (!pMyModel->Load(pDevice, pDeviceContext, MODEL_WALLOBJ)) {
-			MessageBoxA(GetMainWnd(), "壁モデルデータ読み込みエラー", "InitModel", MB_OK);
+			MessageBoxA(GetMainWnd(), "壁モデルデータ読み込みエラー", "InitWallObj", MB_OK);
 		}
 
 		// マップの設定も一度行えばよいためモデル読込と同居させとく
@@ -176,7 +177,7 @@ void WallObj::Draw() {
 	SetBlendState(BS_NONE);			// アルファブレンド無効
 
 	// デバッグ表示
-	DrawCollisionSphere(this);
+	//DrawCollisionSphere(this);
 }
 
 //====================================================================================

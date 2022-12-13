@@ -90,9 +90,6 @@
     <ClCompile Include="mesh.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
-    <ClCompile Include="Meshfield.cpp">
-      <Filter>ソース ファイル\GameSystem</Filter>
-    </ClCompile>
     <ClCompile Include="number.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
@@ -148,6 +145,9 @@
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
     <ClCompile Include="GameObjManager.cpp">
+      <Filter>ソース ファイル\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Meshfield.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
   </ItemGroup>
@@ -299,6 +299,9 @@
       <Filter>ソース ファイル\Shader</Filter>
     </FxCompile>
     <FxCompile Include="ToonPS.hlsl">
+      <Filter>ソース ファイル\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="MeshBumpPS.hlsl">
       <Filter>ソース ファイル\Shader</Filter>
     </FxCompile>
   </ItemGroup>

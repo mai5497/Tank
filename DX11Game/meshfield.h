@@ -28,6 +28,7 @@ private:
 		float fTexSizeX, float fTexSizeZ);
 
 	MESH mesh;							// 構造体
+	ID3D11ShaderResourceView* pShaderTex;	// シェーダー用テクスチャ
 	MATERIAL material;					// マテリアル
 
 };
