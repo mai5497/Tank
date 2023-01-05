@@ -21,7 +21,7 @@
 #define MODEL_PLAYER	"data/model/kobitoblue.fbx"
 #define TOON_TEXTURE	"data/model/ramp.png"
 
-#define	VALUE_MOVE_PLAYER	(5.0f)	// 移動速度
+#define	VALUE_MOVE_PLAYER	(0.2f)	// 移動速度
 #define	RATE_MOVE_PLAYER	(0.25f)	// 移動慣性係数
 #define	VALUE_ROTATE_PLAYER	(4.5f)		// 回転速度
 #define	RATE_ROTATE_PLAYER	(0.1f)		// 回転慣性係数
@@ -59,7 +59,9 @@ void Player::Init() {
 	rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	size = XMFLOAT3(50.0f, 50.0f, 50.0f);
-	collSize = XMFLOAT3(100.0f, 100.0f, 100.0f);
+	collSize = XMFLOAT3(50.0f, 50.0f, 50.0f);
+
+	isCollision = true;
 
 	// モデルデータの読み込み
 	if (!pMyModel) {
@@ -81,6 +83,7 @@ void Player::Init() {
 	// 丸影の生成
 	shadowNum = CreateShadow(pos, 12.0f);
 
+	myTag = PLAYER;
 	collType = Collision::DYNAMIC;
 }
 
@@ -313,7 +316,9 @@ void Player::Draw() {
 
 
 	//PrintDebugProc("%d,%d\n", g_gameObject.m_mapIndex.x, g_gameObject.m_mapIndex.y);
-	//PrintDebugProc("%f\n", g_gameObject.m_pos.z);
+	//PrintDebugProc("%f\n", moveVal.x);
+	//PrintDebugProc("%f\n", moveVal.y);
+	//PrintDebugProc("%f\n", moveVal.z);
 
 	//DrawCollisionSphere(g_gameObject);
 
