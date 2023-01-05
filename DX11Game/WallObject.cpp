@@ -102,7 +102,7 @@ void WallObj::Init() {
 		size = XMFLOAT3(25.0f, 25.0f, 25.0f);
 		moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		collRadius = WALLOBJ_RADIUS;
-		collSize = XMFLOAT3(100.0f, 100.0f, 100.0f);
+		collSize = XMFLOAT3(50.0f, 50.0f, 50.0f);
 
 		rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 

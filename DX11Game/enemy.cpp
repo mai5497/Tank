@@ -14,6 +14,7 @@
 #include "bullet.h"
 #include "collision.h"
 #include "Astar.h"
+#include "GameObjManager.h"
 
 //-------------------- 定数定義 --------------------
 #define MODEL_ENEMY			"data/model/kobitored.fbx"
@@ -68,20 +69,23 @@ void Enemy::Init() {
 
 	// 位置・回転・スケール・サイズの初期設定
 	pos = XMFLOAT3(rand() % 620 - 310.0f, 0.0f, rand() % 620 - 310.0f);
-	rotModel = XMFLOAT3(0.0f, rand() % 360 - 180.0f, 0.0f);
-	rotDest = rotModel;
 	moveVal = XMFLOAT3(
 		-SinDeg(rotModel.y) * VALUE_MOVE_ENEMY,
 		0.0f,
 		-CosDeg(rotModel.y) * VALUE_MOVE_ENEMY);
+	rotModel = XMFLOAT3(0.0f, rand() % 360 - 180.0f, 0.0f);
+	rotDest = rotModel;
 	size = XMFLOAT3(50.0f, 50.0f, 50.0f);
+	collSize = XMFLOAT3(50.0f, 50.0f, 50.0f);
 	// 丸影の生成
 	shadowNum = CreateShadow(pos, 25.0f);
 	use = true;
+	isCollision = true;
 	bulletTimer = 300;
 
 	mapIndex = XMINT2(0, 0);
 
+	myTag = ENEMY;
 	collType = Collision::DYNAMIC;
 }
 
@@ -112,10 +116,19 @@ void Enemy::Update() {
 	XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
 	XMFLOAT3 ShadowMove = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-	//for (int i = 0; i < MAX_ENEMY; ++i) {
 	if (!use) {
 		return;
 	}
+
+	if (hitList.size() > 0) {
+		for (int i = 0; i < hitList.size(); i++) {
+			if (hitList[i] == BULLET_PLAYER) {
+				// 弾と当たった時
+				Destroy();
+			}
+		}
+	}
+
 	moveVal = XMFLOAT3(
 		-SinDeg(rotModel.y) * VALUE_MOVE_ENEMY,
 		0.0f,
@@ -259,6 +272,29 @@ void Enemy::Draw() {
 	pMyModel->Draw(pDC, mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
+}
+
+//====================================================================================
+//
+//				消える
+//
+//====================================================================================
+void Enemy::Destroy() {
+	use = false;
+
+	// 丸影解放
+	ReleaseShadow(shadowNum);
+	shadowNum = -1;
+	// 爆発開始
+	pos.x -= moveVal.x;
+	pos.y -= moveVal.y;
+	pos.z -= moveVal.z;
+
+	int nExp = StartExplosion(pos, XMFLOAT2(20.0f, 20.0f));
+
+	isCollision = false;
+
+	GameObjManager::DelList(gameObjNum);
 }
 
 //====================================================================================

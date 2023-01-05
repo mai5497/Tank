@@ -20,6 +20,7 @@ public:
 	void Draw();
 	//int CollisionEnemy(XMFLOAT3 pos, float radius, float damage);
 	//void CollisionEnemy(GameObject collision);
+	void Destroy();
 	void SetRootIndex(XMINT2 index);
 	XMINT2 SetStartIndex();
 	bool GetUse();

@@ -83,9 +83,12 @@ void GameObjManager::Uninit() {
 //
 //====================================================================================
 void GameObjManager::Update() {
+	// オブジェクトの更新
 	for (updateIndex = 0; updateIndex < pGameObjects.size(); updateIndex++) {
 		pGameObjects[updateIndex]->Update();
 	}
+
+	// 当たり判定の更新
 	pCollManager->Update();
 }
 
@@ -137,11 +140,11 @@ int GameObjManager::AddList(const std::shared_ptr<GameObject>& _pGameobj, bool _
 void GameObjManager::DelList(int _index, bool _isUninit) {
 	updateIndex = _index - 1;	// 今更新しているところがeraseすることにより消えて、消えたところは詰められて更新がうまく回らなくなるため
 
-	if (_isUninit) {
-		pGameObjects[_index]->Uninit();
-	}
 	if (pGameObjects[_index]->myTag == GameObject::ENEMY) {
 		enemySum--;
+	}
+	if (_isUninit) {
+		pGameObjects[_index]->Uninit();
 	}
 
 	pGameObjects.erase(pGameObjects.begin() + _index);

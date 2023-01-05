@@ -93,7 +93,7 @@ void Collision::Update() {
 				} else if (pObjects[j]->collType == Collision::DYNAMIC &&
 					pObjects[i]->collType == Collision::DYNAMIC) {
 					Push(pObjects[j], pObjects[i]);
-					Push(pObjects[i], pObjects[j]);
+					//Push(pObjects[i], pObjects[j]);
 				}
 
 				// 当たっているものリストへの追加
@@ -156,14 +156,172 @@ bool Collision::CollisionAABB(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 Bpos, XMFL
 }
 
 bool Collision::CollisionAABB(GameObject A, GameObject B) {
-	return (A.pos.x - A.collSize.x <= B.pos.x + B.collSize.x) &&
-		(B.pos.x - B.collSize.x <= A.pos.x + A.collSize.x) &&
-		(A.pos.y - A.collSize.y <= B.pos.y + B.collSize.y) &&
-		(B.pos.y - B.collSize.y <= A.pos.y + A.collSize.y) &&
-		(A.pos.z - A.collSize.z <= B.pos.z + B.collSize.z) &&
-		(B.pos.z - B.collSize.z <= A.pos.z + A.collSize.z);
+	return (A.pos.x - A.collSize.x/2 <= B.pos.x + B.collSize.x/2) &&
+		(B.pos.x - B.collSize.x/2 <= A.pos.x + A.collSize.x/2) &&
+		(A.pos.y - A.collSize.y/2 <= B.pos.y + B.collSize.y/2) &&
+		(B.pos.y - B.collSize.y/2 <= A.pos.y + A.collSize.y/2) &&
+		(A.pos.z - A.collSize.z/2 <= B.pos.z + B.collSize.z/2) &&
+		(B.pos.z - B.collSize.z/2 <= A.pos.z + A.collSize.z/2);
 }
 
+//bool Collision::CollisionOBB(GameObject A, GameObject B) {
+//	// ワールドマトリックス取得
+//	XMFLOAT4X4 mWA = A.mtxWorld;
+//	XMFLOAT4X4 mWB = B.mtxWorld;
+//	
+//	// 各方向ベクトルの確保
+//	// （N***:標準化方向ベクトル）
+//	// モデルの方向ベクトルを取得,モデルの方向ベクトルとボックスコライダーの長さをかける
+//	XMVECTOR NAe1 = XMVectorSet(mWA._11,mWA._12,mWA._13,0.0f), Ae1 = NAe1 * A.collSize.x;
+//	XMVECTOR NAe2 = XMVectorSet(mWA._21, mWA._22, mWA._23, 0.0f), Ae2 = NAe2 * A.collSize.y;
+//	XMVECTOR NAe3 = XMVectorSet(mWA._31, mWA._32, mWA._33, 0.0f), Ae3 = NAe3 * A.collSize.z;
+//	XMVECTOR NBe1 = XMVectorSet(mWB._11, mWB._12, mWB._13, 0.0f), Be1 = NBe1 * B.collSize.x;
+//	XMVECTOR NBe2 = XMVectorSet(mWB._21, mWB._22, mWB._23, 0.0f), Be2 = NBe2 * B.collSize.y;
+//	XMVECTOR NBe3 = XMVectorSet(mWB._31, mWB._32, mWB._33, 0.0f), Be3 = NBe3 * B.collSize.z;
+//	XMVECTOR Interval = XMVectorSet(A.pos.x - B.pos.x, A.pos.y - B.pos.y, A.pos.z - B.pos.z,0.0f);
+//
+//	// 分離軸 : Ae1
+//
+//	//vS = NAe1 | NBe1
+//	//vL = Ae1 | Be1
+//	//vD = Interval
+//	FLOAT rA = XMVector3Length(&Ae1);
+//	FLOAT rB = LenSegOnSeparateAxis(&NAe1, &Be1, &Be2, &Be3);
+//
+//	FLOAT L;
+//	XMStoreFloat3(&L, XMVector3Dot(&Interval, &NAe1));
+//	L = fabs(L);
+//
+//	if (L > rA + rB)
+//		return false; // 衝突していない
+//
+//	 // 分離軸 : Ae2
+//	rA = D3DXVec3Length(&Ae2);
+//	rB = LenSegOnSeparateAxis(&NAe2, &Be1, &Be2, &Be3);
+//	L = fabs(D3DXVec3Dot(&Interval, &NAe2));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : Ae3
+//	rA = D3DXVec3Length(&Ae3);
+//	rB = LenSegOnSeparateAxis(&NAe3, &Be1, &Be2, &Be3);
+//	L = fabs(D3DXVec3Dot(&Interval, &NAe3));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : Be1
+//	rA = LenSegOnSeparateAxis(&NBe1, &Ae1, &Ae2, &Ae3);
+//	rB = D3DXVec3Length(&Be1);
+//	L = fabs(D3DXVec3Dot(&Interval, &NBe1));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : Be2
+//	rA = LenSegOnSeparateAxis(&NBe2, &Ae1, &Ae2, &Ae3);
+//	rB = D3DXVec3Length(&Be2);
+//	L = fabs(D3DXVec3Dot(&Interval, &NBe2));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : Be3
+//	rA = LenSegOnSeparateAxis(&NBe3, &Ae1, &Ae2, &Ae3);
+//	rB = D3DXVec3Length(&Be3);
+//	L = fabs(D3DXVec3Dot(&Interval, &NBe3));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : C11
+//	D3DXVECTOR3 Cross;
+//	D3DXVec3Cross(&Cross, &NAe1, &NBe1);
+//	rA = LenSegOnSeparateAxis(&Cross, &Ae2, &Ae3);
+//	rB = LenSegOnSeparateAxis(&Cross, &Be2, &Be3);
+//	L = fabs(D3DXVec3Dot(&Interval, &Cross));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : C12
+//	D3DXVec3Cross(&Cross, &NAe1, &NBe2);
+//	rA = LenSegOnSeparateAxis(&Cross, &Ae2, &Ae3);
+//	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be3);
+//	L = fabs(D3DXVec3Dot(&Interval, &Cross));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : C13
+//	D3DXVec3Cross(&Cross, &NAe1, &NBe3);
+//	rA = LenSegOnSeparateAxis(&Cross, &Ae2, &Ae3);
+//	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be2);
+//	L = fabs(D3DXVec3Dot(&Interval, &Cross));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : C21
+//	D3DXVec3Cross(&Cross, &NAe2, &NBe1);
+//	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae3);
+//	rB = LenSegOnSeparateAxis(&Cross, &Be2, &Be3);
+//	L = fabs(D3DXVec3Dot(&Interval, &Cross));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : C22
+//	D3DXVec3Cross(&Cross, &NAe2, &NBe2);
+//	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae3);
+//	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be3);
+//	L = fabs(D3DXVec3Dot(&Interval, &Cross));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : C23
+//	D3DXVec3Cross(&Cross, &NAe2, &NBe3);
+//	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae3);
+//	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be2);
+//	L = fabs(D3DXVec3Dot(&Interval, &Cross));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : C31
+//	D3DXVec3Cross(&Cross, &NAe3, &NBe1);
+//	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae2);
+//	rB = LenSegOnSeparateAxis(&Cross, &Be2, &Be3);
+//	L = fabs(D3DXVec3Dot(&Interval, &Cross));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : C32
+//	D3DXVec3Cross(&Cross, &NAe3, &NBe2);
+//	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae2);
+//	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be3);
+//	L = fabs(D3DXVec3Dot(&Interval, &Cross));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離軸 : C33
+//	D3DXVec3Cross(&Cross, &NAe3, &NBe3);
+//	rA = LenSegOnSeparateAxis(&Cross, &Ae1, &Ae2);
+//	rB = LenSegOnSeparateAxis(&Cross, &Be1, &Be2);
+//	L = fabs(D3DXVec3Dot(&Interval, &Cross));
+//	if (L > rA + rB)
+//		return false;
+//
+//	// 分離平面が存在しないので「衝突している」
+//	return true;
+//}
+//
+//// 分離軸に投影された軸成分から投影線分長を算出
+//float LenSegOnSeparateAxis(XMVECTOR* Sep, XMVECTOR* e1, XMVECTOR* e2, XMVECTOR* e3 = 0) {
+//	// 3つの内積の絶対値の和で投影線分長を計算
+//	// 分離軸Sepは標準化されていること
+//	float r1, r2, r3;
+//	XMStoreFloat(&r1, XMVector3Dot(*Sep, *e1));
+//	r1 = fabs(r1);
+//	XMStoreFloat(&r2, XMVector3Dot(*Sep, *e2));
+//	r2 = fabs(r2);
+//	XMStoreFloat(&r3, XMVector3Dot(*Sep, *e3));
+//	FLOAT r3 = e3 ? (fabs(r3)) : 0;
+//	return r1 + r2 + r3;
+//}
+//
+//
 
 
 //====================================================================================
@@ -375,7 +533,7 @@ void Collision::Push(std::shared_ptr<GameObject> A, std::shared_ptr<GameObject> 
 			vEnd.y * Normal[i].y +
 			vEnd.z * Normal[i].z;
 		//それぞれの内積の結果が正と負で
-		//あれば移動ベクトル画面を貫通している
+		//あれば移動ベクトルが面を貫通している
 		//正と負の組み合わせかどうかは
 		//掛け算で判定できる
 		//(正x負=負/正x正=正/負x負=正)

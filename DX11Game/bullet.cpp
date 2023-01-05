@@ -106,7 +106,7 @@ void Bullet::Init(void) {
 	shadowNum = -1;
 	collType = Collision::DYNAMIC;
 	type = BULLETTYPE_PLAYER;
-	myTag = BULLET;
+	myTag = BULLET_PLAYER;
 }
 
 //====================================================================================
@@ -157,6 +157,8 @@ void Bullet::Update() {
 					Destroy();
 				} else if (hitList[i] == WALL) {	// •Ç‚Æ‚Ì“–‚½‚è”»’è
 					Destroy();
+				} else if (hitList[i] == BULLET_ENEMY) {	// ’e‚Æ‚Ì“–‚½‚è”»’è
+					Destroy();
 				}
 			}
 		}
@@ -165,7 +167,11 @@ void Bullet::Update() {
 			for (int i = 0; i < hitList.size(); i++) {
 				if (hitList[i] == PLAYER) {	// ƒvƒŒƒCƒ„[‚Æ‚Ì“–‚½‚è”»’è
 					Destroy();
+				}else if(hitList[i] == ENEMY) {	// Ž©•ªˆÈŠO‚Ì“G‚Æ‚Ì“–‚½‚è”»’è
+					Destroy();
 				}else if (hitList[i] == WALL) {	// •Ç‚Æ‚Ì“–‚½‚è”»’è
+					Destroy();
+				} else if (hitList[i] == BULLET_PLAYER) {	// ’e‚Æ‚Ì“–‚½‚è”»’è
 					Destroy();
 				}
 			}

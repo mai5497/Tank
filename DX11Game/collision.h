@@ -34,6 +34,7 @@ public:
 	bool CollisionSphere(GameObject A, GameObject B);
 	bool CollisionAABB(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 Bpos, XMFLOAT3 Bsize);
 	bool CollisionAABB(GameObject A, GameObject B);
+	bool CollisionOBB(GameObject A, GameObject B);
 
 	GameObject* Push(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 move, XMFLOAT3 Bpos, XMFLOAT3 Bsize);
 	void Push(std::shared_ptr<GameObject> A, std::shared_ptr<GameObject> B);
