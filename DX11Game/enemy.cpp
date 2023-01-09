@@ -95,10 +95,7 @@ void Enemy::Init() {
 //
 //====================================================================================
 void Enemy::Uninit() {
-	//for (int i = 0; i < MAX_ENEMY; ++i) {
-		// ŠÛ‰e‚Ì‰ð•ú
 	ReleaseShadow(shadowNum);
-	//}
 
 	// ƒ‚ƒfƒ‹‚Ì‰ð•ú
 	if (pMyModel) {
@@ -120,11 +117,13 @@ void Enemy::Update() {
 		return;
 	}
 
+	// “–‚½‚è”»’è
 	if (hitList.size() > 0) {
 		for (int i = 0; i < hitList.size(); i++) {
 			if (hitList[i] == BULLET_PLAYER) {
 				// ’e‚Æ“–‚½‚Á‚½Žž
 				Destroy();
+				return;
 			}
 		}
 	}
@@ -145,7 +144,6 @@ void Enemy::Update() {
 	} else if (moveVal.z < 0.0f) {
 		ShadowMove.z -= 25.0f;
 	}
-
 
 	// ˆÚ“®
 	pos.x += moveVal.x;
@@ -246,7 +244,7 @@ void Enemy::Update() {
 		Bullet::FireBullet(
 			pos,
 			XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
-			BULLETTYPE_ENEMY);
+			BULLET_ENEMY);
 
 		bulletTimer = BULLET_TIME;
 	}
@@ -290,11 +288,12 @@ void Enemy::Destroy() {
 	pos.y -= moveVal.y;
 	pos.z -= moveVal.z;
 
-	int nExp = StartExplosion(pos, XMFLOAT2(20.0f, 20.0f));
+	int nExp = StartDwarfEffect(pos);
 
 	isCollision = false;
 
-	GameObjManager::DelList(gameObjNum);
+	GameObjManager::DelList(gameObjNum,false);		// Uninit‚ªƒ‚ƒfƒ‹‚ÆŠÛ‰e‚ÌŠJ•ú‚Ì‚Ý‚È‚Ì‚Å‚È‚µB286‚ÅŠÛ‰e‚ÌŠJ•ú‚Ís‚Á‚½A
+																// ƒ‚ƒfƒ‹‚ÌŠJ•ú‚ÍƒVƒ“ƒOƒ‹ƒgƒ“‚Ìˆ×•Ê‚Ì“G•`‰æ‚É‰e‹¿‚ªo‚é‚½‚ßs‚í‚È‚¢
 }
 
 //====================================================================================

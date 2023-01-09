@@ -105,7 +105,7 @@ void Bullet::Init(void) {
 	isCollision = false;
 	shadowNum = -1;
 	collType = Collision::DYNAMIC;
-	type = BULLETTYPE_PLAYER;
+	type = BULLETTYPE_NORMAL;
 	myTag = BULLET_PLAYER;
 }
 
@@ -150,46 +150,46 @@ void Bullet::Update() {
 
 		return;
 	}
-	if (type == BULLETTYPE_PLAYER) {
+	if (type == BULLETTYPE_NORMAL) {
 		if (hitList.size() > 0) {
 			for (int i = 0; i < hitList.size(); i++) {
-				if (hitList[i] == ENEMY) {	// プレイヤーとの当たり判定
-					Destroy();
-				} else if (hitList[i] == WALL) {	// 壁との当たり判定
-					Destroy();
-				} else if (hitList[i] == BULLET_ENEMY) {	// 弾との当たり判定
-					Destroy();
+				if (myTag == BULLET_PLAYER) {
+					if (hitList[i] == ENEMY) {	// プレイヤーとの当たり判定
+						Destroy();
+						return;
+					} else if (hitList[i] == WALL) {	// 壁との当たり判定
+						Destroy();
+						return;
+					} else if (hitList[i] == BULLET_ENEMY) {	// 弾との当たり判定
+						Destroy();
+						return;
+					}
+				} else if (myTag == BULLET_ENEMY) {
+					if (hitList[i] == PLAYER) {	// プレイヤーとの当たり判定
+						Destroy();
+						return;
+					} else if (hitList[i] == ENEMY) {	// 自分以外の敵との当たり判定
+						Destroy();
+						return;
+					} else if (hitList[i] == WALL) {	// 壁との当たり判定
+						Destroy();
+						return;
+					} else if (hitList[i] == BULLET_PLAYER) {	// 弾との当たり判定
+						Destroy();
+						return;
+					}
 				}
+
 			}
 		}
-	} else if (type == BULLETTYPE_ENEMY) {
-		if (hitList.size() > 0) {
-			for (int i = 0; i < hitList.size(); i++) {
-				if (hitList[i] == PLAYER) {	// プレイヤーとの当たり判定
-					Destroy();
-				}else if(hitList[i] == ENEMY) {	// 自分以外の敵との当たり判定
-					Destroy();
-				}else if (hitList[i] == WALL) {	// 壁との当たり判定
-					Destroy();
-				} else if (hitList[i] == BULLET_PLAYER) {	// 弾との当たり判定
-					Destroy();
-				}
-			}
-		}
-
-
 	}
 
 	// 丸影移動
 	MoveShadow(shadowNum, pos);
 	// エフェクトの設定
-	if (type == BULLETTYPE_PLAYER) {
+	if (type == BULLETTYPE_NORMAL) {
 		// 煙生成
 		SetSmoke(pos, XMFLOAT2(8.0f, 8.0f));
-	} else {
-		// 煙生成
-		SetSmoke(pos, XMFLOAT2(8.0f, 8.0f));
-
 	}
 
 }
@@ -211,7 +211,7 @@ void Bullet::Draw() {
 	SetBlendState(BS_ALPHABLEND);	// αブレンディング有効
 	XMFLOAT4X4& mView = CCamera::Get()->GetViewMatrix();
 
-	if (type == BULLETTYPE_PLAYER) {
+	if (myTag == BULLET_PLAYER) {
 		// ビュー行列の回転成分の転置行列を設定
 		mesh_p.mtxWorld._11 = mView._11;
 		mesh_p.mtxWorld._12 = mView._21;
@@ -266,7 +266,7 @@ void Bullet::Draw() {
 //				発射
 //
 //====================================================================================
-void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, EBulletType _type) {
+void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag, EBulletType _type) {
 	std::shared_ptr<Bullet> pBullet = std::make_shared<Bullet>();
 
 	pBullet->Init();
@@ -274,7 +274,7 @@ void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, EBulletType _type) {
 	pBullet->pos = _pos;
 	// 方向ベクトルを正規化
 	XMStoreFloat3(&_dir, XMVector3Normalize(XMLoadFloat3(&_dir)));
-	if (_type == BULLETTYPE_PLAYER) {
+	if (_tag == BULLET_PLAYER) {
 		pBullet->moveVal.x = _dir.x * BULLET_SPEED;
 		pBullet->moveVal.y = _dir.y * BULLET_SPEED;
 		pBullet->moveVal.z = _dir.z * BULLET_SPEED;
@@ -290,6 +290,7 @@ void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, EBulletType _type) {
 	pBullet->use = true;
 	pBullet->type = _type;
 	pBullet->isCollision = true;
+	pBullet->myTag = _tag;
 
 	pBullet->gameObjNum = GameObjManager::AddList(pBullet, false);	// 上ですでに初期化はしているので初期化は必要ない
 
@@ -361,6 +362,6 @@ void Bullet::Destroy() {
 
 	isCollision = false;
 
-	GameObjManager::DelList(gameObjNum);
+	GameObjManager::DelList(gameObjNum,false);
 }
 

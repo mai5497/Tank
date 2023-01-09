@@ -290,7 +290,7 @@ void Player::Update() {
 	// ’e”­ŽË
 	if (GetKeyRepeat(VK_SPACE)) {
 		Bullet::FireBullet(pos, XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
-			BULLETTYPE_PLAYER);
+			BULLET_PLAYER);
 	}
 }
 

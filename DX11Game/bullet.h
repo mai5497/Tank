@@ -12,8 +12,8 @@
 #include "mesh.h"
 
 enum EBulletType {
-	BULLETTYPE_PLAYER = 0,		// プレイヤーの弾
-	BULLETTYPE_ENEMY,			// 敵の弾
+	BULLETTYPE_NORMAL = 0,		// 通常の弾
+	BULLETTYPE_MISSILE,			// ミサイル
 	BULLETTYPE_MAX
 };
 
@@ -27,7 +27,7 @@ public:
 	void Update();
 	void Draw();
 
-	static void FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, EBulletType _type);
+	static void FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag,EBulletType _type = BULLETTYPE_NORMAL);
 
 private:
 	void MakeVertexBullet(ID3D11Device* pDevice);
