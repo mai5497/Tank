@@ -10,6 +10,12 @@
 #include "main.h"
 #include "Scene.h"
 
+class TitleLogo;
+class PressSpace;
+class BG;
+class MeshField;
+class Particle;
+
 //===========================
 //
 //	クラス定義
@@ -24,6 +30,18 @@ public:
 	virtual void Uninit();	// 終了
 	virtual void Update();	// 更新
 	virtual void Draw();	// 描画
+
+private:
+	std::unique_ptr<TitleLogo> pLogo;			// タイトルロゴ
+	std::unique_ptr<PressSpace> pStart;			// プレススペース
+	std::unique_ptr<BG> pBG;					// 背景
+	std::unique_ptr<MeshField> pMeshField;			// フィールド
+	std::unique_ptr<Particle> pParticle;			// フィールド
+
+
+	int timer;
+	int fadeTimer;
+	bool isFade;
 };
 
 #endif // !__TITLE_H__

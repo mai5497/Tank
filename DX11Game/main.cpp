@@ -560,8 +560,6 @@ void Update(void)
 	// ポリゴン表示更新
 	UpdatePolygon();
 
-	// カメラ更新
-	CCamera::Get()->Update();
 
 	// サウンド更新
 	CSound::Update();

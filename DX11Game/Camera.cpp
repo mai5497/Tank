@@ -87,7 +87,7 @@ void CCamera::Init()
 //				更新
 //
 //====================================================================================
-void CCamera::Update()
+void CCamera::Update(eSCENE _scene)
 {
 	//if (GetKeyPress(VK_C)) {
 	//	// 右旋回
@@ -153,6 +153,12 @@ void CCamera::Update()
 	//	m_vAngle = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	//	m_vDestAngle = m_vAngle;
 	//}
+
+	if(_scene == SCENE_TITLE){
+		m_vPos = XMFLOAT3(CAM_POS_P_X, 100, CAM_POS_P_Z);	// 視点
+
+	}
+
 
 	// マトリックス更新
 	UpdateMatrix();

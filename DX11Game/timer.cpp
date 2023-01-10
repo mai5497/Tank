@@ -111,6 +111,8 @@ void DrawTimer() {
 	int sec;
 	ID3D11DeviceContext *pDC = GetDeviceContext();
 	SetBlendState(BS_ALPHABLEND);
+	// Zバッファ有効(Zチェック有&Z更新有)
+	SetZBuffer(false);
 
 	SetPolygonSize(BOX_SIZE_X, BOX_SIZE_Y);
 	SetPolygonPos(BOX_POS_X, BOX_POS_Y);
@@ -157,7 +159,8 @@ void DrawTimer() {
 	SetPolygonUV(0.0f, 0.0f);
 	SetPolygonFrameSize(1.0f, 1.0f);
 	SetBlendState(BS_NONE);
-
+	// Zバッファ有効(Zチェック有&Z更新有)
+	SetZBuffer(true);
 }
 
 
