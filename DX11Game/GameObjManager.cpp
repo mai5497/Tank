@@ -98,8 +98,13 @@ void GameObjManager::Update() {
 //
 //====================================================================================
 void GameObjManager::Draw() {
+	// Zバッファ有効(Zチェック有&Z更新有)
+	SetZBuffer(true);
+
 	for (int i = 0; i < pGameObjects.size(); i++) {
+
 		pGameObjects[i]->Draw();
+
 	}
 }
 
@@ -127,7 +132,7 @@ int GameObjManager::AddList(const std::shared_ptr<GameObject>& _pGameobj, bool _
 
 	if (_pGameobj->myTag == GameObject::ENEMY) {
 		enemySum++;
-	} 
+	}
 
 	return pGameObjects.size() - 1;
 }

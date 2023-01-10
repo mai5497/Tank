@@ -117,6 +117,9 @@ void MeshField::Update(void) {
 //
 //====================================================================================
 void MeshField::Draw(void) {
+	// Zバッファ有効(Zチェック有&Z更新有)
+	SetZBuffer(true);
+
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 
 	// メッシュの描画

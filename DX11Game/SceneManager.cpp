@@ -10,6 +10,7 @@
 #include "Game.h"
 #include "Result.h"
 #include "Fade.h"
+#include "Camera.h"
 
 //-------------------- グローバル変数定義 --------------------
 eSCENE SceneManager::nextScene = SCENE_NONE;
@@ -64,19 +65,23 @@ void SceneManager::Uninit() {
 //
 //====================================================================================
 void SceneManager::Update() {
+
 	//----- シーン切り替え -----
 	if (nowScene != nextScene) {
 		ChangeScene();
 	}
 
+
 	//----- 各種更新処理 -----
 	if (!pNowScene) {
 		MessageBox(NULL, _T("シーン消失エラー"), _T("error"), MB_OK);
 	}
+	//----- カメラ更新 -----
+	CCamera::Get()->Update(nowScene);
+
 	pNowScene->Update();
 
 	pFade->Update();
-
 }
 
 //====================================================================================
@@ -116,6 +121,9 @@ eSCENE SceneManager::GetScene() {
 void SceneManager::ChangeScene() {
 	// 現在のシーンの終了処理
 	pNowScene->Uninit();
+	
+	// カメラの初期化
+	CCamera::Get()->Init();
 
 	// 次のシーンによって格納するものをかえる
 	switch (nextScene) {
@@ -136,7 +144,6 @@ void SceneManager::ChangeScene() {
 		break;
 	}
 
-	/*↓コンストラクタにInitを書いているのでいらない*/
 	// 新しいメモリになったので初期化
 	pNowScene->Init();
 

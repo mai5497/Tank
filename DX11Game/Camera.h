@@ -5,9 +5,9 @@
 //************************************************************************************
 #pragma once
 #include "main.h"
+#include "SceneManager.h"
 
-class CCamera
-{
+class CCamera {
 private:
 	XMFLOAT3 m_vPos;				// éãì_
 	XMFLOAT3 m_vTarget;				// íçéãì_
@@ -39,7 +39,7 @@ public:
 	CCamera();
 
 	void Init();
-	void Update();
+	void Update(eSCENE _scene);
 
 	void SetPos(XMFLOAT3& vPos) { m_vPos = vPos; }
 	XMFLOAT3& GetPos() { return m_vPos; }

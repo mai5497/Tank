@@ -86,10 +86,17 @@ void BG::Update()
 //====================================================================================
 void BG::Draw()
 {
+	// Zバッファ有効(Zチェック有&Z更新有)
+	SetZBuffer(false);
+
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 	SetPolygonSize(BG_WIDTH, BG_HEIGHT);
 	SetPolygonPos(BG_POS_X, BG_POS_Y);
 	SetPolygonTexture(g_pTexture);
 	SetPolygonUV(0.0f, 0.0f);
 	DrawPolygon(pDC);
+
+
+	// Zバッファ有効(Zチェック有&Z更新有)
+	SetZBuffer(true);
 }

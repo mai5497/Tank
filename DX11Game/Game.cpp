@@ -154,14 +154,8 @@ void Game::Update() {
 //
 //====================================================================================
 void Game::Draw() {
-	// Zバッファ無効(Zチェック無&Z更新無)
-	SetZBuffer(false);
-
 	// 背景描画
 	pBG->Draw();
-
-	// Zバッファ有効(Zチェック有&Z更新有)
-	SetZBuffer(true);
 
 	// フィールド描画
 	pMeshField->Draw();
@@ -182,13 +176,6 @@ void Game::Draw() {
 	// 爆発描画
 	DrawExplosion();
 
-	// Zバッファ無効(Zチェック無&Z更新無)
-	SetZBuffer(false);
-
 	// タイマー描画
 	DrawTimer();
-
-	// Zバッファ有効(Zチェック有&Z更新有)
-	SetZBuffer(true);
-
 }
