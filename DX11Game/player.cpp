@@ -21,7 +21,7 @@
 #define MODEL_PLAYER	"data/model/kobitoblue.fbx"
 #define TOON_TEXTURE	"data/model/ramp.png"
 
-#define	VALUE_MOVE_PLAYER	(0.2f)	// ˆÚ“®‘¬“x
+#define	VALUE_MOVE_PLAYER	(0.5f)	// ˆÚ“®‘¬“x
 #define	RATE_MOVE_PLAYER	(0.25f)	// ˆÚ“®Šµ«ŒW”
 #define	VALUE_ROTATE_PLAYER	(4.5f)		// ‰ñ“]‘¬“x
 #define	RATE_ROTATE_PLAYER	(0.1f)		// ‰ñ“]Šµ«ŒW”

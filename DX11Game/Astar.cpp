@@ -23,7 +23,7 @@ struct LIST {
 typedef struct LIST LIST;
 
 
-int *g_Map;
+int g_Map[MAPHEIGHT][MAPWIDTH];
 XMINT2 g_root[(MAPHEIGHT-2)*(MAPWIDTH-2)];
 XMINT2 g_playerIndex;
 XMINT2 g_enemyIndex;
@@ -101,7 +101,7 @@ void search_node(LIST* open, LIST* close, NODE* s, NODE* e, NODE* n, NODE* m) {
 }
 
 
-XMINT2* search_Root(int enemyNo) {
+XMINT2* search_Root(XMINT2 _index) {
     FILE* fp;
     //char map[MAPHEIGHT][MAPWIDTH]; // マップの大きさは考慮しない
     //char buf[28];
@@ -148,12 +148,12 @@ XMINT2* search_Root(int enemyNo) {
     //    }
     //}
 
-    XMINT2 enemyIndex /*= SetStartIndex(enemyNo)*/;
-    s.i = enemyIndex.y;
-    s.j = enemyIndex.x;
+    s.i = _index.y;
+    s.j = _index.x;
     open.node[open.index++] = &s;
 
-    XMINT2 playerIndex;/* = SetPlayerIndex();*/
+    //XMINT2 playerIndex/* = SetPlayerIndex()*/;
+    XMINT2 playerIndex = XMINT2(0,0);
     e.i = playerIndex.y;
     e.j = playerIndex.x;
 
@@ -228,5 +228,9 @@ XMINT2* search_Root(int enemyNo) {
 }
 
 void SetMap(int *Map) {
-    g_Map = Map;
+    for (int j = 0; j < MAPHEIGHT; j++) {
+        for (int i = 0; i < MAPWIDTH; i++) {
+            g_Map[j][i] = *(Map+i+j*MAPHEIGHT);
+        }
+    }
 }

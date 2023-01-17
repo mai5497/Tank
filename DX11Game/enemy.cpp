@@ -83,7 +83,16 @@ void Enemy::Init() {
 	isCollision = true;
 	bulletTimer = 300;
 
-	mapIndex = XMINT2(0, 0);
+	mapIndex.x = (pos.x + 640.0f) / 80.0f;
+	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
+
+	mapIndex.x = 8;
+	mapIndex.y = 8;
+
+
+	//rootIndex = search_Root(mapIndex);
+
+	rootIndexNum = 0;
 
 	myTag = ENEMY;
 	collType = Collision::DYNAMIC;
@@ -96,6 +105,8 @@ void Enemy::Init() {
 //====================================================================================
 void Enemy::Uninit() {
 	ReleaseShadow(shadowNum);
+
+	delete rootIndex;
 
 	// モデルの解放
 	if (pMyModel) {
@@ -149,6 +160,9 @@ void Enemy::Update() {
 	pos.x += moveVal.x;
 	pos.y += moveVal.y;
 	pos.z += moveVal.z;
+	//pos.x += (*(rootIndex+rootIndexNum)).x * 80.0f - 640.0f;
+	//pos.z += (*(rootIndex + rootIndexNum)).y * 80.0f + 480.0f;
+	//rootIndexNum++;
 
 	// 壁にぶつかった
 	bool lr = false, fb = false;
@@ -248,6 +262,13 @@ void Enemy::Update() {
 
 		bulletTimer = BULLET_TIME;
 	}
+
+	//rootTimer--;
+	//if (rootTimer < 0) {
+	//	rootIndexNum = 0;
+	//	rootIndex = search_Root(mapIndex);
+	//	rootTimer = ROOT_TIME;
+	//}
 }
 
 //====================================================================================
@@ -292,64 +313,9 @@ void Enemy::Destroy() {
 
 	isCollision = false;
 
-	GameObjManager::DelList(gameObjNum,false);		// Uninitがモデルと丸影の開放のみなのでなし。286で丸影の開放は行った、
+	GameObjManager::DelList(gameObjNum, false);		// Uninitがモデルと丸影の開放のみなのでなし。286で丸影の開放は行った、
 																// モデルの開放はシングルトンの為別の敵描画に影響が出るため行わない
 }
-
-//====================================================================================
-//
-//				当たり判定
-//
-//====================================================================================
-//int CollisionEnemy(XMFLOAT3 pos, float radius, float damage) {
-//	int hitNum = 0;
-//	for (int i = 0; i < MAX_ENEMY; i++) {
-//		if (!g_enemy[i].m_use) {
-//			continue;
-//		}
-//		bool hit = CollisionSphere(g_GameObj[i]->pos, ENEMY_RADIUS, pos, radius);
-//		if (hit) {
-//			hitNum++;
-//			// 爆発開始
-//			int nExp = -1;
-//			if (damage > 0.0f) {
-//				StartDwarfEffect(g_GameObj[i]->pos);
-//				//nExp = SetEffect(g_enemy[i].m_pos, XMFLOAT4(0.85f, 0.05f, 0.25f, 0.80f), XMFLOAT2(8.0f, 8.0f), 50);
-//
-//			} else {
-//				nExp = StartExplosion(g_GameObj[i]->pos, XMFLOAT2(20.0f, 20.0f));
-//			}
-//			SetExplosionColor(nExp, XMFLOAT4(1.0f, 0.7f, 0.7f, 1.0f));
-//
-//			g_enemyKillSum++;
-//			g_enemy[i].m_use = false;
-//			ReleaseShadow(g_enemy[i].m_nShadow);
-//			CSound::Play(SE_KILL);
-//		}
-//	}
-//	return hitNum;
-//}
-//
-//void CollisionEnemy(GameObject collision) {
-//	GameObject* _GameObject;
-//
-//	for (int i = 0; i < MAX_ENEMY; i++) {
-//		bool isHit = CollisionSphere(*g_GameObj[i], collision);
-//
-//		if (isHit) {
-//			_GameObject = Push(g_GameObj[i]->pos, XMFLOAT3(10.0f, 10.0f, 10.0f), g_GameObj[i]->moveVal, collision.pos, XMFLOAT3(collision.collRadius, collision.collRadius, collision.collRadius));
-//
-//			if (_GameObject == nullptr) {
-//				//　押し出しに失敗している
-//				return;
-//			}
-//
-//			g_GameObj[i]->pos = _GameObject->pos;
-//			g_GameObj[i]->moveVal = _GameObject->moveVal;
-//		}
-//	}
-//}
-
 
 
 //====================================================================================
