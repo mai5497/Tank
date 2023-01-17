@@ -129,12 +129,12 @@ void Title::Uninit() {
 void Title::Update() {
 	//クリックまたは[Enter]押下
 	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_SPACE)) {
+		CSound::Play(SE_DECIDE);
 		isFade = true;
 	}
 	if (isFade) {
 		fadeTimer--;
 		if (fadeTimer < 1) {
-			CSound::Play(SE_DECIDE);
 			//モード選択画面へ
 			//SetScene(SCENE_GAME);
 			Fade::StartFadeOut(SCENE_GAME);
