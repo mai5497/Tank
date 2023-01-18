@@ -7,7 +7,6 @@
 
 //-------------------- インクルード部 --------------------
 #include "Scene.h"
-//#include "HowToPlay.h"
 #include "Fade.h"
 
 

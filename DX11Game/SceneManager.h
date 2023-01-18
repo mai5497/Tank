@@ -5,16 +5,14 @@
 
 class Scene;
 class Fade;
-class Title;
-class Result;
 
 enum eSCENE {
-	SCENE_NONE = 0,	// 未設定
-	SCENE_TITLE,	// タイトル画面
-	//SCENE_MODE,		// モード選択画面
-	//SCENE_HOWTOPLAY,// 遊び方 
-	SCENE_GAME,		// ゲーム画面
-	SCENE_RESULT,	// 結果発表
+	SCENE_NONE = 0,		// 未設定
+	SCENE_TITLE,		// タイトル画面
+	SCENE_MODESELECT,	// モード選択画面
+	//SCENE_HOWTOPLAY,	// 遊び方 
+	SCENE_GAME,			// ゲーム画面
+	SCENE_RESULT,		// 結果発表
 	//SCENE_RANKING,	// ランキング	
 
 	MAX_SCENE		// シーン総数

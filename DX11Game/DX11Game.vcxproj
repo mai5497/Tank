@@ -191,6 +191,7 @@
     <ClCompile Include="polyline.cpp" />
     <ClCompile Include="Result.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Select.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="smoke.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="Result.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="Select.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="shadow.h" />
     <ClInclude Include="smoke.h" />

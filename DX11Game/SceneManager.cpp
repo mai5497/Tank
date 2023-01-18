@@ -11,6 +11,7 @@
 #include "Result.h"
 #include "Fade.h"
 #include "Camera.h"
+#include "Select.h"
 
 //-------------------- グローバル変数定義 --------------------
 eSCENE SceneManager::nextScene = SCENE_NONE;
@@ -130,6 +131,10 @@ void SceneManager::ChangeScene() {
 	case SCENE_TITLE:		// タイトル画面
 		pNowScene.reset();	// メモリ切り替えの為破棄
 		pNowScene = std::make_shared<Title>();
+		break;
+	case SCENE_MODESELECT:	// セレクト画面
+		pNowScene.reset();	// メモリ切り替えの為破棄
+		pNowScene = std::make_shared<Select>();
 		break;
 	case SCENE_GAME:		// ゲーム画面
 		pNowScene.reset();	// メモリ切り替えの為破棄
