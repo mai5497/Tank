@@ -43,6 +43,12 @@
     <Filter Include="ヘッダー ファイル\Title">
       <UniqueIdentifier>{5389bbe0-13a1-435a-92ff-3d7fea84e026}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Select">
+      <UniqueIdentifier>{703c5169-afef-41e7-9c58-49341207d7ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Select">
+      <UniqueIdentifier>{4f5d80d0-a855-4245-992c-80b255b16b1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssimpModel.cpp">
@@ -164,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>ソース ファイル\Title</Filter>
+    </ClCompile>
+    <ClCompile Include="Select.cpp">
+      <Filter>ソース ファイル\Select</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -295,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>ヘッダー ファイル\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="Select.h">
+      <Filter>ヘッダー ファイル\Select</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -37,6 +37,7 @@ static ID3D11ShaderResourceView *g_pTexture;
 //
 //				コンストラクタ
 //
+//====================================================================================
 Title::Title() {
 	//Init();
 }
@@ -137,7 +138,7 @@ void Title::Update() {
 		if (fadeTimer < 1) {
 			//モード選択画面へ
 			//SetScene(SCENE_GAME);
-			Fade::StartFadeOut(SCENE_GAME);
+			Fade::StartFadeOut(SCENE_MODESELECT);
 			return;
 		}
 	}
