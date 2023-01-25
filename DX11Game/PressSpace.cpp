@@ -6,8 +6,8 @@
 #define TEXTURE_POSX	(0.0f)
 #define TEXTURE_POSY	(-200.0f)
 
-ID3D11ShaderResourceView* PressSpace::pTexture;
 LPCWSTR PressSpace::pszTexFName;
+std::unique_ptr<Texture> PressSpace::pTexture;
 
 PressSpace::PressSpace() {
 
@@ -21,12 +21,15 @@ void PressSpace::Init() {
 	pszTexFName = TEXTURE_PATH;
 
 	ID3D11Device* pDevice = GetDevice();
-	CreateTextureFromFile(pDevice, pszTexFName, &pTexture);
+	pTexture = std::make_unique<Texture>();
+	pTexture->SetTexture(pDevice, pszTexFName);
 
 }
 
 void PressSpace::Uninit() {
-	SAFE_RELEASE(pTexture);
+	// テクスチャの解放
+	pTexture->ReleaseTexture();
+	pTexture.reset();
 }
 
 void PressSpace::Update() {
@@ -41,7 +44,7 @@ void PressSpace::Draw() {
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 	SetPolygonSize(TEXTURE_WIDTH, TEXTURE_HEIGHT);
 	SetPolygonPos(TEXTURE_POSX, TEXTURE_POSY);
-	SetPolygonTexture(pTexture);
+	SetPolygonTexture(pTexture->GetTexture());
 	SetPolygonUV(0.0f, 0.0f);
 
 	DrawPolygon(pDC);

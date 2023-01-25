@@ -9,6 +9,8 @@
 #include "main.h"
 #include "mesh.h"
 
+class Texture;
+
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
@@ -27,8 +29,9 @@ private:
 		int nNumBlockX, int nNumBlockZ, float fSizeBlockX, float fSizeBlockZ,
 		float fTexSizeX, float fTexSizeZ);
 
-	MESH mesh;							// 構造体
-	ID3D11ShaderResourceView* pShaderTex;	// シェーダー用テクスチャ
+	static MESH mesh;							// 構造体
+	//static std::unique_ptr<Texture> pTexture;
+	//std::unique_ptr<Texture> pShaderTex;
 	MATERIAL material;					// マテリアル
 
 };

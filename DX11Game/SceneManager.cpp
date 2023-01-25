@@ -75,7 +75,7 @@ void SceneManager::Update() {
 
 	//----- 各種更新処理 -----
 	if (!pNowScene) {
-		MessageBox(NULL, _T("シーン消失エラー"), _T("error"), MB_OK);
+		MessageBox(NULL, _T("シーン消失エラー\nSceneManager.cpp(78)"), _T("error"), MB_OK);
 	}
 	//----- カメラ更新 -----
 	CCamera::Get()->Update(nowScene);
@@ -145,7 +145,7 @@ void SceneManager::ChangeScene() {
 		pNowScene = std::make_shared<Result>();
 		break;
 	default:
-		MessageBox(NULL, _T("シーンの切り替えに失敗しました。"), _T("error"), MB_OK);
+		MessageBox(NULL, _T("シーンの切り替えに失敗しました。\nSceneManager.cpp(148)"), _T("error"), MB_OK);
 		break;
 	}
 

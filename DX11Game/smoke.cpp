@@ -63,9 +63,13 @@ HRESULT InitSmoke(void)
 	MakeVertexSmoke(pDevice);
 
 	// テクスチャの読み込み
-	hr = CreateTextureFromFile(pDevice,				// デバイスへのポインタ
-							   TEXTURE_SMOKE,		// ファイル名
-							   &g_mesh.pTexture);	// 読み込むメモリ
+	std::unique_ptr<Texture> pTexture = std::make_unique<Texture>();
+	if (g_mesh.pTexture == nullptr) {
+		hr = pTexture->SetTexture(pDevice, TEXTURE_SMOKE);
+		g_mesh.pTexture = pTexture->GetTexture();
+	}
+	pTexture.reset();
+
 	XMStoreFloat4x4(&g_mesh.mtxTexture, XMMatrixIdentity());
 
 	// マテリアルの設定

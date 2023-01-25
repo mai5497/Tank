@@ -34,7 +34,8 @@ public:
 	PARTICLE particles[PARTICLE_MAX];
 
 private:
-	HRESULT MakeVertex(ID3D11Device* pDevice);
+	//HRESULT MakeVertex(ID3D11Device* pDevice);
+	static std::unique_ptr<Texture> pTexture;
 };
 
 

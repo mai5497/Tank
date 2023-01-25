@@ -31,8 +31,6 @@ static LPCWSTR g_pszTexFName = {
 	L"data/texture/title.png"
 };
 
-static ID3D11ShaderResourceView *g_pTexture;
-
 //====================================================================================
 //
 //				コンストラクタ
@@ -59,10 +57,8 @@ Title::~Title() {
 //====================================================================================
 void Title::Init() {
 	ID3D11Device *pDevice = GetDevice();
-	CreateTextureFromFile(pDevice, g_pszTexFName, &g_pTexture);
 	//nowScene = Scene::SCENE_TITLE;
 
-	timer = MOVIETIMER;
 	fadeTimer = FADETIMER;
 	isFade = false;
 	// ロゴ初期化
@@ -98,8 +94,6 @@ void Title::Uninit() {
 
 	// BGM再生停止
 	CSound::Stop(BGM_TITLE);
-	// 背景テクスチャ開放
-	SAFE_RELEASE(g_pTexture);
 
 	// パーティクル終了処理
 	pParticle->Uninit();

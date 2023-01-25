@@ -1076,7 +1076,7 @@ TAssimpMaterial CAssimpModel::loadMaterial(ID3D11Device* pDevice, aiMaterial* ma
 	if (mesh->mTextureCoords[0]) {
 		// DIFFUSE TEXTURE
 		if (AI_SUCCESS == aiGetMaterialString(mat, AI_MATKEY_TEXTURE_DIFFUSE(0), &szPath)) {
-			LoadTexture(pDevice, szPath, &material.pTexture);
+			material.pTexture = LoadTexture(pDevice, szPath);
 
 			aiGetMaterialInteger(mat, AI_MATKEY_MAPPINGMODE_U_DIFFUSE(0), (int*)&mapU);
 			aiGetMaterialInteger(mat, AI_MATKEY_MAPPINGMODE_V_DIFFUSE(0), (int*)&mapV);
@@ -1084,17 +1084,17 @@ TAssimpMaterial CAssimpModel::loadMaterial(ID3D11Device* pDevice, aiMaterial* ma
 
 		// SPECULAR TEXTURE
 		if (AI_SUCCESS == aiGetMaterialString(mat, AI_MATKEY_TEXTURE_SPECULAR(0), &szPath)) {
-			LoadTexture(pDevice, szPath, &material.pTexSpecular);
+			material.pTexSpecular = LoadTexture(pDevice, szPath);
 		}
 
 		// EMISSIVE TEXTURE
 		if (AI_SUCCESS == aiGetMaterialString(mat, AI_MATKEY_TEXTURE_EMISSIVE(0), &szPath)) {
-			LoadTexture(pDevice, szPath, &material.pTexEmmisive);
+			material.pTexEmmisive = LoadTexture(pDevice, szPath);
 		}
 
 		// OPACITY TEXTURE
 		if (AI_SUCCESS == aiGetMaterialString(mat, AI_MATKEY_TEXTURE_OPACITY(0), &szPath)) {
-			LoadTexture(pDevice, szPath, &material.pTexTransparent);
+			material.pTexTransparent = LoadTexture(pDevice, szPath);
 		} else {
 			int flags = 0;
 			aiGetMaterialInteger(mat, AI_MATKEY_TEXFLAGS_DIFFUSE(0), &flags);
@@ -1159,14 +1159,14 @@ int CAssimpModel::getTextureIndex(aiString* str) {
 //====================================================================================
 ID3D11ShaderResourceView* CAssimpModel::getTextureFromModel(ID3D11Device* pDevice, int textureindex) {
 	HRESULT hr = S_OK;
-	ID3D11ShaderResourceView* texture;
+	std::unique_ptr<Texture> pTexture = std::make_unique<Texture>();
 
 	int* size = reinterpret_cast<int*>(&m_pScene->mTextures[textureindex]->mWidth);
-	hr = CreateTextureFromMemory(pDevice, reinterpret_cast<unsigned char*>(m_pScene->mTextures[textureindex]->pcData), *size, &texture);
+	hr = pTexture->SetTexture(pDevice, reinterpret_cast<unsigned char*>(m_pScene->mTextures[textureindex]->pcData), *size);
 	if (FAILED(hr))
 		MessageBoxA(NULL, "Texture couldn't be created from memory!", "Error!", MB_ICONERROR | MB_OK);
 
-	return texture;
+	return pTexture->GetTexture();
 }
 
 //====================================================================================
@@ -1174,23 +1174,25 @@ ID3D11ShaderResourceView* CAssimpModel::getTextureFromModel(ID3D11Device* pDevic
 //				モデルクラステクスチャ読込
 //
 //====================================================================================
-void CAssimpModel::LoadTexture(ID3D11Device* pDevice, aiString& szPath, ID3D11ShaderResourceView** ppTexture) {
+ID3D11ShaderResourceView* CAssimpModel::LoadTexture(ID3D11Device* pDevice, aiString& szPath) {
+	std::unique_ptr pTexture = std::make_unique<Texture>();
+
 	if (m_textype == "embedded compressed texture") {
 		int textureindex = getTextureIndex(&szPath);
-		*ppTexture = getTextureFromModel(pDevice, textureindex);
+		pTexture->SetTexture(getTextureFromModel(pDevice, textureindex));
 	} else {
 		string filename = string(szPath.C_Str());
 		filename = m_directory + filename;
-		HRESULT hr = CreateTextureFromFile(pDevice, filename.c_str(), ppTexture);
+		HRESULT hr = pTexture->SetTexture(pDevice, filename.c_str());
 		if (FAILED(hr)) {
 			char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFName[_MAX_FNAME], szExt[_MAX_EXT];
 			_splitpath_s(szPath.C_Str(), szDrive, _MAX_DRIVE, szDir, _MAX_DIR, szFName, _MAX_FNAME, szExt, _MAX_EXT);
 			filename = m_directory + szFName + szExt;
-			hr = CreateTextureFromFile(pDevice, filename.c_str(), ppTexture);
+			hr = pTexture->SetTexture(pDevice, filename.c_str());
 			if (FAILED(hr)) {
 				if (m_ext == ".fbx") {
 					filename = m_directory + m_fname + ".fbm/" + szFName + szExt;
-					hr = CreateTextureFromFile(pDevice, filename.c_str(), ppTexture);
+					hr = pTexture->SetTexture(pDevice, filename.c_str());
 				}
 			}
 		}
@@ -1198,6 +1200,8 @@ void CAssimpModel::LoadTexture(ID3D11Device* pDevice, aiString& szPath, ID3D11Sh
 			MessageBoxA(NULL, "Texture couldn't be loaded", "Error!", MB_ICONERROR | MB_OK);
 		}
 	}
+
+	return pTexture->GetTexture();
 }
 
 //====================================================================================

@@ -8,7 +8,6 @@
 //-------------------- インクルード部 --------------------
 #include "BG.h"
 #include "Texture.h"
-#include "polygon.h"
 
 //-------------------- 定数定義 --------------------
 #define PATH_BGTEXTURE	L"data/texture/sky001.jpg"
@@ -17,8 +16,7 @@
 #define BG_WIDTH		SCREEN_WIDTH
 #define BG_HEIGHT		SCREEN_HEIGHT
 
-//-------------------- グローバル変数定義 --------------------
-static ID3D11ShaderResourceView* g_pTexture;
+std::unique_ptr<Texture> BG::pBG;
 
 //====================================================================================
 //
@@ -53,7 +51,8 @@ HRESULT BG::Init()
 	ID3D11Device* pDevice = GetDevice();
 
 	// テクスチャ読込
-	hr = CreateTextureFromFile(pDevice, PATH_BGTEXTURE, &g_pTexture);
+	pBG = std::make_unique<Texture>();
+	hr =  pBG->SetTexture(pDevice, PATH_BGTEXTURE);
 
 	return hr;
 }
@@ -66,7 +65,8 @@ HRESULT BG::Init()
 void BG::Uninit()
 {
 	// 背景テクスチャ解放
-	SAFE_RELEASE(g_pTexture);
+	pBG->ReleaseTexture();
+	pBG.reset();
 }
 
 //====================================================================================
@@ -92,7 +92,7 @@ void BG::Draw()
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 	SetPolygonSize(BG_WIDTH, BG_HEIGHT);
 	SetPolygonPos(BG_POS_X, BG_POS_Y);
-	SetPolygonTexture(g_pTexture);
+	SetPolygonTexture(pBG->GetTexture());
 	SetPolygonUV(0.0f, 0.0f);
 	DrawPolygon(pDC);
 

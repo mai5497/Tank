@@ -9,6 +9,7 @@
 #include "Shader.h"
 #include "Texture.h"
 
+
 //-------------------- 定数定義 --------------------
 #define	TEXTURE_FILENAME	L"data/texture/field004.jpg"	// テクスチャファイル名
 #define	BUMP_TEXTURE		L"data/texture/field004_bump.png"	// テクスチャファイル名
@@ -21,6 +22,9 @@
 
 #define	VALUE_MOVE			(5.0f)							// 移動量
 #define	VALUE_ROTATE		(0.2f)							// 回転量
+
+MESH MeshField::mesh;
+//std::unique_ptr<Texture> MeshField::pTexture;
 
 
 //====================================================================================
@@ -67,15 +71,24 @@ HRESULT MeshField::Init(int nNumBlockX, int nNumBlockZ,
 	mesh.pMaterial = &material;
 
 	// テクスチャの読み込み
-	hr = CreateTextureFromFile(pDevice, TEXTURE_FILENAME, &mesh.pTexture);
-	if (FAILED(hr))
-		return hr;
+	//if(pTexture == nullptr){
+	std::unique_ptr<Texture> pTexture = std::make_unique<Texture>();
+	//}
+	if (mesh.pTexture == nullptr) {
+		hr = pTexture->SetTexture(pDevice, TEXTURE_FILENAME);
+		mesh.pTexture = pTexture->GetTexture();
+		//mesh.pTexture = std::move(pTexture->GetTexture());
+	}
+	//pTexture->ReleaseTexture();
+	pTexture.reset();
 
 	XMStoreFloat4x4(&mesh.mtxTexture, XMMatrixIdentity());
 
-	hr = CreateTextureFromFile(pDevice, BUMP_TEXTURE, &pShaderTex);
-	if (FAILED(hr))
-		return hr;
+	//pShaderTex = std::make_unique<Texture>();
+
+	//hr = pShaderTex->SetTexture(pDevice, BUMP_TEXTURE);
+	//if (FAILED(hr))
+	//	return hr;
 
 	//if (_pTexture) {
 	//	pDC->PSSetShaderResources(4, 1, &_pTexture);
@@ -99,6 +112,11 @@ HRESULT MeshField::Init(int nNumBlockX, int nNumBlockZ,
 void MeshField::Uninit(void) {
 	// メッシュ解放
 	ReleaseMesh(&mesh);
+
+	// テクスチャ開放
+
+	//pShaderTex->ReleaseTexture();
+	//pShaderTex.reset();
 }
 
 //====================================================================================
@@ -123,7 +141,7 @@ void MeshField::Draw(void) {
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 
 	// メッシュの描画
-	DrawMesh(pDC, &mesh/*, MSM_BUMP, pShaderTex*/);
+	DrawMesh(pDC, &mesh);
 }
 
 //====================================================================================

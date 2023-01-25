@@ -18,7 +18,7 @@
 #define F_SET(v,px,py)		v.x=px;v.y=py
 #define F_SQRT(v)			sqrtf(v.x*v.x+v.y*v.y)
 
-ID3D11ShaderResourceView* TitleLogo::pTexture;
+std::unique_ptr<Texture> TitleLogo::pTexture;
 LPCWSTR TitleLogo::pszTexFName;
 
 TitleLogo::TitleLogo() {
@@ -33,7 +33,9 @@ void TitleLogo::Init() {
 	pszTexFName = TEXTURE_PATH;
 
 	ID3D11Device* pDevice = GetDevice();
-	CreateTextureFromFile(pDevice, pszTexFName, &pTexture);
+
+	pTexture = std::make_unique<Texture>();
+	pTexture->SetTexture(pDevice, pszTexFName);
 
 	for (int j = 0; j < STRING_TOTAL; j++) {
 		float massRate = (rand() % 10) * 0.1 + 0.1f;
@@ -55,7 +57,9 @@ void TitleLogo::Reset() {
 }
 
 void TitleLogo::Uninit() {
-	SAFE_RELEASE(pTexture);
+	// テクスチャ開放
+	pTexture->ReleaseTexture();
+	pTexture.reset();
 }
 
 void TitleLogo::Update() {
@@ -180,7 +184,7 @@ void TitleLogo::Draw() {
 		ID3D11DeviceContext* pDC = GetDeviceContext();
 		SetPolygonSize(TEXTURE_WIDTH/STRING_TOTAL, TEXTURE_HEIGHT);
 		SetPolygonPos(springs[i][SPRING_TOTAL - 1].position.x, springs[i][SPRING_TOTAL - 1].position.y);
-		SetPolygonTexture(pTexture);
+		SetPolygonTexture(pTexture->GetTexture());
 		SetPolygonUV((i % STRING_TOTAL) / (float)STRING_TOTAL, 0.0f);
 
 		DrawPolygon(pDC);
