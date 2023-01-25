@@ -10,6 +10,8 @@
 #include "main.h"
 #include "Scene.h"
 
+class Texture;
+
 //===========================
 //
 //	プロトタイプ宣言
@@ -17,6 +19,13 @@
 //===========================
 class Result : public Scene {
 public:
+	enum TEXNUM {
+		TEX_BG = 0,
+		TEX_TIMER,
+
+		MAX_TEXTURE,
+	};
+
 	Result();
 	~Result();
 
@@ -24,6 +33,10 @@ public:
 	virtual void Uninit();	// 終了
 	virtual void Update();	// 更新
 	virtual void Draw();	// 描画
+
+private:
+	static std::unique_ptr<Texture> pTexture[MAX_TEXTURE];
+
 };
 #endif
 

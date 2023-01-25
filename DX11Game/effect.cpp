@@ -61,9 +61,11 @@ HRESULT InitEffect(void)
 	MakeVertexEffect(pDevice);
 
 	// テクスチャの読み込み
-	CreateTextureFromFile(pDevice,				// デバイスへのポインタ
-						  TEXTURE_EFFECT,		// ファイルの名前
-						  &g_mesh.pTexture);	// 読み込むメモリー
+	std::unique_ptr<Texture> pTexture = std::make_unique<Texture>();
+	pTexture->SetTexture(pDevice, TEXTURE_EFFECT);
+	g_mesh.pTexture = pTexture->GetTexture();
+	pTexture->ReleaseTexture();
+	pTexture.reset();
 	XMStoreFloat4x4(&g_mesh.mtxTexture, XMMatrixIdentity());
 
 	// マテリアルの設定

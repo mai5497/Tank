@@ -55,9 +55,16 @@ HRESULT InitShadow(void)
 	g_mesh.pMaterial = &g_material;
 
 	// テクスチャの読み込み
-	hr = CreateTextureFromFile(pDevice, TEXTURE_FILENAME, &g_mesh.pTexture);
+	std::unique_ptr<Texture> pTexture = std::make_unique<Texture>();
+
+	if (g_mesh.pTexture == nullptr) {
+		hr = pTexture->SetTexture(pDevice, TEXTURE_FILENAME);
+		g_mesh.pTexture = pTexture->GetTexture();
+	}
 	if (FAILED(hr))
 		return hr;
+	pTexture.reset();
+
 	XMStoreFloat4x4(&g_mesh.mtxTexture, XMMatrixIdentity());
 
 	// ワールドマトリックス初期化

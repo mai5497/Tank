@@ -7,7 +7,6 @@
 
 //-------------------- インクルード部 --------------------
 #include "Result.h"
-#include "polygon.h"
 #include "Texture.h"
 #include "input.h"
 #include "Sound.h"
@@ -32,15 +31,7 @@
 #define SECNUM_POS_X		(MINCHR_POS_X + (NUMBER_SIZE_X*2.5) - (NUMBER_SIZE_X*2.5) / 2)
 #define SECCHR_POS_X		(SECNUM_POS_X + SEC_CHRCNT * (NUMBER_SIZE_X*2.5) + (NUMBER_SIZE_X*2.5) / 2)
 
-
 //-------------------- 列挙体定義 --------------------
-enum TEXNUM {
-	TEX_BG = 0,
-	TEX_TIMER,
-
-	MAX_TEXTURE,
-};
-
 enum TIMERROGONUM {
 	MIN = 10,
 	SEC,
@@ -48,12 +39,13 @@ enum TIMERROGONUM {
 
 
 //-------------------- グローバル変数定義 --------------------
-static LPCWSTR g_pszTexFName[MAX_TEXTURE] = {
+static LPCWSTR g_pszTexFName[Result::MAX_TEXTURE] = {
 	L"data/texture/result.png",
 	L"data/texture/number001.png",
 };
 
-static ID3D11ShaderResourceView *g_pTexture[MAX_TEXTURE];
+//static ID3D11ShaderResourceView *g_pTexture[MAX_TEXTURE];
+std::unique_ptr<Texture> Result::pTexture[MAX_TEXTURE];
 
 //====================================================================================
 //
@@ -83,7 +75,8 @@ void Result::Init() {
 
 	ID3D11Device *pDevice = GetDevice();
 	for (int i = 0; i < MAX_TEXTURE; i++) {
-		CreateTextureFromFile(pDevice, g_pszTexFName[i], &g_pTexture[i]);
+		pTexture[i] = std::make_unique<Texture>();
+		pTexture[i]->SetTexture(pDevice, g_pszTexFName[i]);
 	}
 
 	// BGM再生
@@ -102,7 +95,8 @@ void Result::Uninit() {
 
 	// テクスチャ開放
 	for (int i = 0; i < MAX_TEXTURE; i++) {
-		SAFE_RELEASE(g_pTexture[i]);
+		pTexture[i]->ReleaseTexture();
+		pTexture[i].reset();
 	}
 }
 
@@ -139,7 +133,7 @@ void Result::Draw() {
 
 	SetPolygonSize(RESULT_WIDTH, RESULT_HEIGHT);
 	SetPolygonPos(RESULT_POS_X, RESULT_POS_Y);
-	SetPolygonTexture(g_pTexture[TEX_BG]);
+	SetPolygonTexture(pTexture[TEX_BG]->GetTexture());
 	DrawPolygon(pDC);
 
 	SetBlendState(BS_ADDITIVE);		// 加算合成
@@ -148,7 +142,7 @@ void Result::Draw() {
 	SetPolygonPos(MINCHR_POS_X, TIMERROGO_POS_Y);
 	SetPolygonUV((MIN % NUMBER_COUNT_X) / (float)NUMBER_COUNT_X,
 		(MIN / NUMBER_COUNT_X) / (float)NUMBER_COUNT_Y);
-	SetPolygonTexture(g_pTexture[TEX_TIMER]);
+	SetPolygonTexture(pTexture[TEX_TIMER]->GetTexture());
 	DrawPolygon(pDC);
 
 	SetPolygonFrameSize(1.0f / NUMBER_COUNT_X, 1.0f / NUMBER_COUNT_Y);
@@ -156,7 +150,7 @@ void Result::Draw() {
 	SetPolygonPos(SECCHR_POS_X, TIMERROGO_POS_Y);
 	SetPolygonUV((SEC % NUMBER_COUNT_X) / (float)NUMBER_COUNT_X,
 		(SEC / NUMBER_COUNT_X) / (float)NUMBER_COUNT_Y);
-	SetPolygonTexture(g_pTexture[TEX_TIMER]);
+	SetPolygonTexture(pTexture[TEX_TIMER]->GetTexture());
 	DrawPolygon(pDC);
 
 

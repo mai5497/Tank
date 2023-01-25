@@ -8,7 +8,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include "debugproc.h"
-#include "polygon.h"
 #include "Texture.h"
 
 //-------------------- 定数定義 --------------------
@@ -17,7 +16,7 @@
 #define FONT_HEIGHT			16
 
 //-------------------- グローバル変数定義 --------------------
-static ID3D11ShaderResourceView*	g_pTexture;					// テクスチャへのポインタ
+static std::unique_ptr<Texture> g_pTexture;
 static char							g_szDebug[8192] = { '\0' };	// デバッグ情報
 static bool							g_bHiragana = false;		// 平仮名フラグ
 
@@ -32,7 +31,8 @@ HRESULT InitDebugProc(void)
 	HRESULT hr = S_OK;
 
 	// テクスチャの読み込み
-	hr = CreateTextureFromFile(pDevice, TEXTURE_FILENAME, &g_pTexture);
+	g_pTexture = std::make_unique<Texture>();
+	hr = g_pTexture->SetTexture(pDevice, TEXTURE_FILENAME);
 
 	return hr;
 }
@@ -45,7 +45,8 @@ HRESULT InitDebugProc(void)
 void UninitDebugProc(void)
 {
 	// テクスチャ解法
-	SAFE_RELEASE(g_pTexture);
+	g_pTexture->ReleaseTexture();
+	g_pTexture.reset();
 }
 
 //====================================================================================
@@ -70,7 +71,7 @@ void DrawDebugProc(void)
 		SCREEN_HEIGHT * 0.5f - FONT_HEIGHT * 0.5f);
 	SetPolygonColor(1.0f, 1.0f, 1.0f);
 	SetPolygonAlpha(1.0f);
-	SetPolygonTexture(g_pTexture);
+	SetPolygonTexture(g_pTexture->GetTexture());
 	SetPolygonFrameSize(8.0f / 128.0f, 8.0f / 128.0f);
 	SetPolygonSize(FONT_WIDTH, FONT_HEIGHT);
 	for (char* pChr = &g_szDebug[0]; *pChr; ++pChr) {

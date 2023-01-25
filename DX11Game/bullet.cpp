@@ -87,8 +87,13 @@ void Bullet::Init(void) {
 	mesh_e.pMaterial = &material;
 
 	// テクスチャの読み込み
-	CreateTextureFromFile(pDevice, PLAYERBULLET_FILENAME, &mesh_p.pTexture);
-	CreateTextureFromFile(pDevice, ENEMYBULLET_FILENAME, &mesh_e.pTexture);
+	std::unique_ptr<Texture> pTexture = std::make_unique<Texture>();
+	pTexture->SetTexture(pDevice, PLAYERBULLET_FILENAME);
+	mesh_p.pTexture = pTexture->GetTexture();
+	pTexture->SetTexture(pDevice, ENEMYBULLET_FILENAME);
+	mesh_e.pTexture = pTexture->GetTexture();
+	pTexture->ReleaseTexture();
+	pTexture.reset();
 
 	XMStoreFloat4x4(&mesh_p.mtxTexture, XMMatrixIdentity());
 	XMStoreFloat4x4(&mesh_e.mtxTexture, XMMatrixIdentity());

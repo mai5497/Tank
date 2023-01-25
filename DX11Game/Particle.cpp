@@ -21,8 +21,7 @@
 #define MATERIAL_EMISSIVE		XMFLOAT4(0,0,0,1)
 #define MATERIAL_POWER			(1.0f)
 
-//-------------------- グローバル変数定義 --------------------
-static ID3D11ShaderResourceView* g_pTexture;
+std::unique_ptr<Texture> Particle::pTexture;
 
 Particle::Particle() {
 
@@ -88,7 +87,8 @@ void Particle::Init() {
 		pIndexWk[3] = 3;
 
 		// 頂点バッファ生成
-		HRESULT  hr = CreateTextureFromFile(pDevice, PATH_BGTEXTURE, &g_pTexture);
+		pTexture = std::make_unique<Texture>();
+		HRESULT  hr = pTexture->SetTexture(pDevice, PATH_BGTEXTURE);
 
 		particles[i].color = XMFLOAT4((rand() % 9) * 0.1 + 0.1, (rand() % 9) * 0.1 + 0.1, (rand() % 9) * 0.1 + 0.1, 0.8f);
 
@@ -100,6 +100,10 @@ void Particle::Uninit() {
 	//	// メッシュの開放
 	//	ReleaseMesh(&particles[i].mesh);
 	//}
+	
+	// テクスチャの開放
+	pTexture->ReleaseTexture();
+	pTexture.reset();
 }
 
 void Particle::Update() {
@@ -160,7 +164,7 @@ void Particle::Draw() {
 		if (particles[i].status == 2) {
 			SetPolygonSize(particles[i].size, particles[i].size);
 			SetPolygonPos(particles[i].pos.x, particles[i].pos.y);
-			SetPolygonTexture(g_pTexture);
+			SetPolygonTexture(pTexture->GetTexture());
 			SetPolygonUV(0.0f, 0.0f);
 
 			SetPolygonColor(particles[i].color.x, particles[i].color.y, particles[i].color.z);

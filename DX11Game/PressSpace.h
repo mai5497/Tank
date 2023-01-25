@@ -19,9 +19,7 @@ public:
 private:
 	static LPCWSTR pszTexFName;
 
-	static ID3D11ShaderResourceView* pTexture;
-
-
+	static std::unique_ptr<Texture> pTexture;
 };
 
 

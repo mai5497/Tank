@@ -288,7 +288,7 @@ private:
 	std::string determineTextureType(aiMaterial* mat);
 	int getTextureIndex(aiString* str);
 	ID3D11ShaderResourceView* getTextureFromModel(ID3D11Device* pDevice, int textureindex);
-	void LoadTexture(ID3D11Device* pDevice, aiString& szPath, ID3D11ShaderResourceView** ppTexture);
+	ID3D11ShaderResourceView* LoadTexture(ID3D11Device* pDevice, aiString& szPath);
 	bool HasAlphaPixels(ID3D11ShaderResourceView* pTexture);
 
 	ShaderMode eMode;

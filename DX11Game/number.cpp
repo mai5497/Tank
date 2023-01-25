@@ -8,14 +8,13 @@
 //-------------------- インクルード部 --------------------
 #include "number.h"
 #include "Texture.h"
-#include "polygon.h"
 
 //-------------------- 定数定義 --------------------
 #define PATH_NUMBERTEXTURE	L"data/texture/number001.png"
 
 
 //-------------------- グローバル変数定義 --------------------
-static ID3D11ShaderResourceView *g_pTexture;
+static std::unique_ptr<Texture> pTexture;
 
 
 //====================================================================================
@@ -27,7 +26,9 @@ HRESULT InitNumber() {
 	HRESULT hr = S_OK;
 	ID3D11Device *pDevice = GetDevice();
 
-	hr = CreateTextureFromFile(pDevice, PATH_NUMBERTEXTURE, &g_pTexture);
+	pTexture = std::make_unique<Texture>();
+
+	hr = pTexture->SetTexture(pDevice, PATH_NUMBERTEXTURE);
 	return hr;
 }
 
@@ -39,7 +40,8 @@ HRESULT InitNumber() {
 //====================================================================================
 void UninitNumber() {
 	// テクスチャ開放
-	SAFE_RELEASE(g_pTexture);
+	pTexture->ReleaseTexture();
+	pTexture.reset();
 }
 
 
@@ -52,7 +54,7 @@ void DrawNumber(XMFLOAT2 vPos,unsigned uNumber,int nWidth,float fSizeX,float fSi
 	ID3D11DeviceContext *pDC = GetDeviceContext();
 	SetPolygonColor(1.0f,1.0f, 1.0f);
 	SetPolygonSize(fSizeX, fSizeY);
-	SetPolygonTexture(g_pTexture);
+	SetPolygonTexture(pTexture->GetTexture());
 	SetPolygonFrameSize(1.0f / NUMBER_COUNT_X, 1.0f / NUMBER_COUNT_Y);
 
 	vPos.x += (nWidth - 0.5f) * fSizeX;

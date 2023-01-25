@@ -71,10 +71,10 @@ void Player::Init() {
 
 
 		// トゥーンシェーダー
-		ID3D11ShaderResourceView* _pTexture = nullptr;		// テクスチャ
-		CreateTextureFromFile(pDevice, TOON_TEXTURE, &_pTexture);
+		std::unique_ptr<Texture> _pTexture = std::make_unique<Texture>();
+		_pTexture->SetTexture(pDevice, TOON_TEXTURE);
 		pMyModel->SetShaderMode(CAssimpModel::SM_TOON);	// トゥーンシェーダーにする
-		pMyModel->SetShaderMat(_pTexture);
+		pMyModel->SetShaderMat(_pTexture->GetTexture());
 
 		if (!pMyModel->Load(pDevice, pDeviceContext, MODEL_PLAYER)) {
 			MessageBoxA(GetMainWnd(), "プレイヤーモデルデータ読み込みエラー", "InitModel", MB_OK);

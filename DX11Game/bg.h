@@ -8,7 +8,13 @@
 #define __BG_H__
 #include "main.h"
 
-// 関数プロトタイプ
+class Texture;
+
+//===========================
+//
+//	クラス定義
+//
+//===========================
 class BG {
 public:
 	BG();
@@ -18,5 +24,7 @@ public:
 	void Uninit();	// 終了処理
 	void Update();	// 更新
 	void Draw();		// 描画
+private:
+	static std::unique_ptr<Texture> pBG;
 };
 #endif

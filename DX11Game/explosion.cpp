@@ -70,7 +70,11 @@ HRESULT InitExplosion(void)
 	g_mesh.pMaterial = &g_material;
 
 	// テクスチャの読み込み
-	hr = CreateTextureFromFile(pDevice, TEXTURE_FILENAME, &g_mesh.pTexture);
+	std::unique_ptr<Texture> pTexture = std::make_unique<Texture>();
+	hr = pTexture->SetTexture(pDevice, TEXTURE_FILENAME);
+	g_mesh.pTexture = pTexture->GetTexture();
+	pTexture->ReleaseTexture();
+	pTexture.reset();
 	if (FAILED(hr)) {
 		return hr;
 	}

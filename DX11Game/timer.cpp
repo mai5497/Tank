@@ -51,7 +51,7 @@ static LPCWSTR g_pszTexFName[MAX_TEXTURE] = {
 	L"data/texture/numberbox.png",
 	L"data/texture/number001.png",
 };
-static ID3D11ShaderResourceView *g_pTexture[MAX_TEXTURE];
+static std::unique_ptr<Texture> pTexture[MAX_TEXTURE];
 
 									
 //====================================================================================
@@ -63,7 +63,8 @@ HRESULT InitTimer() {
 	HRESULT hr = S_OK;
 	ID3D11Device *pDevice = GetDevice();
 	for (int i = 0; i < MAX_TEXTURE; i++) {
-		hr = CreateTextureFromFile(pDevice, g_pszTexFName[i], &g_pTexture[i]);
+		pTexture[i] = std::make_unique<Texture>();
+		hr = pTexture[i]->SetTexture(pDevice, g_pszTexFName[i]);
 		if (FAILED(hr)) {
 			return hr;
 		}
@@ -85,7 +86,8 @@ HRESULT InitTimer() {
 void UninitTimer() {
 	// テクスチャ開放
 	for (int i = 0; i < MAX_TEXTURE; i++) {
-		SAFE_RELEASE(g_pTexture[i]);
+		pTexture[i]->ReleaseTexture();
+		pTexture->reset();
 	}
 
 }
@@ -116,7 +118,7 @@ void DrawTimer() {
 
 	SetPolygonSize(BOX_SIZE_X, BOX_SIZE_Y);
 	SetPolygonPos(BOX_POS_X, BOX_POS_Y);
-	SetPolygonTexture(g_pTexture[TEX_BOX]);
+	SetPolygonTexture(pTexture[TEX_BOX]->GetTexture());
 	DrawPolygon(pDC);
 
 	SetPolygonFrameSize(1.0f / NUMBER_COUNT_X, 1.0f / NUMBER_COUNT_Y);
@@ -124,7 +126,7 @@ void DrawTimer() {
 	SetPolygonPos(TIMERROGO_POS_X, TIMERROGO_POS_Y);
 	SetPolygonUV((TIMER % NUMBER_COUNT_X) / (float)NUMBER_COUNT_X,
 				(TIMER / NUMBER_COUNT_X) / (float)NUMBER_COUNT_Y);
-	SetPolygonTexture(g_pTexture[TEX_TIMER]);
+	SetPolygonTexture(pTexture[TEX_TIMER]->GetTexture());
 	DrawPolygon(pDC);
 
 	SetPolygonFrameSize(1.0f / NUMBER_COUNT_X, 1.0f / NUMBER_COUNT_Y);
@@ -132,7 +134,7 @@ void DrawTimer() {
 	SetPolygonPos(MINCHR_POS_X, TIMERROGO_POS_Y);
 	SetPolygonUV((MIN % NUMBER_COUNT_X) / (float)NUMBER_COUNT_X,
 				(MIN / NUMBER_COUNT_X) / (float)NUMBER_COUNT_Y);
-	SetPolygonTexture(g_pTexture[TEX_TIMER]);
+	SetPolygonTexture(pTexture[TEX_TIMER]->GetTexture());
 	DrawPolygon(pDC);
 
 	SetPolygonFrameSize(1.0f / NUMBER_COUNT_X, 1.0f / NUMBER_COUNT_Y);
@@ -140,7 +142,7 @@ void DrawTimer() {
 	SetPolygonPos(SECCHR_POS_X, TIMERROGO_POS_Y);
 	SetPolygonUV((SEC % NUMBER_COUNT_X) / (float)NUMBER_COUNT_X,
 				(SEC / NUMBER_COUNT_X) / (float)NUMBER_COUNT_Y);
-	SetPolygonTexture(g_pTexture[TEX_TIMER]);
+	SetPolygonTexture(pTexture[TEX_TIMER]->GetTexture());
 	DrawPolygon(pDC);
 
 	
