@@ -129,9 +129,6 @@
     <ClCompile Include="Texture.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
-    <ClCompile Include="smoke.cpp">
-      <Filter>ソース ファイル\GameSystem</Filter>
-    </ClCompile>
     <ClCompile Include="timer.cpp">
       <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
@@ -176,6 +173,9 @@
     </ClCompile>
     <ClCompile Include="SelectUI.cpp">
       <Filter>ソース ファイル\Select</Filter>
+    </ClCompile>
+    <ClCompile Include="smoke.cpp">
+      <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

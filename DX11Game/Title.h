@@ -36,7 +36,7 @@ private:
 	std::unique_ptr<TitleLogo> pLogo;			// タイトルロゴ
 	std::unique_ptr<PressSpace> pStart;			// プレススペース
 	std::unique_ptr<BG> pBG;					// 背景
-	std::unique_ptr<MeshField> pMeshField;		// フィールド
+	//std::unique_ptr<MeshField> pMeshField;		// フィールド
 	std::unique_ptr<Particle> pParticle;		// パーティクル
 
 	int timer;
