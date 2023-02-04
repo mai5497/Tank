@@ -64,7 +64,7 @@ HRESULT InitEffect(void)
 	std::unique_ptr<Texture> pTexture = std::make_unique<Texture>();
 	pTexture->SetTexture(pDevice, TEXTURE_EFFECT);
 	g_mesh.pTexture = pTexture->GetTexture();
-	pTexture->ReleaseTexture();
+	//pTexture->ReleaseTexture();
 	pTexture.reset();
 	XMStoreFloat4x4(&g_mesh.mtxTexture, XMMatrixIdentity());
 

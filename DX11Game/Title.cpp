@@ -74,8 +74,8 @@ void Title::Init() {
 	pBG->Init();
 
 	// フィールド初期化
-	pMeshField = std::make_unique<MeshField>();
-	pMeshField->Init(8, 7, 80.0f, 80.0f);
+	//pMeshField = std::make_unique<MeshField>();
+	//pMeshField->Init(8, 7, 80.0f, 80.0f);
 
 	// パーティクル初期化
 	pParticle = std::make_unique<Particle>();
@@ -100,8 +100,8 @@ void Title::Uninit() {
 	pParticle.reset();
 
 	// フィールド終了処理
-	pMeshField->Uninit();
-	pMeshField.reset();
+	//pMeshField->Uninit();
+	//pMeshField.reset();
 
 	// 背景終了
 	pBG->Uninit();
@@ -145,7 +145,7 @@ void Title::Update() {
 		pStart->Update();
 
 		// フィールド更新
-		pMeshField->Update();
+		//pMeshField->Update();
 
 		// パーティクル
 		pParticle->Update();
@@ -179,7 +179,7 @@ void Title::Draw() {
 	pBG->Draw();
 
 	// フィールド描画
-	pMeshField->Draw();
+	//pMeshField->Draw();
 
 	// ロゴの描画
 	pLogo->Draw();

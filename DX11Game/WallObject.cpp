@@ -77,12 +77,12 @@ void WallObj::Init() {
 		ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
 
 		// バンプマップ読込
-		std::unique_ptr<Texture> _pTexture = std::make_unique<Texture>();		// テクスチャ
-		_pTexture->SetTexture(pDevice, BUMP_WALLOBJ);
-		pMyModel->SetShaderMode(CAssimpModel::SM_BUMP);	// バンプマップする		
-		pMyModel->SetShaderMat(_pTexture->GetTexture());
-		_pTexture->ReleaseTexture();
-		_pTexture.reset();
+		//std::unique_ptr<Texture> _pTexture = std::make_unique<Texture>();		// テクスチャ
+		//_pTexture->SetTexture(pDevice, BUMP_WALLOBJ);
+		//pMyModel->SetShaderMode(CAssimpModel::SM_BUMP);	// バンプマップする		
+		//pMyModel->SetShaderMat(_pTexture->GetTexture());
+		////_pTexture->ReleaseTexture();
+		//_pTexture.reset();
 
 		//if (_pTexture) {
 		//	pDeviceContext->PSSetShaderResources(4, 1, &_pTexture);

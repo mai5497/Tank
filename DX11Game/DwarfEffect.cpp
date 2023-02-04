@@ -71,7 +71,7 @@ HRESULT InitDwarfEffect(void) {
 	std::unique_ptr<Texture> pTexture = std::make_unique<Texture>();
 	hr = pTexture->SetTexture(pDevice, TEXTURE_FILENAME);
 	g_mesh.pTexture = pTexture->GetTexture();
-	pTexture->ReleaseTexture();
+	//pTexture->ReleaseTexture();
 	pTexture.reset();
 
 	if (FAILED(hr)) {
