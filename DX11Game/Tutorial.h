@@ -4,35 +4,33 @@
 // 
 //************************************************************************************
 
-#ifndef __SELECT_H__
-#define __SELECT_H__
+#ifndef __TUTORIAL_H__
+#define __TUTORIAL_H__
 
 #include "main.h"
 #include "Scene.h"
 
 //----- 前方定義 ------
-class SelectUI;
-
+class Texture;
 
 //===========================
 //
 //	クラス定義
 //
 //===========================
-class Select : public Scene {
+class Tutorial : public Scene {
 public:
-	Select();
-	~Select();
+	Tutorial();
+	~Tutorial();
 
-	virtual void Init();	// 初期化
-	virtual void Uninit();	// 終了
-	virtual void Update();	// 更新
-	virtual void Draw();	// 描画
+	virtual void Init();
+	virtual void Uninit();
+	virtual void Update();
+	virtual void Draw();
+
 
 private:
-	std::unique_ptr<SelectUI> pUI;
+	static std::unique_ptr<Texture> pUI;	// 操作説明の画像
 };
-
-
 
 #endif

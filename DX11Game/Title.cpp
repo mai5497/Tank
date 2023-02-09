@@ -70,8 +70,7 @@ void Title::Init() {
 	pStart->Init();
 
 	// 背景初期化
-	pBG = std::make_unique<BG>();
-	pBG->Init();
+	BG::Init();
 
 	// フィールド初期化
 	//pMeshField = std::make_unique<MeshField>();
@@ -104,8 +103,12 @@ void Title::Uninit() {
 	//pMeshField.reset();
 
 	// 背景終了
-	pBG->Uninit();
-	pBG.reset();
+	/*
+	* static関数の為ゲームの終了時にBGの終了処理は書く
+	* ->main関数に移動
+	*/
+	//pBG->Uninit();
+	//pBG.reset();
 
 	// プレススペース終了
 	pStart->Uninit();
@@ -176,7 +179,7 @@ void Title::Draw() {
 
 
 	// 背景の描画
-	pBG->Draw();
+	BG::Draw(SCENE_TITLE);
 
 	// フィールド描画
 	//pMeshField->Draw();

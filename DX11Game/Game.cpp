@@ -57,8 +57,9 @@ void Game::Init() {
 	pMeshField->Init(16, 14, 80.0f, 80.0f);
 
 	// 背景初期化
-	pBG = std::make_unique<BG>();
-	pBG->Init();
+	/*
+	 * タイトルに移動
+	 */
 
 	// 爆発初期化
 	InitExplosion();
@@ -98,8 +99,9 @@ void Game::Uninit() {
 	UninitExplosion();
 
 	// 背景終了処理
-	pBG->Uninit();
-	pBG.reset();
+	/*
+	* main関数に移動
+	*/
 
 	// フィールド終了処理
 	pMeshField->Uninit();
@@ -124,9 +126,6 @@ void Game::Uninit() {
 void Game::Update() {
 	// ゲームオブジェクト管理クラス更新
 	pGameObjects->Update();
-
-	// 背景更新
-	pBG->Update();
 
 	// フィールド更新
 	pMeshField->Update();
@@ -155,7 +154,7 @@ void Game::Update() {
 //====================================================================================
 void Game::Draw() {
 	// 背景描画
-	pBG->Draw();
+	BG::Draw(SCENE_GAME);
 
 	// フィールド描画
 	pMeshField->Draw();

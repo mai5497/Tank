@@ -201,6 +201,7 @@
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="TitleLogo.cpp" />
+    <ClCompile Include="Tutorial.cpp" />
     <ClCompile Include="WallObject.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -248,6 +249,7 @@
     <ClInclude Include="timer.h" />
     <ClInclude Include="Title.h" />
     <ClInclude Include="TitleLogo.h" />
+    <ClInclude Include="Tutorial.h" />
     <ClInclude Include="WallObject.h" />
   </ItemGroup>
   <ItemGroup>

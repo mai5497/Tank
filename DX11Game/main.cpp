@@ -17,6 +17,7 @@
 #include "number.h"
 #include "Sound.h"
 
+#include "bg.h"
 
 //-------------------- ライブラリのリンク --------------------
 #pragma comment(lib, "winmm")
@@ -511,6 +512,9 @@ void Uninit(void)
 
 	// ポリゴン表示終了処理
 	UninitPolygon();
+
+	// 背景画像終了処理
+	BG::Uninit();
 
 	// 深度ステンシルステート解放
 	for (int i = 0; i < _countof(g_pDSS); ++i) {

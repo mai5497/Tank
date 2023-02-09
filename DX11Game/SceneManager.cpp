@@ -8,6 +8,7 @@
 #include "Scene.h"
 #include "Title.h"
 #include "Game.h"
+#include "Tutorial.h"
 #include "Result.h"
 #include "Fade.h"
 #include "Camera.h"
@@ -122,26 +123,26 @@ eSCENE SceneManager::GetScene() {
 void SceneManager::ChangeScene() {
 	// 現在のシーンの終了処理
 	pNowScene->Uninit();
-	
+	pNowScene.reset();	// メモリ切り替えの為破棄
+
 	// カメラの初期化
 	CCamera::Get()->Init();
 
 	// 次のシーンによって格納するものをかえる
 	switch (nextScene) {
 	case SCENE_TITLE:		// タイトル画面
-		pNowScene.reset();	// メモリ切り替えの為破棄
 		pNowScene = std::make_shared<Title>();
 		break;
 	case SCENE_MODESELECT:	// セレクト画面
-		pNowScene.reset();	// メモリ切り替えの為破棄
 		pNowScene = std::make_shared<Select>();
 		break;
+	case SCENE_TUTORIAL:	// チュートリアル
+		pNowScene = std::make_shared<Tutorial>();
+		break;
 	case SCENE_GAME:		// ゲーム画面
-		pNowScene.reset();	// メモリ切り替えの為破棄
 		pNowScene = std::make_shared<Game>();
 		break;
 	case SCENE_RESULT:		// リザルトシーン
-		pNowScene.reset();	// メモリ切り替えの為破棄
 		pNowScene = std::make_shared<Result>();
 		break;
 	default:
