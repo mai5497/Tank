@@ -8,7 +8,9 @@
 #define __BG_H__
 #include "main.h"
 
-class Texture;
+#include "SceneManager.h"
+
+class Texture; 
 
 //===========================
 //
@@ -20,11 +22,12 @@ public:
 	BG();
 	~BG();
 
-	HRESULT Init();	// 初期化
-	void Uninit();	// 終了処理
-	void Update();	// 更新
-	void Draw();		// 描画
+	static HRESULT Init();				// 初期化
+	static void Uninit();				// 終了処理
+	static void Draw(eSCENE _nowScene);	// 描画
 private:
-	static std::unique_ptr<Texture> pBG;
+	static std::unique_ptr<Texture> pTitleBG;
+	static std::unique_ptr<Texture> pSelectBG;
+	static std::unique_ptr<Texture> pGameBG;
 };
 #endif

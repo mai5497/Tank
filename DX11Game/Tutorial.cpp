@@ -1,73 +1,73 @@
-//************************************************************************************
-// 
-// セレクト画面[Select.cpp]
-// 編集者：伊地田真衣
-// 
-//************************************************************************************
-//-------------------- インクルード部 --------------------
-#include "Select.h"
-#include "input.h"
+#include "Tutorial.h"
 
+#include "Texture.h"
+#include "input.h"
 #include "fade.h"
 
 #include "bg.h"
-#include "SelectUI.h"
+
+
+#define PATH_UI_TEXTURE	L"data/texture/uiSousa.png"
+
+#define UI_WIDTH		(615)
+#define UI_HEIGHT		(401)
+
+
+// 静的メンバ変数初期化
+std::unique_ptr<Texture> Tutorial::pUI;
 
 //====================================================================================
 //
 //				コンストラクタ
 //
 //====================================================================================
-Select::Select() {
+Tutorial::Tutorial() {
 
 }
+
 
 //====================================================================================
 //
 //				デストラクタ
 //
 //====================================================================================
-Select::~Select() {
+Tutorial::~Tutorial() {
 
 }
+
 
 //====================================================================================
 //
 //				初期化
 //
 //====================================================================================
-void Select::Init() {
-	pUI = std::make_unique<SelectUI>();
-	pUI->Init();
+void Tutorial::Init() {
+	ID3D11Device* pDevice = GetDevice();
+
+	pUI = std::make_unique<Texture>();
+	pUI->SetTexture(pDevice,PATH_UI_TEXTURE);
 }
+
 
 //====================================================================================
 //
 //				終了
 //
 //====================================================================================
-void Select::Uninit() {
-	pUI->Uninit();
+void Tutorial::Uninit() {
+	pUI->ReleaseTexture();
 	pUI.reset();
 }
+
 
 //====================================================================================
 //
 //				更新
 //
 //====================================================================================
-void Select::Update() {
-	int _select = pUI->Update();
-	
-	// 決定キーが押されたらシーン遷移
-	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_SPACE)) {
-		if (_select == SelectUI::START) {
-			Fade::StartFadeOut(SCENE_GAME);
-		} else if (_select == SelectUI::TUTORIAL) {
-			Fade::StartFadeOut(SCENE_TUTORIAL);
-		} else if (_select == SelectUI::SCORE) {
-			Fade::StartFadeOut(SCENE_GAME);
-		}
+void Tutorial::Update() {
+	if (GetKeyRelease(VK_RETURN)) {
+		Fade::StartFadeOut(SCENE_MODESELECT);
 	}
 }
 
@@ -77,8 +77,23 @@ void Select::Update() {
 //				描画
 //
 //====================================================================================
-void Select::Draw() {
-	BG::Draw(SCENE_MODESELECT);
+void Tutorial::Draw() {
+	ID3D11DeviceContext* pDC = GetDeviceContext();
+	
+	BG::Draw(SCENE_TUTORIAL);
 
-	pUI->Draw();
+	// Zバッファ有効(Zチェック有&Z更新有)
+	SetZBuffer(false);
+	SetBlendState(BS_ALPHABLEND);
+
+	SetPolygonSize(UI_WIDTH, UI_HEIGHT);
+	SetPolygonFrameSize(1.0f, 1.0f);
+	SetPolygonTexture(pUI->GetTexture());
+	SetPolygonPos(0.0f, 0.0f);
+	SetPolygonUV(0.0f, 0.0f);
+	DrawPolygon(pDC);
+
+	// Zバッファ有効(Zチェック有&Z更新有)
+	SetZBuffer(true);
+	SetBlendState(BS_NONE);
 }

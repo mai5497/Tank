@@ -12,7 +12,6 @@
 
 class GameObjManager;
 class MeshField;
-class BG;
 
 class Game : public Scene {
 public:
@@ -27,7 +26,6 @@ public:
 private:
 	std::unique_ptr<GameObjManager> pGameObjects;	// ゲームオブジェクト管理クラス
 	std::unique_ptr<MeshField> pMeshField;			// フィールド
-	std::unique_ptr<BG> pBG;						// 背景
 };
 
 #endif
