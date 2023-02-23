@@ -1,8 +1,13 @@
 #include "GameObjManager.h"
+
+#include "fade.h"
+
 #include "Collision.h"
 #include "Player.h"
 #include "WallObject.h"
 #include "Enemy.h"
+
+
 
 std::vector<std::shared_ptr<GameObject>> GameObjManager::pGameObjects;
 int GameObjManager::enemySum;
@@ -39,12 +44,6 @@ void GameObjManager::Init() {
 	// プレイヤー初期化
 	gameObjNum = AddList(std::make_shared<Player>());
 	pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
-	// 敵初期化
-	enemySum = 0;
-	for (int i = 0; i < MAX_ENEMY; i++) {
-		gameObjNum = AddList(std::make_shared<Enemy>());
-		pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
-	}
 	// オブジェクトの壁初期化
 	for (int j = 0; j < MAPHEIGHT; j++) {
 		for (int i = 0; i < MAPWIDTH; i++) {
@@ -56,6 +55,13 @@ void GameObjManager::Init() {
 			}
 		}
 	}
+	// 敵初期化
+	enemySum = 0;
+	for (int i = 0; i < MAX_ENEMY; i++) {
+		gameObjNum = AddList(std::make_shared<Enemy>());
+		pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
+	}
+
 
 	//for (int i = 0; i < pGameObjects.size(); i++) {
 	//	pGameObjects[i]->Init();
@@ -90,6 +96,10 @@ void GameObjManager::Update() {
 
 	// 当たり判定の更新
 	pCollManager->Update();
+
+	if (enemySum < 1) {
+		Fade::StartFadeOut(SCENE_RESULT);
+	}
 }
 
 //====================================================================================

@@ -86,11 +86,13 @@ void Enemy::Init() {
 	mapIndex.x = (pos.x + 640.0f) / 80.0f;
 	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
 
-	mapIndex.x = 8;
-	mapIndex.y = 8;
+	
+	//mapIndex.x = 8;
+	//mapIndex.y = 8;
 
 
-	//rootIndex = search_Root(mapIndex);
+	rootTimer = ROOT_TIME;
+	rootIndex = search_Root(mapIndex);
 
 	rootIndexNum = 0;
 
@@ -157,12 +159,14 @@ void Enemy::Update() {
 	}
 
 	// 移動
-	pos.x += moveVal.x;
-	pos.y += moveVal.y;
-	pos.z += moveVal.z;
-	//pos.x += (*(rootIndex+rootIndexNum)).x * 80.0f - 640.0f;
-	//pos.z += (*(rootIndex + rootIndexNum)).y * 80.0f + 480.0f;
-	//rootIndexNum++;
+	//pos.x += moveVal.x;
+	//pos.y += moveVal.y;
+	//pos.z += moveVal.z;
+	if (rootIndex->x > -1 && rootIndex->y > -1) {
+		pos.x = (*(rootIndex + rootIndexNum)).x * 80.0f - 640.0f;
+		pos.z = (*(rootIndex + rootIndexNum)).y * 80.0f + 480.0f;
+		rootIndexNum++;
+	}
 
 	// 壁にぶつかった
 	bool lr = false, fb = false;
@@ -188,40 +192,35 @@ void Enemy::Update() {
 	if (pos.y > 80.0f) {
 		pos.y = 80.0f;
 	}
-	if (fabsf(rotModel.y - rotDest.y) < 0.0001f) {
-		if (lr) {
-			moveVal.x *= -1.0f;
-		}
-		if (fb) {
-			moveVal.z *= -1.0f;
-		}
-		if (lr || fb) {
-			rotDest.y = XMConvertToDegrees(atan2f(-moveVal.x, -moveVal.z));
-		}
-	}
+	//if (fabsf(rotModel.y - rotDest.y) < 0.0001f) {
+	//	if (lr) {
+	//		moveVal.x *= -1.0f;
+	//	}
+	//	if (fb) {
+	//		moveVal.z *= -1.0f;
+	//	}
+	//	if (lr || fb) {
+	//		rotDest.y = XMConvertToDegrees(atan2f(-moveVal.x, -moveVal.z));
+	//	}
+	//}
 
-	// 目的の角度までの差分
-	float fDiffRotY = rotDest.y - rotModel.y;
-	if (fDiffRotY >= 180.0f) {
-		fDiffRotY -= 360.0f;
-	}
-	if (fDiffRotY < -180.0f) {
-		fDiffRotY += 360.0f;
-	}
+	//// 目的の角度までの差分
+	//float fDiffRotY = rotDest.y - rotModel.y;
+	//if (fDiffRotY >= 180.0f) {
+	//	fDiffRotY -= 360.0f;
+	//}
+	//if (fDiffRotY < -180.0f) {
+	//	fDiffRotY += 360.0f;
+	//}
 
-	// 目的の角度まで慣性をかける
-	rotModel.y += fDiffRotY * RATE_ROTATE_ENEMY;
-	if (rotModel.y >= 180.0f) {
-		rotModel.y -= 360.0f;
-	}
-	if (rotModel.y < -180.0f) {
-		rotModel.y += 360.0f;
-	}
-
-
-	// マップの要素番号であったら現在の位置がどこになるのかを求める
-	mapIndex.x = (pos.x + 640.0f) / 80.0f;
-	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
+	//// 目的の角度まで慣性をかける
+	//rotModel.y += fDiffRotY * RATE_ROTATE_ENEMY;
+	//if (rotModel.y >= 180.0f) {
+	//	rotModel.y -= 360.0f;
+	//}
+	//if (rotModel.y < -180.0f) {
+	//	rotModel.y += 360.0f;
+	//}
 
 
 	// ワールドマトリックスの初期化
@@ -263,12 +262,15 @@ void Enemy::Update() {
 		bulletTimer = BULLET_TIME;
 	}
 
-	//rootTimer--;
-	//if (rootTimer < 0) {
-	//	rootIndexNum = 0;
-	//	rootIndex = search_Root(mapIndex);
-	//	rootTimer = ROOT_TIME;
-	//}
+	rootTimer--;
+	if (rootTimer < 0) {
+	// マップの要素番号であったら現在の位置がどこになるのかを求める
+		mapIndex.x = (pos.x + 640.0f) / 80.0f;
+		mapIndex.y = abs(pos.z - 480.0) / 80.0f;
+		rootIndexNum = 0;
+		rootIndex = search_Root(mapIndex);
+		rootTimer = ROOT_TIME;
+	}
 }
 
 //====================================================================================
@@ -291,6 +293,8 @@ void Enemy::Draw() {
 	pMyModel->Draw(pDC, mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
+
+	PrintDebugProc("%f","%f\n", (*(rootIndex + rootIndexNum)).x, (*(rootIndex + rootIndexNum)).y);
 }
 
 //====================================================================================
