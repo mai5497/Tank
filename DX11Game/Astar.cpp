@@ -14,14 +14,11 @@ struct NODE {
     int cost;
     struct NODE* parent;
 };
-typedef struct NODE NODE;
 
 struct LIST {
     NODE* node[NODE_MAX];
     int index;
 };
-typedef struct LIST LIST;
-
 
 int g_Map[MAPHEIGHT][MAPWIDTH];
 XMINT2 g_root[(MAPHEIGHT-2)*(MAPWIDTH-2)];
@@ -34,12 +31,7 @@ int h(NODE* e, NODE* n);
 void search_node(LIST* open, LIST* close, NODE* s, NODE* e, NODE* n, NODE* m);
 
 
-
-
-
-
 NODE* create_node(int i, int j, int cost) {
-    // とりあえずmallocとか使わずに固定
     static NODE n[NODE_MAX];
     static int index = 0;
     n[index].i = i;
@@ -153,9 +145,18 @@ XMINT2* search_Root(XMINT2 _index) {
     open.node[open.index++] = &s;
 
     //XMINT2 playerIndex/* = SetPlayerIndex()*/;
-    XMINT2 playerIndex = XMINT2(0,0);
+    XMINT2 playerIndex = XMINT2(5,5);
     e.i = playerIndex.y;
     e.j = playerIndex.x;
+
+
+    // 既に同じ位置にいる場合計算をスキップ
+    if (s.i == e.i && s.j == e.j) {
+        g_root[rootIndex] = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
+
+        XMINT2* pRoot = (XMINT2*)g_root;
+        return pRoot;
+    }
 
 
     while (1) {
@@ -174,7 +175,10 @@ XMINT2* search_Root(XMINT2 _index) {
         // openからリストがなくなったので終了する
         if (n == NULL) {
             //ルートが見つかりませんでした
-            break;
+            g_root[rootIndex] = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
+
+            XMINT2* pRoot = (XMINT2*)g_root;
+            return pRoot;
         }
 
         // ゴールが見つかった
@@ -182,36 +186,35 @@ XMINT2* search_Root(XMINT2 _index) {
             n = n->parent;
             while (n->parent != NULL) {
                 // ルート保存
-                g_root[rootIndex] = XMINT2(n->i,n->j);
+                g_root[rootIndex] = XMINT2(n->i, n->j);
                 rootIndex++;
                 n = n->parent;
             }
-            g_root[rootIndex] = XMINT2(-1,-1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
+            g_root[rootIndex] = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
 
             XMINT2* pRoot = (XMINT2*)g_root;
             return pRoot;
-            break;
         }
 
         close.node[close.index++] = n;
 
         // 上のノードを検索
-        if (n->i >= 1 && g_Map[n->i - 1*MAPWIDTH + n->j] == 0 || (n->i - 1 == playerIndex.y && n->j == playerIndex.x)) {
+        if (n->i >= 1 && g_Map[n->i - 1][n->j] == 0 || (n->i - 1 == playerIndex.y && n->j == playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i - 1, n->j, n->cost + 1));
         }
 
         // 下のノードを検索
-        if (n->i <= MAPHEIGHT-1 && g_Map[n->i + 1*MAPWIDTH+n->j] == 0 || (n->i + 1 == playerIndex.y && n->j == playerIndex.x)) {
+        if (n->i <= MAPHEIGHT - 2 && g_Map[n->i + 1][n->j] == 0 || (n->i + 1 == playerIndex.y && n->j == playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i + 1, n->j, n->cost + 1));
         }
 
         // 右のノードを検索
-        if (n->j <= MAPWIDTH-1 && g_Map[n->i*MAPWIDTH+n->j + 1] == 0 || (n->i == playerIndex.y && n->j + 1 == playerIndex.x )) {
+        if (n->j <= MAPWIDTH-3 && g_Map[n->i][n->j + 1] == 0 || (n->i == playerIndex.y && n->j + 1 == playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i, n->j + 1, n->cost + 1));
         }
 
         // 左のノードを検索
-        if (n->j >= 1 && g_Map[n->i*MAPWIDTH+n->j - 1] == 0 || (n->i == playerIndex.y &&  n->j - 1 == playerIndex.x)) {
+        if (n->j >= 1 && g_Map[n->i][n->j-1] == 0 || (n->i == playerIndex.y &&  n->j - 1 == playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i, n->j - 1, n->cost + 1));
         }
 

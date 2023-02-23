@@ -109,9 +109,8 @@ void Result::Update() {
 	//クリックまたは[Enter]押下
 	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_SPACE)) {
 		CSound::Play(SE_DECIDE);
-		//ランキング画面へ
-		//SetScene(SCENE_TITLE);
-		Fade::StartFadeOut(SCENE_TITLE);
+		//セレクト画面へ
+		Fade::StartFadeOut(SCENE_MODESELECT);
 		return;
 	}
 }
