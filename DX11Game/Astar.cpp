@@ -21,7 +21,8 @@ struct LIST {
 };
 
 int g_Map[MAPHEIGHT][MAPWIDTH];
-XMINT2 g_root[(MAPHEIGHT-2)*(MAPWIDTH-2)];
+//XMINT2 g_root[(MAPHEIGHT-2)*(MAPWIDTH-2)];
+std::vector<XMINT2> g_root;
 XMINT2 g_playerIndex;
 XMINT2 g_enemyIndex;
 
@@ -93,7 +94,7 @@ void search_node(LIST* open, LIST* close, NODE* s, NODE* e, NODE* n, NODE* m) {
 }
 
 
-XMINT2* search_Root(XMINT2 _index) {
+std::vector<XMINT2> search_Root(XMINT2 _index) {
     FILE* fp;
     //char map[MAPHEIGHT][MAPWIDTH]; // マップの大きさは考慮しない
     //char buf[28];
@@ -101,7 +102,7 @@ XMINT2* search_Root(XMINT2 _index) {
     /*i = y j = x*/
     int i = 0;
     int j = 0;
-    int rootIndex = 0;
+    //std::vector<XMINT2>::iterator rootIndex = g_root.begin();
     int loop = 0;
     NODE s = { 0,0,0 };
     NODE e = { 0,0,0 };
@@ -109,6 +110,9 @@ XMINT2* search_Root(XMINT2 _index) {
     LIST close;
     open.index = 0;
     close.index = 0;
+
+    g_root.push_back(XMINT2(-1, -1));   // ルートは配列の先頭にゴールに近い側の座標が入るため後ろからvectorの読み込みをする
+                                        // ルートに-1が入ることはないため、ルートの読み込みが終わった判定に使う
 
     
 
@@ -145,16 +149,15 @@ XMINT2* search_Root(XMINT2 _index) {
     open.node[open.index++] = &s;
 
     //XMINT2 playerIndex/* = SetPlayerIndex()*/;
-    XMINT2 playerIndex = XMINT2(5,5);
+    XMINT2 playerIndex = XMINT2(1,12);
     e.i = playerIndex.y;
     e.j = playerIndex.x;
 
 
     // 既に同じ位置にいる場合計算をスキップ
     if (s.i == e.i && s.j == e.j) {
-        g_root[rootIndex] = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
 
-        XMINT2* pRoot = (XMINT2*)g_root;
+        std::vector<XMINT2> pRoot = g_root;
         return pRoot;
     }
 
@@ -175,9 +178,10 @@ XMINT2* search_Root(XMINT2 _index) {
         // openからリストがなくなったので終了する
         if (n == NULL) {
             //ルートが見つかりませんでした
-            g_root[rootIndex] = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
+            //*rootIndex = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
+            //g_root.push_back(XMINT2( - 1, -1));
 
-            XMINT2* pRoot = (XMINT2*)g_root;
+            std::vector<XMINT2> pRoot = g_root;
             return pRoot;
         }
 
@@ -186,13 +190,15 @@ XMINT2* search_Root(XMINT2 _index) {
             n = n->parent;
             while (n->parent != NULL) {
                 // ルート保存
-                g_root[rootIndex] = XMINT2(n->i, n->j);
-                rootIndex++;
+                //*rootIndex = XMINT2(n->i, n->j);
+                g_root.push_back(XMINT2(n->i, n->j));
+
                 n = n->parent;
             }
-            g_root[rootIndex] = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
+            //*rootIndex = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
+            //g_root.push_back(XMINT2(-1, -1));
 
-            XMINT2* pRoot = (XMINT2*)g_root;
+            std::vector<XMINT2> pRoot = g_root;
             return pRoot;
         }
 
@@ -214,6 +220,8 @@ XMINT2* search_Root(XMINT2 _index) {
         }
 
         // 左のノードを検索
+
+
         if (n->j >= 1 && g_Map[n->i][n->j-1] == 0 || (n->i == playerIndex.y &&  n->j - 1 == playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i, n->j - 1, n->cost + 1));
         }
@@ -227,13 +235,18 @@ XMINT2* search_Root(XMINT2 _index) {
     //    }
     //    printf("\n");
     //}
-    return nullptr;
+
+    //*rootIndex = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
+    //g_root.push_back(XMINT2(-1, -1));
+
+    std::vector<XMINT2> pRoot = g_root;
+    return pRoot;
 }
 
 void SetMap(int *Map) {
     for (int j = 0; j < MAPHEIGHT; j++) {
         for (int i = 0; i < MAPWIDTH; i++) {
-            g_Map[j][i] = *(Map+i+j*MAPHEIGHT);
+            g_Map[j][i] = Map[i+j*MAPWIDTH];
         }
     }
 }

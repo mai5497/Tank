@@ -27,6 +27,7 @@
 
 #define BULLET_TIME			(300)		// 弾発射までの時間
 #define ROOT_TIME			(300)		// 次にルート検索するまでの時間
+#define MOVE_TIME			(30)		// 次にルート検索するまでの時間
 
 
 std::unique_ptr<CAssimpModel> Enemy::pMyModel;
@@ -83,8 +84,8 @@ void Enemy::Init() {
 	isCollision = true;
 	bulletTimer = 300;
 
-	mapIndex.x = (pos.x + 640.0f) / 80.0f;
-	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
+	mapIndex.y = (pos.x + 640.0f) / 80.0f;
+	mapIndex.x = abs(pos.z - 480.0) / 80.0f;
 
 	
 	//mapIndex.x = 8;
@@ -92,9 +93,11 @@ void Enemy::Init() {
 
 
 	rootTimer = ROOT_TIME;
+	moveTimer = MOVE_TIME;
 	rootIndex = search_Root(mapIndex);
 
-	rootIndexNum = 0;
+	//rootIndexNum = rootIndex.begin();
+	rootIndexNum = rootIndex.end()-1;
 
 	myTag = ENEMY;
 	collType = Collision::DYNAMIC;
@@ -108,7 +111,7 @@ void Enemy::Init() {
 void Enemy::Uninit() {
 	ReleaseShadow(shadowNum);
 
-	delete rootIndex;
+	//delete rootIndex;
 
 	// モデルの解放
 	if (pMyModel) {
@@ -162,11 +165,31 @@ void Enemy::Update() {
 	//pos.x += moveVal.x;
 	//pos.y += moveVal.y;
 	//pos.z += moveVal.z;
-	if (rootIndex->x > -1 && rootIndex->y > -1) {
-		pos.x = (*(rootIndex + rootIndexNum)).x * 80.0f - 640.0f;
-		pos.z = (*(rootIndex + rootIndexNum)).y * 80.0f + 480.0f;
-		rootIndexNum++;
+
+	//if (rootIndex->x > -1 && rootIndex->y > -1) {
+	//	pos.x = (*(rootIndex + rootIndexNum)).x * 80.0f - 640.0f;
+	//	pos.z = (*(rootIndex + rootIndexNum)).y * 80.0f + 480.0f;
+	//	rootIndexNum++;
+	//}
+
+	//if (rootIndex.size() > 1 && (rootIndexNum->x > -1 && rootIndexNum->y > -1)) {
+	//	pos.x = (*rootIndexNum).x * 80.0f - 640.0f;
+	//	pos.z = (*rootIndexNum).y * 80.0f + 480.0f;
+	//	rootIndexNum++;
+	//}
+
+	if (moveTimer < 1) {
+		if (rootIndex.size() > 1 && (rootIndexNum->x > -1 && rootIndexNum->y > -1)) {
+			pos.x = (*rootIndexNum).x * 80.0f - 640.0f;
+			pos.z = -(*rootIndexNum).y * 80.0f + 480.0f;
+			rootIndexNum--;
+		}
+		moveTimer = MOVE_TIME;
 	}
+	moveTimer--;
+
+
+
 
 	// 壁にぶつかった
 	bool lr = false, fb = false;
@@ -265,10 +288,10 @@ void Enemy::Update() {
 	rootTimer--;
 	if (rootTimer < 0) {
 	// マップの要素番号であったら現在の位置がどこになるのかを求める
-		mapIndex.x = (pos.x + 640.0f) / 80.0f;
-		mapIndex.y = abs(pos.z - 480.0) / 80.0f;
-		rootIndexNum = 0;
+		mapIndex.y = (pos.x + 640.0f) / 80.0f;
+		mapIndex.x = abs(pos.z - 480.0) / 80.0f;
 		rootIndex = search_Root(mapIndex);
+		rootIndexNum = rootIndex.end()-1;
 		rootTimer = ROOT_TIME;
 	}
 }
@@ -294,7 +317,7 @@ void Enemy::Draw() {
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
 
-	PrintDebugProc("%f","%f\n", (*(rootIndex + rootIndexNum)).x, (*(rootIndex + rootIndexNum)).y);
+	//PrintDebugProc("%d\n");
 }
 
 //====================================================================================

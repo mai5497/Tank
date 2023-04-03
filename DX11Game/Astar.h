@@ -10,7 +10,7 @@
 #include "WallObject.h"
 #include "main.h"
 
-XMINT2* search_Root(XMINT2 _index);
+std::vector<XMINT2> search_Root(XMINT2 _index);
 void SetMap(int* Map);
 
 #endif

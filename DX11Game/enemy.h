@@ -30,8 +30,10 @@ private:
 	XMFLOAT3 rotDest;	// 目的の向き
 	int	bulletTimer;	// 弾発射タイマー
 	int	rootTimer;		// ルート検索タイマー
-	int rootIndexNum;	// 検索したルートの何番目かに使う
-	XMINT2* rootIndex;	// 検索したルートが格納される
+	int	moveTimer;		// ルート検索タイマー
+	//int rootIndexNum;	// 検索したルートの何番目かに使う
+	std::vector<XMINT2>::iterator rootIndexNum;	// 検索したルートの何番目かに使う
+	std::vector<XMINT2> rootIndex;	// 検索したルートが格納される
 };
 
 #endif

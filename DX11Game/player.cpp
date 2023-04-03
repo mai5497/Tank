@@ -109,6 +109,14 @@ void Player::Uninit() {
 //
 //====================================================================================
 void Player::Update() {
+	mapIndex.x = (pos.x + 640.0f) / 80.0f;
+	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
+
+	testPos.x = mapIndex.x * 80.0f - 640.0f;
+	testPos.y = pos.y;
+	testPos.z = -mapIndex.y * 80.0f + 480.0f;
+
+
 	// カメラの向き取得
 	XMFLOAT3 rotCamera = CCamera::Get()->GetAngle();
 
@@ -315,7 +323,9 @@ void Player::Draw() {
 	SetBlendState(BS_NONE);			// アルファブレンド無効
 
 
-	//PrintDebugProc("%d,%d\n", g_gameObject.m_mapIndex.x, g_gameObject.m_mapIndex.y);
+	PrintDebugProc("index:%d,%d\n",mapIndex.x, mapIndex.y);
+	PrintDebugProc("pos:%f,%f,%f\n",pos.x, pos.y,pos.z);
+	PrintDebugProc("pos:%f,%f,%f\n",testPos.x, testPos.y, testPos.z);
 	//PrintDebugProc("%f\n", moveVal.x);
 	//PrintDebugProc("%f\n", moveVal.y);
 	//PrintDebugProc("%f\n", moveVal.z);

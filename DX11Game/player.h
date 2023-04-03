@@ -28,6 +28,8 @@ private:
 	static std::unique_ptr<CAssimpModel> pMyModel;
 	XMFLOAT3 rotDestModel;	// –Ú“I‚ÌŒü‚«
 	double m_animTime;
+
+	XMFLOAT3 testPos;
 };
 
 #endif
