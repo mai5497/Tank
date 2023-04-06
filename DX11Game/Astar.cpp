@@ -149,7 +149,7 @@ std::vector<XMINT2> search_Root(XMINT2 _index) {
     open.node[open.index++] = &s;
 
     //XMINT2 playerIndex/* = SetPlayerIndex()*/;
-    XMINT2 playerIndex = XMINT2(1,12);
+    XMINT2 playerIndex = XMINT2(12,1);// x,yの順
     e.i = playerIndex.y;
     e.j = playerIndex.x;
 
@@ -191,7 +191,7 @@ std::vector<XMINT2> search_Root(XMINT2 _index) {
             while (n->parent != NULL) {
                 // ルート保存
                 //*rootIndex = XMINT2(n->i, n->j);
-                g_root.push_back(XMINT2(n->i, n->j));
+                g_root.push_back(XMINT2(n->j, n->i));
 
                 n = n->parent;
             }
@@ -210,18 +210,16 @@ std::vector<XMINT2> search_Root(XMINT2 _index) {
         }
 
         // 下のノードを検索
-        if (n->i <= MAPHEIGHT - 2 && g_Map[n->i + 1][n->j] == 0 || (n->i + 1 == playerIndex.y && n->j == playerIndex.x)) {
+        if (n->i <= MAPHEIGHT - 1 && g_Map[n->i + 1][n->j] == 0 || (n->i + 1 == playerIndex.y && n->j == playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i + 1, n->j, n->cost + 1));
         }
 
         // 右のノードを検索
-        if (n->j <= MAPWIDTH-3 && g_Map[n->i][n->j + 1] == 0 || (n->i == playerIndex.y && n->j + 1 == playerIndex.x)) {
+        if (n->j <= MAPWIDTH-1 && g_Map[n->i][n->j + 1] == 0 || (n->i == playerIndex.y && n->j + 1 == playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i, n->j + 1, n->cost + 1));
         }
 
         // 左のノードを検索
-
-
         if (n->j >= 1 && g_Map[n->i][n->j-1] == 0 || (n->i == playerIndex.y &&  n->j - 1 == playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i, n->j - 1, n->cost + 1));
         }

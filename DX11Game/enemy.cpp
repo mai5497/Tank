@@ -84,8 +84,8 @@ void Enemy::Init() {
 	isCollision = true;
 	bulletTimer = 300;
 
-	mapIndex.y = (pos.x + 640.0f) / 80.0f;
-	mapIndex.x = abs(pos.z - 480.0) / 80.0f;
+	mapIndex.x = (pos.x + 640.0f) / 80.0f;
+	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
 
 	
 	//mapIndex.x = 8;
@@ -288,8 +288,8 @@ void Enemy::Update() {
 	rootTimer--;
 	if (rootTimer < 0) {
 	// マップの要素番号であったら現在の位置がどこになるのかを求める
-		mapIndex.y = (pos.x + 640.0f) / 80.0f;
-		mapIndex.x = abs(pos.z - 480.0) / 80.0f;
+		mapIndex.x = (pos.x + 640.0f) / 80.0f;
+		mapIndex.y = abs(pos.z - 480.0) / 80.0f;
 		rootIndex = search_Root(mapIndex);
 		rootIndexNum = rootIndex.end()-1;
 		rootTimer = ROOT_TIME;
@@ -316,6 +316,9 @@ void Enemy::Draw() {
 	pMyModel->Draw(pDC, mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
+
+	PrintDebugProc("index:%d,%d\n", mapIndex.x, mapIndex.y);
+	PrintDebugProc("pos:%f,%f,%f\n", pos.x, pos.y, pos.z);
 
 	//PrintDebugProc("%d\n");
 }

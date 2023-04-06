@@ -323,9 +323,9 @@ void Player::Draw() {
 	SetBlendState(BS_NONE);			// アルファブレンド無効
 
 
-	PrintDebugProc("index:%d,%d\n",mapIndex.x, mapIndex.y);
-	PrintDebugProc("pos:%f,%f,%f\n",pos.x, pos.y,pos.z);
-	PrintDebugProc("pos:%f,%f,%f\n",testPos.x, testPos.y, testPos.z);
+	//PrintDebugProc("index:%d,%d\n",mapIndex.x, mapIndex.y);
+	//PrintDebugProc("pos:%f,%f,%f\n",pos.x, pos.y,pos.z);
+	//PrintDebugProc("pos:%f,%f,%f\n",testPos.x, testPos.y, testPos.z);
 	//PrintDebugProc("%f\n", moveVal.x);
 	//PrintDebugProc("%f\n", moveVal.y);
 	//PrintDebugProc("%f\n", moveVal.z);
