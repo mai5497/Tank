@@ -22,7 +22,7 @@ public:
 	XMFLOAT3& GetPlayerPos();
 	bool CollisionPlayer(XMFLOAT3 pos, float radius, float damage);
 	bool CollisionPlayer(GameObject collision);
-	XMINT2 SetPlayerIndex();
+	//XMINT2 SetPlayerIndex();
 
 private:
 	static std::unique_ptr<CAssimpModel> pMyModel;
