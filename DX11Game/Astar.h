@@ -12,5 +12,6 @@
 
 std::vector<XMINT2> search_Root(XMINT2 _index);
 void SetMap(int* Map);
+void SetPlayerIndex(XMINT2 _index);
 
 #endif

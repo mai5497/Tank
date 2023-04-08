@@ -23,7 +23,7 @@ struct LIST {
 int g_Map[MAPHEIGHT][MAPWIDTH];
 //XMINT2 g_root[(MAPHEIGHT-2)*(MAPWIDTH-2)];
 std::vector<XMINT2> g_root;
-XMINT2 g_playerIndex;
+XMINT2 g_playerIndex=XMINT2(0,0);
 XMINT2 g_enemyIndex;
 
 NODE* create_node(int i, int j, int cost);
@@ -96,7 +96,7 @@ void search_node(LIST* open, LIST* close, NODE* s, NODE* e, NODE* n, NODE* m) {
 
 std::vector<XMINT2> search_Root(XMINT2 _index) {
     FILE* fp;
-    //char map[MAPHEIGHT][MAPWIDTH]; // マップの大きさは考慮しない
+    //char map[MAPHEIGHT][MAPWIDTH];
     //char buf[28];
 
     /*i = y j = x*/
@@ -129,29 +129,14 @@ std::vector<XMINT2> search_Root(XMINT2 _index) {
     //}
     //fclose(fp);
 
-    /*スタートとゴールはプレイヤーとエネミーが持っているものを直接取得する*/
-    //for (i = 0; i < MAPHEIGHT; i++) {
-    //    for (j = 0; j < MAPWIDTH; j++) {
-    //        if (map[i][j] == 'S') {
-    //            s.i = i;
-    //            s.j = j;
-    //            open.node[open.index++] = &s;
-    //        }
-    //        if (map[i][j] == 'G') {
-    //            e.i = i;
-    //            e.j = j;
-    //        }
-    //    }
-    //}
-
     s.i = _index.y;
     s.j = _index.x;
     open.node[open.index++] = &s;
 
     //XMINT2 playerIndex/* = SetPlayerIndex()*/;
-    XMINT2 playerIndex = XMINT2(12,1);// x,yの順
-    e.i = playerIndex.y;
-    e.j = playerIndex.x;
+    //XMINT2 playerIndex = XMINT2(12,1);// x,yの順
+    e.i = g_playerIndex.y;
+    e.j = g_playerIndex.x;
 
 
     // 既に同じ位置にいる場合計算をスキップ
@@ -186,7 +171,7 @@ std::vector<XMINT2> search_Root(XMINT2 _index) {
         }
 
         // ゴールが見つかった
-        if (n->i == playerIndex.y && n->j == playerIndex.x) {
+        if (n->i == g_playerIndex.y && n->j == g_playerIndex.x) {
             n = n->parent;
             while (n->parent != NULL) {
                 // ルート保存
@@ -205,22 +190,22 @@ std::vector<XMINT2> search_Root(XMINT2 _index) {
         close.node[close.index++] = n;
 
         // 上のノードを検索
-        if (n->i >= 1 && g_Map[n->i - 1][n->j] == 0 || (n->i - 1 == playerIndex.y && n->j == playerIndex.x)) {
+        if (n->i >= 1 && g_Map[n->i - 1][n->j] == 0 || (n->i - 1 == g_playerIndex.y && n->j == g_playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i - 1, n->j, n->cost + 1));
         }
 
         // 下のノードを検索
-        if (n->i <= MAPHEIGHT - 1 && g_Map[n->i + 1][n->j] == 0 || (n->i + 1 == playerIndex.y && n->j == playerIndex.x)) {
+        if (n->i <= MAPHEIGHT - 1 && g_Map[n->i + 1][n->j] == 0 || (n->i + 1 == g_playerIndex.y && n->j == g_playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i + 1, n->j, n->cost + 1));
         }
 
         // 右のノードを検索
-        if (n->j <= MAPWIDTH-1 && g_Map[n->i][n->j + 1] == 0 || (n->i == playerIndex.y && n->j + 1 == playerIndex.x)) {
+        if (n->j <= MAPWIDTH-1 && g_Map[n->i][n->j + 1] == 0 || (n->i == g_playerIndex.y && n->j + 1 == g_playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i, n->j + 1, n->cost + 1));
         }
 
         // 左のノードを検索
-        if (n->j >= 1 && g_Map[n->i][n->j-1] == 0 || (n->i == playerIndex.y &&  n->j - 1 == playerIndex.x)) {
+        if (n->j >= 1 && g_Map[n->i][n->j-1] == 0 || (n->i == g_playerIndex.y &&  n->j - 1 == g_playerIndex.x)) {
             search_node(&open, &close, &s, &e, n, create_node(n->i, n->j - 1, n->cost + 1));
         }
 
@@ -241,10 +226,21 @@ std::vector<XMINT2> search_Root(XMINT2 _index) {
     return pRoot;
 }
 
+/// <summary>
+/// マップ情報の登録
+/// </summary>
+/// <param name="Map"></param>
 void SetMap(int *Map) {
     for (int j = 0; j < MAPHEIGHT; j++) {
         for (int i = 0; i < MAPWIDTH; i++) {
             g_Map[j][i] = Map[i+j*MAPWIDTH];
         }
     }
+}
+
+/// <summary>
+/// Playerの座標をもとにしたMapの配列の要素番号
+/// </summary>
+void SetPlayerIndex(XMINT2 _index) {
+    g_playerIndex = _index;
 }

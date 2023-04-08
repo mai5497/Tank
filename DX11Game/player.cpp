@@ -12,10 +12,10 @@
 #include "shadow.h"
 #include "bullet.h"
 #include "effect.h"
-#include "collision.h"
 #include "explosion.h"
 #include "DebugCollision.h"
 #include "Texture.h"
+#include "Astar.h"
 
 //-------------------- マクロ定義 --------------------
 #define MODEL_PLAYER	"data/model/kobitoblue.fbx"
@@ -285,6 +285,7 @@ void Player::Update() {
 			XMFLOAT2(5.0f, 5.0f), 20);
 	}
 
+	// アニメーション
 	//static double dLastTime = clock() / double(CLOCKS_PER_SEC);
 	//double dNowTime = clock() / double(CLOCKS_PER_SEC);
 	//double dSlice = dNowTime - dLastTime;
@@ -300,6 +301,9 @@ void Player::Update() {
 		Bullet::FireBullet(pos, XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
 			BULLET_PLAYER);
 	}
+
+	// A*に自分の座標を渡す
+	SetPlayerIndex(mapIndex);
 }
 
 //====================================================================================
@@ -314,7 +318,7 @@ void Player::Draw() {
 	pMyModel->Draw(pDC, mtxWorld, eOpacityOnly);
 
 	// 半透明部分を描画
-	//myModel.SetAnimIndex(1);
+	//myModel.SetAnimIndex(1);	// アニメーション
 	//myModel.SetAnimTime(m_animTime);
 	SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
 	SetZWrite(false);				// Zバッファ更新しない
@@ -388,6 +392,6 @@ bool Player::CollisionPlayer(GameObject collision) {
 	return isHit;
 }
 
-XMINT2 Player::SetPlayerIndex() {
-	return mapIndex;
-}
+//XMINT2 Player::SetPlayerIndex() {
+//	return mapIndex;
+//}
