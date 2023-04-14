@@ -78,8 +78,8 @@ void SceneManager::Update() {
 	if (!pNowScene) {
 		MessageBox(NULL, _T("シーン消失エラー\nSceneManager.cpp(78)"), _T("error"), MB_OK);
 	}
-	//----- カメラ更新 -----
-	CCamera::Get()->Update(nowScene);
+	////----- カメラ更新 -----
+	//CCamera::Get()->Update(nowScene);
 
 	pNowScene->Update();
 

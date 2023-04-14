@@ -12,10 +12,10 @@
 
 //-------------------- グローバル変数定義 --------------------
 namespace {
-	const float CAM_POS_P_X = 0.0f;					// カメラの視点初期位置(X座標)
+	const float CAM_POS_P_X = -40.0f;				// カメラの視点初期位置(X座標)
 	const float CAM_POS_P_Y = 1000.0f;				// カメラの視点初期位置(Y座標)
 	const float CAM_POS_P_Z = -350.0f;				// カメラの視点初期位置(Z座標)
-	const float CAM_POS_R_X = 0.0f;					// カメラの注視点初期位置(X座標)
+	const float CAM_POS_R_X = -40.0f;				// カメラの注視点初期位置(X座標)
 	const float CAM_POS_R_Y = 50.0f;				// カメラの注視点初期位置(Y座標)
 	const float CAM_POS_R_Z = 0.0f;					// カメラの注視点初期位置(Z座標)
 	const float VIEW_ANGLE = 45.0f;					// ビュー平面の視野角
@@ -58,120 +58,19 @@ void CCamera::Init()
 	m_vPos = XMFLOAT3(CAM_POS_P_X, CAM_POS_P_Y, CAM_POS_P_Z);	// 視点
 	m_vTarget = XMFLOAT3(CAM_POS_R_X, CAM_POS_R_Y, CAM_POS_R_Z);// 注視点
 	m_vUp = XMFLOAT3(0.0f, 1.0f, 0.0f);							// 上方ベクトル
-	m_vSrcPos = m_vPos;
-	m_vDestPos = m_vPos;
-	m_vDestTarget = m_vTarget;
-	m_vVelocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-
-	m_vAngle = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	m_vDestAngle = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	m_vDestTargetAngle = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	m_fAspectRatio = VIEW_ASPECT;		// 縦横比
 	m_fFovY = VIEW_ANGLE;				// 視野角(単位:Degree)
 	m_fNearZ = VIEW_NEAR_Z;				// 前方クリップ距離
 	m_fFarZ = VIEW_FAR_Z;				// 後方クリップ距離
 
-	float dx, dz;
-	dx = m_vPos.x - m_vTarget.x;
-	dz = m_vPos.z - m_vTarget.z;
-	m_fLengthInterval = sqrtf(dx * dx + dz * dz);
+	m_vAngle = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
+	// マトリックス計算
 	CalcWorldMatrix();
-	//UpdateMatrix();
-
-}
-
-//====================================================================================
-//
-//				更新
-//
-//====================================================================================
-void CCamera::Update(eSCENE _scene)
-{
-	//if (GetKeyPress(VK_C)) {
-	//	// 右旋回
-	//	m_vDestAngle.y -= VALUE_ROTATE_CAMERA;
-	//	if (m_vDestAngle.y < -180.0f) {
-	//		m_vDestAngle.y += 360.0f;
-	//	}
-	//}
-	//if (GetKeyPress(VK_Z)) {
-	//	// 左旋回
-	//	m_vDestAngle.y += VALUE_ROTATE_CAMERA;
-	//	if (m_vDestAngle.y >= 180.0f) {
-	//		m_vDestAngle.y -= 360.0f;
-	//	}
-	//}
-
-	//// 目的の角度までの差分
-	//float fDiffRotY = m_vDestAngle.y - m_vAngle.y;
-	//if (fDiffRotY >= 180.0f) {
-	//	fDiffRotY -= 360.0f;
-	//}
-	//if (fDiffRotY < -180.0f) {
-	//	fDiffRotY += 360.0f;
-	//}
-
-	//// 目的の角度まで慣性をかける
-	//m_vAngle.y += fDiffRotY * RATE_ROTATE_CAMERA;
-	//if (m_vAngle.y >= 180.0f) {
-	//	m_vAngle.y -= 360.0f;
-	//}
-	//if (m_vAngle.y < -180.0f) {
-	//	m_vAngle.y += 360.0f;
-	//}
-	//m_vSrcPos.x = -SinDeg(m_vAngle.y) * m_fLengthInterval;
-	//m_vSrcPos.z = -CosDeg(m_vAngle.y) * m_fLengthInterval;
-
-	////// 追跡カメラ
-	////XMFLOAT3& vModelPos = GetPlayerPos();	// 自機座標
-	////// 視点座標移動先を算出
-	//m_vDestPos.x += m_vSrcPos.x ;
-	//m_vDestPos.y += m_vSrcPos.y ;
-	//m_vDestPos.z += m_vSrcPos.z ;
-	//// 注視点座標移動先を算出
-	//m_vDestTarget.x += CAM_POS_R_X ;
-	//m_vDestTarget.y += CAM_POS_R_Y ;
-	//m_vDestTarget.z += CAM_POS_R_Z ;
-	//// 視点を徐々に移動先に近づける
-	//m_vPos.x = m_vPos.x * 0.9f + m_vDestPos.x * 0.1f;
-	//m_vPos.y = m_vPos.y * 0.9f + m_vDestPos.y * 0.1f;
-	//m_vPos.z = m_vPos.z * 0.9f + m_vDestPos.z * 0.1f;
-	//// 注視点を徐々に移動先に近づける
-	//m_vTarget.x = m_vTarget.x * 0.9f + m_vDestTarget.x * 0.1f;
-	//m_vTarget.y = m_vTarget.y * 0.9f + m_vDestTarget.y * 0.1f;
-	//m_vTarget.z = m_vTarget.z * 0.9f + m_vDestTarget.z * 0.1f;
-
-	//if (GetKeyTrigger(VK_HOME)) {
-	//	// リセット
-	//	m_vPos = XMFLOAT3(CAM_POS_P_X, CAM_POS_P_Y, CAM_POS_P_Z);	// 視点
-	//	m_vTarget = XMFLOAT3(CAM_POS_R_X, CAM_POS_R_Y, CAM_POS_R_Z);// 注視点
-	//	m_vSrcPos = m_vPos;
-	//	m_vDestPos = m_vPos;
-	//	m_vDestTarget = m_vTarget;
-	//	m_vAngle = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//	m_vDestAngle = m_vAngle;
-	//}
-
-	if(_scene == SCENE_TITLE){
-		m_vPos = XMFLOAT3(CAM_POS_P_X, 100, CAM_POS_P_Z);	// 視点
-
-	}
-
 
 	// マトリックス更新
 	UpdateMatrix();
-
-	////PrintDebugProc("[ｶﾒﾗ ｲﾁ : (%f, %f, %f)]\n", m_vPos.x, m_vPos.y, m_vPos.z);
-	////PrintDebugProc("[ﾁｭｳｼﾃﾝ : (%f, %f, %f)]\n", m_vTarget.x, m_vTarget.y, m_vTarget.z);
-	////PrintDebugProc("[ｶﾒﾗ ﾑｷ : (%f)]\n", m_vAngle.y);
-	////PrintDebugProc("\n");
-
-	////PrintDebugProc("*** ｼﾃﾝ ｿｳｻ ***\n");
-	////PrintDebugProc("ﾋﾀﾞﾘ ｾﾝｶｲ : Z\n");
-	////PrintDebugProc("ﾐｷﾞ  ｾﾝｶｲ : C\n");
-	////PrintDebugProc("\n");
 }
 
 //====================================================================================

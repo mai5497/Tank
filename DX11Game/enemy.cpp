@@ -19,13 +19,13 @@
 //-------------------- 定数定義 --------------------
 #define MODEL_ENEMY			"data/model/kobitored.fbx"
 
-#define	VALUE_MOVE_ENEMY	(0.40f)		// 移動速度
+#define	VALUE_MOVE_ENEMY	(0.50f)		// 移動速度
 #define	RATE_MOVE_ENEMY		(0.20f)		// 移動慣性係数
 #define	VALUE_ROTATE_ENEMY	(7.0f)		// 回転速度
 #define	RATE_ROTATE_ENEMY	(0.20f)		// 回転慣性係数
 #define ENEMY_RADIUS		(50.0f)		// 境界球半径
 
-#define BULLET_TIME			(300)		// 弾発射までの時間
+#define BULLET_TIME			(120)		// 弾発射までの時間
 #define ROOT_TIME			(300)		// 次にルート検索するまでの時間
 #define MOVE_TIME			(30)		// 次にルート検索するまでの時間
 
@@ -70,10 +70,7 @@ void Enemy::Init() {
 
 	// 位置・回転・スケール・サイズの初期設定
 	pos = XMFLOAT3(rand() % 620 - 310.0f, 0.0f, rand() % 620 - 310.0f);
-	moveVal = XMFLOAT3(
-		-SinDeg(rotModel.y) * VALUE_MOVE_ENEMY,
-		0.0f,
-		-CosDeg(rotModel.y) * VALUE_MOVE_ENEMY);
+	moveVal = XMFLOAT3(VALUE_MOVE_ENEMY, 0.0f, VALUE_MOVE_ENEMY);
 	rotModel = XMFLOAT3(0.0f, rand() % 360 - 180.0f, 0.0f);
 	rotDest = rotModel;
 	size = XMFLOAT3(50.0f, 50.0f, 50.0f);
@@ -87,17 +84,11 @@ void Enemy::Init() {
 	mapIndex.x = (pos.x + 640.0f) / 80.0f;
 	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
 
-	
-	//mapIndex.x = 8;
-	//mapIndex.y = 8;
-
-
-	rootTimer = ROOT_TIME;
+	rootTimer = 0;
 	moveTimer = MOVE_TIME;
-	rootIndex = search_Root(mapIndex);
+	rootIndex = search_Root(mapIndex);	// ルートを検索して入れる
 
-	//rootIndexNum = rootIndex.begin();
-	rootIndexNum = rootIndex.end()-1;
+	rootIndexNum = rootIndex.end()-1;	// ルートの検索結果が後ろから入るので後ろを初期値とする
 
 	myTag = ENEMY;
 	collType = Collision::DYNAMIC;
@@ -126,12 +117,15 @@ void Enemy::Uninit() {
 //
 //====================================================================================
 void Enemy::Update() {
-	XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
-	XMFLOAT3 ShadowMove = XMFLOAT3(0.0f, 0.0f, 0.0f);
-
+	// 未使用ならスキップ
 	if (!use) {
 		return;
 	}
+
+	// 変数初期化
+	XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
+	XMFLOAT3 ShadowMove = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
 
 	// 当たり判定
 	if (hitList.size() > 0) {
@@ -144,10 +138,7 @@ void Enemy::Update() {
 		}
 	}
 
-	moveVal = XMFLOAT3(
-		-SinDeg(rotModel.y) * VALUE_MOVE_ENEMY,
-		0.0f,
-		-CosDeg(rotModel.y) * VALUE_MOVE_ENEMY);
+	// 移動
 
 	if (moveVal.x > 0.0f) {
 		ShadowMove.x += 25.0f;
@@ -161,73 +152,51 @@ void Enemy::Update() {
 		ShadowMove.z -= 25.0f;
 	}
 
-	// 移動
-	//pos.x += moveVal.x;
-	//pos.y += moveVal.y;
-	//pos.z += moveVal.z;
+	//----- 移動 -----
+	// 座標から現在のマップ番号を取得
+	mapIndex.x = (pos.x + 640.0f) / 80.0f;
+	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
 
-	//if (rootIndex->x > -1 && rootIndex->y > -1) {
-	//	pos.x = (*(rootIndex + rootIndexNum)).x * 80.0f - 640.0f;
-	//	pos.z = (*(rootIndex + rootIndexNum)).y * 80.0f + 480.0f;
-	//	rootIndexNum++;
-	//}
-
-	//if (rootIndex.size() > 1 && (rootIndexNum->x > -1 && rootIndexNum->y > -1)) {
-	//	pos.x = (*rootIndexNum).x * 80.0f - 640.0f;
-	//	pos.z = (*rootIndexNum).y * 80.0f + 480.0f;
-	//	rootIndexNum++;
-	//}
-
-	if (moveTimer < 1) {
+	// 向かうルートと現在の位置を比較して移動
+	if (mapIndex.x < (*rootIndexNum).x) {
+		pos.x += moveVal.x;
+	} else if (mapIndex.x > (*rootIndexNum).x) {
+		pos.x -= moveVal.x;
+	}
+	if (mapIndex.y < (*rootIndexNum).y) {
+		pos.z -= moveVal.z;
+	} else if (mapIndex.y > (*rootIndexNum).y) {
+		pos.z += moveVal.z;
+	}
+	// 次のルートに更新
+	if (mapIndex.x == (*rootIndexNum).x && mapIndex.y == (*rootIndexNum).y){
 		if (rootIndex.size() > 1 && (rootIndexNum->x > -1 && rootIndexNum->y > -1)) {
-			pos.x = (*rootIndexNum).x * 80.0f - 640.0f;
-			pos.z = -(*rootIndexNum).y * 80.0f + 480.0f;
 			rootIndexNum--;
 		}
-		moveTimer = MOVE_TIME;
 	}
-	moveTimer--;
 
-
-
-
-	// 壁にぶつかった
-	bool lr = false, fb = false;
-	if (pos.x < -310.0f) {
-		pos.x = -310.0f;
-		lr = true;
-	}
-	if (pos.x > 310.0f) {
-		pos.x = 310.0f;
-		lr = true;
-	}
-	if (pos.z < -310.0f) {
-		pos.z = -310.0f;
-		fb = true;
-	}
-	if (pos.z > 310.0f) {
-		pos.z = 310.0f;
-		fb = true;
-	}
-	if (pos.y < 0.0f) {
-		pos.y = 0.0f;
-	}
-	if (pos.y > 80.0f) {
-		pos.y = 80.0f;
-	}
-	//if (fabsf(rotModel.y - rotDest.y) < 0.0001f) {
-	//	if (lr) {
-	//		moveVal.x *= -1.0f;
-	//	}
-	//	if (fb) {
-	//		moveVal.z *= -1.0f;
-	//	}
-	//	if (lr || fb) {
-	//		rotDest.y = XMConvertToDegrees(atan2f(-moveVal.x, -moveVal.z));
-	//	}
+	// 目的の角度を求める
+	float degree = atan2f(-(*rootIndexNum).y * 80.0f + 480.0f - pos.z, (*rootIndexNum).x * 80.0f - 640.0f - pos.x);
+	degree = degree * 3.14 / 180;
+	//if (degree < 0) {
+	//	degree = degree + 2 * 3.14;
 	//}
+	//rotModel.y = degree * 360 / (2 * 3.14);
+	rotModel.y = degree;
+	//if (rotModel.y < -180) {
+	//	rotModel.y = 360 - rotModel.y;
+	//}
+	//rotModel.y -= 90;
 
-	//// 目的の角度までの差分
+
+
+	//if (rotDest.y < -180) {
+	//	rotDest.y = 360 - rotDest.y;
+	//}
+	rotDest.y -= 90;
+
+
+	// 目的の角度までの差分
 	//float fDiffRotY = rotDest.y - rotModel.y;
 	//if (fDiffRotY >= 180.0f) {
 	//	fDiffRotY -= 360.0f;
@@ -244,6 +213,16 @@ void Enemy::Update() {
 	//if (rotModel.y < -180.0f) {
 	//	rotModel.y += 360.0f;
 	//}
+
+	//if (moveTimer < 1) {
+	//	if (rootIndex.size() > 1 && (rootIndexNum->x > -1 && rootIndexNum->y > -1)) {
+	//		pos.x = (*rootIndexNum).x * 80.0f - 640.0f;
+	//		pos.z = -(*rootIndexNum).y * 80.0f + 480.0f;
+	//		rootIndexNum--;
+	//	}
+	//	moveTimer = MOVE_TIME;
+	//}
+	//moveTimer--;
 
 
 	// ワールドマトリックスの初期化

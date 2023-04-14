@@ -13,12 +13,8 @@ private:
 	XMFLOAT3 m_vTarget;				// 注視点
 	XMFLOAT3 m_vUp;					// 上方ベクトル
 
-	XMFLOAT3 m_vSrcPos;				// 元の視点
-
-	XMFLOAT3 m_vDestPos;			// 視点の目的位置
-	XMFLOAT3 m_vDestTarget;			// 注視点の目的位置
-	XMFLOAT3 m_vVelocity;			// 移動量
-
+	XMFLOAT3 m_vAngle;				// カメラの角度
+	
 	float m_fAspectRatio;			// 縦横比
 	float m_fFovY;					// 視野角(Degree)
 	float m_fNearZ;					// 前方クリップ距離
@@ -28,18 +24,12 @@ private:
 	XMFLOAT4X4 m_mtxView;			// ビュー マトリックス
 	XMFLOAT4X4 m_mtxProj;			// プロジェクション マトリックス
 
-	XMFLOAT3 m_vAngle;				// カメラの角度
-	XMFLOAT3 m_vDestAngle;			// カメラの目的の向き
-	XMFLOAT3 m_vDestTargetAngle;	// 注視点の目的の向き
-	float m_fLengthInterval;		// カメラの視点と注視点の距離
-
 	static CCamera* m_pCamera;		// 現在のカメラ
 
 public:
 	CCamera();
 
 	void Init();
-	void Update(eSCENE _scene);
 
 	void SetPos(XMFLOAT3& vPos) { m_vPos = vPos; }
 	XMFLOAT3& GetPos() { return m_vPos; }
