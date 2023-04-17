@@ -4,32 +4,35 @@
 // 
 //************************************************************************************
 
-#ifndef __GAME_H__
-#define __GAME_H__
+#ifndef __GAME_SUMMARY_H__
+#define __GAME_SUMMARY_H__
 
 #include "main.h"
 #include "Scene.h"
 
-class GameObjManager;
-class MeshField;
+//----- 前方定義 ------
+class Texture;
 
-class Game : public Scene {
+//===========================
+//
+//	クラス定義
+//
+//===========================
+class GameSummary : public Scene {
 public:
-	Game(int _stageNum);
-	~Game();
+	GameSummary();
+	~GameSummary();
 
 	virtual void Init();
 	virtual void Uninit();
 	virtual void Update();
 	virtual void Draw();
 
-	int GetStageNum();
 
 private:
-	std::unique_ptr<GameObjManager> pGameObjects;	// ゲームオブジェクト管理クラス
-	std::unique_ptr<MeshField> pMeshField;			// フィールド
+	static std::unique_ptr<Texture> pBG;	// 背景
 
-	int stageNum;
+	int sceneChangeTimer;
 };
 
 #endif

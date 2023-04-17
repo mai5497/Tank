@@ -10,7 +10,8 @@ enum eSCENE {
 	SCENE_NONE = 0,		// 未設定
 	SCENE_TITLE,		// タイトル画面
 	SCENE_MODESELECT,	// モード選択画面
-	SCENE_TUTORIAL,	// 遊び方 
+	SCENE_TUTORIAL,		// 遊び方 
+	SCENE_STAGESUMMARY,	// ステージの説明 
 	SCENE_GAME,			// ゲーム画面
 	SCENE_RESULT,		// 結果発表
 	//SCENE_RANKING,	// ランキング	
@@ -36,6 +37,8 @@ private:
 
 	static eSCENE nextScene;
 	eSCENE nowScene;
+	int stageNum;
+
 
 	std::shared_ptr<Fade> pFade;
 

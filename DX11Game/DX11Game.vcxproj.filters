@@ -55,6 +55,12 @@
     <Filter Include="ヘッダー ファイル\Tutorial">
       <UniqueIdentifier>{a2a6c8d6-02c6-488c-804c-04194b360025}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\GameSummary">
+      <UniqueIdentifier>{f81d3f87-e70a-4161-965c-4989c4e5000d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\GameSummary">
+      <UniqueIdentifier>{74c62900-d346-4720-8000-9898023ebe4e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssimpModel.cpp">
@@ -185,6 +191,9 @@
     </ClCompile>
     <ClCompile Include="Tutorial.cpp">
       <Filter>ソース ファイル\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSummary.cpp">
+      <Filter>ソース ファイル\GameSummary</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -325,6 +334,9 @@
     </ClInclude>
     <ClInclude Include="Tutorial.h">
       <Filter>ヘッダー ファイル\Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSummary.h">
+      <Filter>ヘッダー ファイル\GameSummary</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

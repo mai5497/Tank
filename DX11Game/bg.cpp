@@ -98,7 +98,7 @@ void BG::Draw(eSCENE _nowScene) {
 	SetPolygonPos(BG_POS_X, BG_POS_Y);
 	if (_nowScene == SCENE_TITLE) {
 		SetPolygonTexture(pTitleBG->GetTexture());
-	} else if (_nowScene == SCENE_MODESELECT) {
+	} else if (_nowScene == SCENE_MODESELECT || _nowScene == SCENE_STAGESUMMARY) {
 		SetPolygonTexture(pSelectBG->GetTexture());
 	}else if(_nowScene == SCENE_TUTORIAL){
 		SetPolygonTexture(pSelectBG->GetTexture());

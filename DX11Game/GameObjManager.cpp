@@ -7,6 +7,7 @@
 #include "WallObject.h"
 #include "Enemy.h"
 
+#include "Game.h"
 
 
 std::vector<std::shared_ptr<GameObject>> GameObjManager::pGameObjects;
@@ -36,7 +37,9 @@ GameObjManager::~GameObjManager() {
 //				‰Šú‰»
 //
 //====================================================================================
-void GameObjManager::Init() {
+void GameObjManager::Init(Game* _pGameScene) {
+	pGameScene = _pGameScene;
+
 	// “–‚½‚è”»’èŠÇ—ƒNƒ‰ƒX‚Ì‰Šú‰»
 	pCollManager = std::make_shared<Collision>();
 
