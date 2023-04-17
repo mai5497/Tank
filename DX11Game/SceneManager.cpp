@@ -6,13 +6,17 @@
 //************************************************************************************
 #include "SceneManager.h"
 #include "Scene.h"
+
 #include "Title.h"
-#include "Game.h"
-#include "Tutorial.h"
-#include "Result.h"
-#include "Fade.h"
-#include "Camera.h"
 #include "Select.h"
+#include "Tutorial.h"
+#include "GameSummary.h"
+#include "Game.h"
+#include "Result.h"
+
+#include "Fade.h"
+
+#include "Camera.h"
 
 //-------------------- グローバル変数定義 --------------------
 eSCENE SceneManager::nextScene = SCENE_NONE;
@@ -39,6 +43,8 @@ SceneManager::~SceneManager() {
 //
 //====================================================================================
 void SceneManager::Init() {
+	stageNum = -1;	// ステージ番号は0から シーンはいるときに加算するので-1で初期化
+
 	// 最初はタイトル画面
 	nowScene = nextScene = SCENE_TITLE;
 	if(!pNowScene)pNowScene = std::make_shared<Title>();
@@ -76,7 +82,7 @@ void SceneManager::Update() {
 
 	//----- 各種更新処理 -----
 	if (!pNowScene) {
-		MessageBox(NULL, _T("シーン消失エラー\nSceneManager.cpp(78)"), _T("error"), MB_OK);
+		MessageBox(NULL, _T("シーン消失エラー\nSceneManager.cpp(79)"), _T("error"), MB_OK);
 	}
 	////----- カメラ更新 -----
 	//CCamera::Get()->Update(nowScene);
@@ -139,8 +145,12 @@ void SceneManager::ChangeScene() {
 	case SCENE_TUTORIAL:	// チュートリアル
 		pNowScene = std::make_shared<Tutorial>();
 		break;
+	case SCENE_STAGESUMMARY:// ステージ概要
+		stageNum++;
+		pNowScene = std::make_shared<GameSummary>();
+		break;
 	case SCENE_GAME:		// ゲーム画面
-		pNowScene = std::make_shared<Game>();
+		pNowScene = std::make_shared<Game>(stageNum);
 		break;
 	case SCENE_RESULT:		// リザルトシーン
 		pNowScene = std::make_shared<Result>();

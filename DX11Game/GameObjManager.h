@@ -11,13 +11,14 @@
 
 class GameObject;
 class Collision;
+class Game;
 
 class GameObjManager {
 public:
 	GameObjManager();
 	~GameObjManager();
 
-	void Init();
+	void Init(Game* _pGameScene);
 	void Uninit();
 	void Update();
 	void Draw();
@@ -33,6 +34,8 @@ private:
 	std::shared_ptr<Collision> pCollManager;
 
 	static int updateIndex;
+
+	Game* pGameScene;
 };
 
 

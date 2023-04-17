@@ -9,6 +9,7 @@
 
 #include "GameObject.h"
 
+#define MAXMAP				(10)		// ステージの最大数
 #define MAPWIDTH			(16)		// 壁を置ける横の最大数
 #define MAPHEIGHT			(12)		// 壁を置ける縦最大数
 
@@ -27,7 +28,7 @@ public:
 
 	//void CollisionWallObj();
 	//bool CollisionWalltoBullet(XMFLOAT3 pos, float radius, float damage);
-	static int wallMap[MAPHEIGHT][MAPWIDTH];
+	static int wallMap[MAXMAP][MAPHEIGHT][MAPWIDTH];
 private:
 	static std::unique_ptr<CAssimpModel> pMyModel;
 

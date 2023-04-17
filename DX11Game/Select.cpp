@@ -62,7 +62,7 @@ void Select::Update() {
 	// 決定キーが押されたらシーン遷移
 	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_SPACE)) {
 		if (_select == SelectUI::START) {
-			Fade::StartFadeOut(SCENE_GAME);
+			Fade::StartFadeOut(SCENE_STAGESUMMARY);
 		} else if (_select == SelectUI::TUTORIAL) {
 			Fade::StartFadeOut(SCENE_TUTORIAL);
 		} else if (_select == SelectUI::SCORE) {
