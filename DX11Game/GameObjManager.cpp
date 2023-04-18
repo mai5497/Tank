@@ -39,11 +39,12 @@ GameObjManager::~GameObjManager() {
 //====================================================================================
 void GameObjManager::Init(Game* _pGameScene) {
 	pGameScene = _pGameScene;
+	int stageNum = pGameScene->GetStageNum();
 
 	// 当たり判定管理クラスの初期化
 	pCollManager = std::make_shared<Collision>();
 
-	int gameObjNum;
+	int gameObjNum = 0;
 	// プレイヤー初期化
 	gameObjNum = AddList(std::make_shared<Player>());
 	pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
@@ -52,7 +53,7 @@ void GameObjManager::Init(Game* _pGameScene) {
 		for (int i = 0; i < MAPWIDTH; i++) {
 			std::shared_ptr<GameObject> work;
 			work = std::make_shared<WallObj>(i, j);
-			if (WallObj::wallMap[j][i] != 0) {
+			if (WallObj::wallMap[stageNum][j][i] != 0) {
 				gameObjNum = AddList(work);
 				pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
 			}
@@ -84,6 +85,8 @@ void GameObjManager::Uninit() {
 		pGameObjects[i]->Uninit();
 		pGameObjects[i].reset();
 	}
+
+	pGameObjects.clear();
 }
 
 //====================================================================================
@@ -101,7 +104,7 @@ void GameObjManager::Update() {
 	pCollManager->Update();
 
 	if (enemySum < 1) {
-		Fade::StartFadeOut(SCENE_RESULT);
+		Fade::StartFadeOut(SCENE_STAGESUMMARY);
 	}
 }
 
