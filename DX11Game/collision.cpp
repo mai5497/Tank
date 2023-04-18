@@ -30,6 +30,8 @@ Collision::~Collision() {
 	for (int i = 0; i < delCnt; i++) {
 		pObjects[i].reset();
 	}
+
+	pObjects.clear();
 }
 
 

@@ -156,13 +156,13 @@ void SceneManager::ChangeScene() {
 		pNowScene = std::make_shared<Result>();
 		break;
 	default:
-		MessageBox(NULL, _T("シーンの切り替えに失敗しました。\nSceneManager.cpp(148)"), _T("error"), MB_OK);
+		MessageBox(NULL, _T("シーンの切り替えに失敗しました。\nSceneManager.cpp(159)"), _T("error"), MB_OK);
 		break;
 	}
 
 	// 新しいメモリになったので初期化
 	pNowScene->Init();
 
-	// 現在のシーン番号を初期化しておく
+	// 現在のシーン番号を更新しておく
 	nowScene = nextScene;
 }

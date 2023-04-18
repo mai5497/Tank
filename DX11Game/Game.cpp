@@ -49,7 +49,7 @@ void Game::Init() {
 
 	// ゲームオブジェクト管理クラス初期化
 	pGameObjects = std::make_unique<GameObjManager>();
-	pGameObjects->Init();
+	pGameObjects->Init(this);
 
 	// フィールド初期化
 	pMeshField = std::make_unique<MeshField>();

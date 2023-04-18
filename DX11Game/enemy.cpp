@@ -322,7 +322,7 @@ void Enemy::Destroy() {
 
 	isCollision = false;
 
-	GameObjManager::DelList(gameObjNum, false);		// Uninitがモデルと丸影の開放のみなのでなし。286で丸影の開放は行った、
+	GameObjManager::DelList(gameObjNum, false);		// Uninitがモデルと丸影の開放のみなのでなし。ちょい上で丸影の開放は行った、
 																// モデルの開放はシングルトンの為別の敵描画に影響が出るため行わない
 }
 
