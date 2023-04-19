@@ -5,7 +5,7 @@
 // 
 //************************************************************************************
 //-------------------- インクルード部 --------------------
-#include "bullet.h"
+#include "Bullet.h"
 #include "Camera.h"
 #include "shadow.h"
 #include "Texture.h"
@@ -161,27 +161,29 @@ void Bullet::Update() {
 		if (hitList.size() > 0) {
 			for (int i = 0; i < hitList.size(); i++) {
 				if (myTag == BULLET_PLAYER) {
-					if (hitList[i] == ENEMY) {	// プレイヤーとの当たり判定
+					if (hitList[i].myTag == ENEMY) {	// プレイヤーとの当たり判定
 						Destroy();
 						return;
-					} else if (hitList[i] == WALL) {	// 壁との当たり判定
+					} else if (hitList[i].myTag == WALL) {	// 壁との当たり判定
 						Destroy();
 						return;
-					} else if (hitList[i] == BULLET_ENEMY) {	// 弾との当たり判定
+					} else if (hitList[i].myTag == BULLET_ENEMY) {	// 弾との当たり判定
 						Destroy();
 						return;
 					}
 				} else if (myTag == BULLET_ENEMY) {
-					if (hitList[i] == PLAYER) {	// プレイヤーとの当たり判定
+					if (hitList[i].myTag == PLAYER) {	// プレイヤーとの当たり判定
 						Destroy();
 						return;
-					} else if (hitList[i] == ENEMY) {	// 自分以外の敵との当たり判定
+					} else if (hitList[i].myTag == ENEMY) {	// 自分以外の敵との当たり判定
+						if (hitList[i].gameObjNum != fireBulletObjNum) {
+							Destroy();
+						}
+						return;
+					} else if (hitList[i].myTag == WALL) {	// 壁との当たり判定
 						Destroy();
 						return;
-					} else if (hitList[i] == WALL) {	// 壁との当たり判定
-						Destroy();
-						return;
-					} else if (hitList[i] == BULLET_PLAYER) {	// 弾との当たり判定
+					} else if (hitList[i].myTag == BULLET_PLAYER) {	// 弾との当たり判定
 						Destroy();
 						return;
 					}
@@ -273,7 +275,7 @@ void Bullet::Draw() {
 //				発射
 //
 //====================================================================================
-void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag, EBulletType _type) {
+void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag,int objNum, EBulletType _type) {
 	std::shared_ptr<Bullet> pBullet = std::make_shared<Bullet>();
 
 	pBullet->Init();
@@ -298,6 +300,7 @@ void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag, EBulletType _
 	pBullet->type = _type;
 	pBullet->isCollision = true;
 	pBullet->myTag = _tag;
+	pBullet->fireBulletObjNum = objNum;
 
 	pBullet->gameObjNum = GameObjManager::AddList(pBullet, false);	// 上ですでに初期化はしているので初期化は必要ない
 

@@ -27,7 +27,7 @@ public:
 	void Update();
 	void Draw();
 
-	static void FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag,EBulletType _type = BULLETTYPE_NORMAL);
+	static void FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag,int objNum,EBulletType _type = BULLETTYPE_NORMAL);
 
 private:
 	void MakeVertexBullet(ID3D11Device* pDevice);
@@ -38,6 +38,8 @@ private:
 	static MATERIAL material;				// マテリアル
 
 	EBulletType	type;		// 種類
+
+	int fireBulletObjNum;	// この弾を打ったオブジェクトの番号
 };
 
 #endif

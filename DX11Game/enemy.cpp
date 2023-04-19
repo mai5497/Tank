@@ -37,7 +37,9 @@ std::unique_ptr<CAssimpModel> Enemy::pMyModel;
 //				コンストラクタ
 //
 //====================================================================================
-Enemy::Enemy() {
+Enemy::Enemy(int mapIndex_x, int mapindex_y) {
+	mapIndex.x = mapIndex_x;
+	mapIndex.y = mapindex_y;
 }
 
 
@@ -56,7 +58,7 @@ Enemy::~Enemy() {
 //
 //====================================================================================
 void Enemy::Init() {
-	// モデルデータの読み込み
+	//----- モデルデータの読み込み -----
 	if (!pMyModel) {
 		pMyModel = std::make_unique<CAssimpModel>();
 		ID3D11Device* pDevice = GetDevice();
@@ -68,30 +70,31 @@ void Enemy::Init() {
 		}
 	}
 
-	// 位置・回転・スケール・サイズの初期設定
-	pos = XMFLOAT3(rand() % 620 - 310.0f, 0.0f, rand() % 620 - 310.0f);
-	moveVal = XMFLOAT3(VALUE_MOVE_ENEMY, 0.0f, VALUE_MOVE_ENEMY);
+	//----- 位置・回転・スケール・サイズなどオブジェクトに必要な初期設定 -----
+	pos = XMFLOAT3(mapIndex.x * 80.0f - 640.0f, 0.0f, -mapIndex.y * 80.0f + 480.0f);
+	moveVal = XMFLOAT3(0.0f, 0.0f,0.0f);
 	rotModel = XMFLOAT3(0.0f, rand() % 360 - 180.0f, 0.0f);
 	rotDest = rotModel;
 	size = XMFLOAT3(50.0f, 50.0f, 50.0f);
 	collSize = XMFLOAT3(50.0f, 50.0f, 50.0f);
-	// 丸影の生成
-	shadowNum = CreateShadow(pos, 25.0f);
-	use = true;
-	isCollision = true;
-	bulletTimer = 300;
+	myTag = ENEMY;								// オブジェクト識別のタグ
+	collType = Collision::DYNAMIC;				// 動的オブジェクト
 
-	mapIndex.x = (pos.x + 640.0f) / 80.0f;
+	//----- 敵の初期設定 -----
+	shadowNum = CreateShadow(pos, 25.0f);	// 丸影の生成
+
+	use = true;								// 使用フラグ
+	
+	isCollision = true;						// 当たり判定を行うか
+	
+	bulletTimer = 300;						// 弾発射の間隔
+
+	mapIndex.x = (pos.x + 640.0f) / 80.0f;	// 座標をマップ番号に変換した値
 	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
 
-	rootTimer = 0;
-	moveTimer = MOVE_TIME;
-	rootIndex = search_Root(mapIndex);	// ルートを検索して入れる
-
-	rootIndexNum = rootIndex.end()-1;	// ルートの検索結果が後ろから入るので後ろを初期値とする
-
-	myTag = ENEMY;
-	collType = Collision::DYNAMIC;
+	rootTimer = 0;							// ルート検索の間隔
+	rootIndex = search_Root(mapIndex);		// ルートを検索して入れる
+	rootIndexNum = rootIndex.end()-1;		// ルートの検索結果が後ろから入るので後ろを初期値とする
 }
 
 //====================================================================================
@@ -102,7 +105,7 @@ void Enemy::Init() {
 void Enemy::Uninit() {
 	ReleaseShadow(shadowNum);
 
-	//delete rootIndex;
+	rootIndex.clear();
 
 	// モデルの解放
 	if (pMyModel) {
@@ -122,15 +125,15 @@ void Enemy::Update() {
 		return;
 	}
 
-	// 変数初期化
+	//----- 変数初期化 -----
 	XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
 	XMFLOAT3 ShadowMove = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 
-	// 当たり判定
+	//----- 当たり判定 -----
 	if (hitList.size() > 0) {
 		for (int i = 0; i < hitList.size(); i++) {
-			if (hitList[i] == BULLET_PLAYER) {
+			if (hitList[i].myTag == BULLET_PLAYER) {
 				// 弾と当たった時
 				Destroy();
 				return;
@@ -138,36 +141,35 @@ void Enemy::Update() {
 		}
 	}
 
-	// 移動
-
-	if (moveVal.x > 0.0f) {
-		ShadowMove.x += 25.0f;
-	} else if (moveVal.x < 0.0f) {
-		ShadowMove.x -= 25.0f;
-	}
-
-	if (moveVal.z > 0.0f) {
-		ShadowMove.z += 25.0f;
-	} else if (moveVal.z < 0.0f) {
-		ShadowMove.z -= 25.0f;
-	}
-
 	//----- 移動 -----
+	// カメラの向き取得
+	XMFLOAT3 rotCamera = CCamera::Get()->GetAngle();
+
 	// 座標から現在のマップ番号を取得
 	mapIndex.x = (pos.x + 640.0f) / 80.0f;
 	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
 
-	// 向かうルートと現在の位置を比較して移動
+	// 向かうルートと現在の位置を比較して移動量を決める
 	if (mapIndex.x < (*rootIndexNum).x) {
-		pos.x += moveVal.x;
+		moveVal.x = VALUE_MOVE_ENEMY;
+		rotDest.y = rotCamera.y - 90.0f;
 	} else if (mapIndex.x > (*rootIndexNum).x) {
-		pos.x -= moveVal.x;
+		moveVal.x = -VALUE_MOVE_ENEMY;
+		rotDest.y = rotCamera.y + 90.0f;
+	} else if (mapIndex.x == (*rootIndexNum).x) {
+		moveVal.x = 0.0f;
 	}
+
 	if (mapIndex.y < (*rootIndexNum).y) {
-		pos.z -= moveVal.z;
+		moveVal.z = -VALUE_MOVE_ENEMY;
+		rotDest.y = rotCamera.y;
 	} else if (mapIndex.y > (*rootIndexNum).y) {
-		pos.z += moveVal.z;
+		moveVal.z = VALUE_MOVE_ENEMY;
+		rotDest.y = rotCamera.y + 180.0f;
+	} else if (mapIndex.y == (*rootIndexNum).y) {
+		moveVal.z = 0.0f;
 	}
+
 	// 次のルートに更新
 	if (mapIndex.x == (*rootIndexNum).x && mapIndex.y == (*rootIndexNum).y){
 		if (rootIndex.size() > 1 && (rootIndexNum->x > -1 && rootIndexNum->y > -1)) {
@@ -175,56 +177,30 @@ void Enemy::Update() {
 		}
 	}
 
-	// 目的の角度を求める
-	float degree = atan2f(-(*rootIndexNum).y * 80.0f + 480.0f - pos.z, (*rootIndexNum).x * 80.0f - 640.0f - pos.x);
-	degree = degree * 3.14 / 180;
-	//if (degree < 0) {
-	//	degree = degree + 2 * 3.14;
-	//}
-	//rotModel.y = degree * 360 / (2 * 3.14);
-	rotModel.y = degree;
-	//if (rotModel.y < -180) {
-	//	rotModel.y = 360 - rotModel.y;
-	//}
-	//rotModel.y -= 90;
-
-
-
-	//if (rotDest.y < -180) {
-	//	rotDest.y = 360 - rotDest.y;
-	//}
-	rotDest.y -= 90;
-
-
 	// 目的の角度までの差分
-	//float fDiffRotY = rotDest.y - rotModel.y;
-	//if (fDiffRotY >= 180.0f) {
-	//	fDiffRotY -= 360.0f;
-	//}
-	//if (fDiffRotY < -180.0f) {
-	//	fDiffRotY += 360.0f;
-	//}
+	float fDiffRotY = rotDest.y - rotModel.y;
+	if (fDiffRotY >= 180.0f) {
+		fDiffRotY -= 360.0f;
+	}
+	if (fDiffRotY < -180.0f) {
+		fDiffRotY += 360.0f;
+	}
 
-	//// 目的の角度まで慣性をかける
-	//rotModel.y += fDiffRotY * RATE_ROTATE_ENEMY;
-	//if (rotModel.y >= 180.0f) {
-	//	rotModel.y -= 360.0f;
-	//}
-	//if (rotModel.y < -180.0f) {
-	//	rotModel.y += 360.0f;
-	//}
+	// 目的の角度まで慣性をかける
+	rotModel.y += fDiffRotY * RATE_ROTATE_ENEMY;
+	if (rotModel.y >= 180.0f) {
+		rotModel.y -= 360.0f;
+	}
+	if (rotModel.y < -180.0f) {
+		rotModel.y += 360.0f;
+	}
 
-	//if (moveTimer < 1) {
-	//	if (rootIndex.size() > 1 && (rootIndexNum->x > -1 && rootIndexNum->y > -1)) {
-	//		pos.x = (*rootIndexNum).x * 80.0f - 640.0f;
-	//		pos.z = -(*rootIndexNum).y * 80.0f + 480.0f;
-	//		rootIndexNum--;
-	//	}
-	//	moveTimer = MOVE_TIME;
-	//}
-	//moveTimer--;
+	// 移動量の加算
+	pos.x += moveVal.x;
+	pos.z += moveVal.z;
 
 
+	//----- 移動をワールド座標に変換する -----
 	// ワールドマトリックスの初期化
 	_mtxWorld = XMMatrixIdentity();
 
@@ -233,7 +209,6 @@ void Enemy::Update() {
 	// スケールを反映
 	_mtxScale = XMMatrixScaling(size.x, size.y, size.z);
 	_mtxWorld = XMMatrixMultiply(_mtxScale, _mtxWorld);
-
 
 	// 回転を反映
 	_mtxRot = XMMatrixRotationRollPitchYaw(
@@ -249,9 +224,23 @@ void Enemy::Update() {
 	// ワールドマトリックス設定
 	XMStoreFloat4x4(&mtxWorld, _mtxWorld);
 
-	// 丸影の移動
+
+	//----- 丸影の移動 -----
+	if (moveVal.x > 0.0f) {
+		ShadowMove.x += 25.0f;
+	} else if (moveVal.x < 0.0f) {
+		ShadowMove.x -= 25.0f;
+	}
+
+	if (moveVal.z > 0.0f) {
+		ShadowMove.z += 25.0f;
+	} else if (moveVal.z < 0.0f) {
+		ShadowMove.z -= 25.0f;
+	}
+
 	MoveShadow(shadowNum, XMFLOAT3(pos.x + ShadowMove.x, pos.y, pos.z + ShadowMove.z));
 
+	//----- 弾発射 -----
 	int randomtime;
 	randomtime = rand() % 3;
 	bulletTimer -= randomtime;
@@ -259,11 +248,13 @@ void Enemy::Update() {
 		Bullet::FireBullet(
 			pos,
 			XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
-			BULLET_ENEMY);
+			BULLET_ENEMY,
+			gameObjNum);
 
 		bulletTimer = BULLET_TIME;
 	}
 
+	//----- ルート検索 -----
 	rootTimer--;
 	if (rootTimer < 0) {
 	// マップの要素番号であったら現在の位置がどこになるのかを求める
@@ -295,11 +286,6 @@ void Enemy::Draw() {
 	pMyModel->Draw(pDC, mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
-
-	PrintDebugProc("index:%d,%d\n", mapIndex.x, mapIndex.y);
-	PrintDebugProc("pos:%f,%f,%f\n", pos.x, pos.y, pos.z);
-
-	//PrintDebugProc("%d\n");
 }
 
 //====================================================================================

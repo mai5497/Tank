@@ -44,26 +44,27 @@ void GameObjManager::Init(Game* _pGameScene) {
 	// 当たり判定管理クラスの初期化
 	pCollManager = std::make_shared<Collision>();
 
+	enemySum = 0;
 	int gameObjNum = 0;
 	// プレイヤー初期化
 	gameObjNum = AddList(std::make_shared<Player>());
 	pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
-	// オブジェクトの壁初期化
+	
+
 	for (int j = 0; j < MAPHEIGHT; j++) {
 		for (int i = 0; i < MAPWIDTH; i++) {
 			std::shared_ptr<GameObject> work;
-			work = std::make_shared<WallObj>(i, j);
-			if (WallObj::wallMap[stageNum][j][i] != 0) {
+			if (WallObj::wallMap[stageNum][j][i] == 1) {
+				// オブジェクトの壁初期化
+				work = std::make_shared<WallObj>(i, j);
 				gameObjNum = AddList(work);
+				pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
+			} else if (WallObj::wallMap[stageNum][j][i] == 2) {
+				// 敵初期化
+				gameObjNum = AddList(std::make_shared<Enemy>(i,j));
 				pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
 			}
 		}
-	}
-	// 敵初期化
-	enemySum = 0;
-	for (int i = 0; i < MAX_ENEMY; i++) {
-		gameObjNum = AddList(std::make_shared<Enemy>());
-		pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
 	}
 
 

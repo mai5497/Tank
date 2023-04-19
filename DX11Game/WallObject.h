@@ -16,7 +16,7 @@
 class  WallObj : public GameObject {
 public:
 	WallObj();
-	WallObj(int x,int y);
+	WallObj(int mapIndex_x,int mapindex_y);
 	~WallObj();
 
 	void Init();
