@@ -50,7 +50,7 @@ public:
 	bool isHit;							// 何かに当たっている
 
 	ObjTag myTag;						// このオブジェクトのタグ
-	std::vector<ObjTag> hitList;		// このオブジェクトに当たっているオブジェクトのタグを取得
+	std::vector<GameObject> hitList;	// このオブジェクトに当たっているオブジェクト
 
 	bool use;							// 使用フラグ
 

@@ -421,6 +421,9 @@ HRESULT Init(HWND hWnd, BOOL bWindow)
 	// サウンド初期化
 	CSound::Init();
 
+	// 背景初期化
+	BG::Init();
+
 	// シーン初期化
 	pSceneManager = std::make_shared<SceneManager>();
 	pSceneManager->Init();
@@ -488,6 +491,9 @@ void Uninit(void)
 	//}
 	//UninitPolyline();
 
+	// 背景終了処理
+	BG::Uninit();
+
 	// サウンド終了処理
 	CSound::Fin();
 
@@ -512,9 +518,6 @@ void Uninit(void)
 
 	// ポリゴン表示終了処理
 	UninitPolygon();
-
-	// 背景画像終了処理
-	BG::Uninit();
 
 	// 深度ステンシルステート解放
 	for (int i = 0; i < _countof(g_pDSS); ++i) {

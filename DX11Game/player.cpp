@@ -10,7 +10,7 @@
 #include "input.h"
 #include "debugproc.h"
 #include "shadow.h"
-#include "bullet.h"
+#include "Bullet.h"
 #include "effect.h"
 #include "explosion.h"
 #include "DebugCollision.h"
@@ -85,6 +85,8 @@ void Player::Init() {
 
 	myTag = PLAYER;
 	collType = Collision::DYNAMIC;
+
+	hitPoint = MAX_HP;
 }
 
 //====================================================================================
@@ -111,11 +113,6 @@ void Player::Uninit() {
 void Player::Update() {
 	mapIndex.x = (pos.x + 640.0f) / 80.0f;
 	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
-
-	testPos.x = mapIndex.x * 80.0f - 640.0f;
-	testPos.y = pos.y;
-	testPos.z = -mapIndex.y * 80.0f + 480.0f;
-
 
 	// ƒJƒƒ‰‚ÌŒü‚«Žæ“¾
 	XMFLOAT3 rotCamera = CCamera::Get()->GetAngle();
@@ -299,7 +296,8 @@ void Player::Update() {
 	// ’e”­ŽË
 	if (GetKeyRepeat(VK_SPACE)) {
 		Bullet::FireBullet(pos, XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
-			BULLET_PLAYER);
+			BULLET_PLAYER,
+			gameObjNum);
 	}
 
 	// A*‚ÉŽ©•ª‚ÌÀ•W‚ð“n‚·
@@ -349,49 +347,9 @@ XMFLOAT3& Player::GetPlayerPos() {
 
 //====================================================================================
 //
-//				Õ“Ë”»’è
+//				HPŽæ“¾
 //
 //====================================================================================
-bool Player::CollisionPlayer(XMFLOAT3 pos, float radius, float damage) {
-	Collision _collision;
-	bool hit = _collision.CollisionSphere(pos, PLAYER_RADIUS, pos, radius);
-	if (hit) {
-		// ”š”­ŠJŽn
-		int nExp = -1;
-		if (damage > 0.0f) {
-			nExp = StartExplosion(pos, XMFLOAT2(40.0f, 40.0f));
-			// 
-		} else {
-			nExp = StartExplosion(pos, XMFLOAT2(20.0f, 20.0f));
-		}
-		SetExplosionColor(nExp, XMFLOAT4(1.0f, 0.7f, 0.7f, 1.0f));
-	}
-	return hit;
+int Player::GetHP() {
+	return hitPoint;
 }
-
-bool Player::CollisionPlayer(GameObject collision) {
-	GameObject* _GameObject;
-	Collision _collision;
-
-	_GameObject = this;
-
-	bool isHit = _collision.CollisionSphere(*_GameObject, collision);
-
-	if (isHit) {
-		_GameObject = _collision.Push(pos, XMFLOAT3(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS), moveVal, collision.pos, XMFLOAT3(collision.collRadius, collision.collRadius, collision.collRadius));
-
-		if (_GameObject == nullptr) {
-			//@‰Ÿ‚µo‚µ‚ÉŽ¸”s‚µ‚Ä‚¢‚é
-			return isHit;
-		}
-
-		pos = _GameObject->pos;
-		moveVal = _GameObject->moveVal;
-	}
-
-	return isHit;
-}
-
-//XMINT2 Player::SetPlayerIndex() {
-//	return mapIndex;
-//}

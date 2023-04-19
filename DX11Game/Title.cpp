@@ -69,9 +69,6 @@ void Title::Init() {
 	pStart = std::make_unique<PressSpace>();
 	pStart->Init();
 
-	// 背景初期化
-	BG::Init();
-
 	// フィールド初期化
 	//pMeshField = std::make_unique<MeshField>();
 	//pMeshField->Init(8, 7, 80.0f, 80.0f);

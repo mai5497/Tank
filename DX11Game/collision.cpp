@@ -99,8 +99,8 @@ void Collision::Update() {
 				}
 
 				// “–‚½‚Á‚Ä‚¢‚é‚à‚ÌƒŠƒXƒg‚Ö‚Ì’Ç‰Á
-				pObjects[i]->hitList.emplace_back(pObjects[j]->myTag);
-				pObjects[j]->hitList.emplace_back(pObjects[i]->myTag);
+				pObjects[i]->hitList.emplace_back(*pObjects[j]);
+				pObjects[j]->hitList.emplace_back(*pObjects[i]);
 			} /*else {
 				pObjects[i]->isHit = false;
 				pObjects[j]->isHit = false;

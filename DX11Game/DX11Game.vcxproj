@@ -164,7 +164,7 @@
     <ClCompile Include="Astar.cpp" />
     <ClCompile Include="BG.cpp" />
     <ClCompile Include="Boss.cpp" />
-    <ClCompile Include="bullet.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="DebugCollision.cpp" />
@@ -210,7 +210,7 @@
     <ClInclude Include="Astar.h" />
     <ClInclude Include="BG.h" />
     <ClInclude Include="Boss.h" />
-    <ClInclude Include="bullet.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="DebugCollision.h" />

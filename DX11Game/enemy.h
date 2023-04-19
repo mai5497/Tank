@@ -11,7 +11,7 @@
 //-------------------- クラス定義 --------------------
 class Enemy : public GameObject {
 public:
-	Enemy();
+	Enemy(int mapIndex_x, int mapindex_y);
 	~Enemy();
 
 	void Init();
@@ -30,8 +30,6 @@ private:
 	XMFLOAT3 rotDest;	// 目的の向き
 	int	bulletTimer;	// 弾発射タイマー
 	int	rootTimer;		// ルート検索タイマー
-	int	moveTimer;		// ルート検索タイマー
-	//int rootIndexNum;	// 検索したルートの何番目かに使う
 	std::vector<XMINT2>::iterator rootIndexNum;	// 検索したルートの何番目かに使う
 	std::vector<XMINT2> rootIndex;	// 検索したルートが格納される
 };

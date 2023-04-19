@@ -46,8 +46,14 @@ void SceneManager::Init() {
 	stageNum = -1;	// ステージ番号は0から シーンはいるときに加算するので-1で初期化
 
 	// 最初はタイトル画面
+#if 0
 	nowScene = nextScene = SCENE_TITLE;
 	if(!pNowScene)pNowScene = std::make_shared<Title>();
+#else
+	stageNum++;
+	nowScene = nextScene = SCENE_GAME;
+	if (!pNowScene)pNowScene = std::make_shared<Game>(stageNum);
+#endif
 	pNowScene->Init();
 
 	// フェードの初期化

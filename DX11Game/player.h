@@ -8,6 +8,8 @@
 
 #include "GameObject.h"
 
+#define MAX_HP				(3)			// HP最大値
+
 //-------------------- クラス定義 --------------------
 class Player : public GameObject {
 public:
@@ -20,16 +22,13 @@ public:
 	void Draw();
 
 	XMFLOAT3& GetPlayerPos();
-	bool CollisionPlayer(XMFLOAT3 pos, float radius, float damage);
-	bool CollisionPlayer(GameObject collision);
-	//XMINT2 SetPlayerIndex();
-
+	int GetHP();
 private:
 	static std::unique_ptr<CAssimpModel> pMyModel;
 	XMFLOAT3 rotDestModel;	// 目的の向き
 	double m_animTime;
 
-	XMFLOAT3 testPos;
+	int hitPoint;
 };
 
 #endif
