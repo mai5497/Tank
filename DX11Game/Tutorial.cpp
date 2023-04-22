@@ -7,7 +7,7 @@
 #include "bg.h"
 
 
-#define PATH_UI_TEXTURE	L"data/texture/uiSousa.png"
+#define PATH_UI_TEXTURE	L"data/texture/UI_Sousa.png"
 
 #define UI_WIDTH		(615)
 #define UI_HEIGHT		(401)

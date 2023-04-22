@@ -26,8 +26,7 @@ public:
 	static void Uninit();				// I—¹ˆ—
 	static void Draw(eSCENE _nowScene);	// •`‰æ
 private:
-	static std::unique_ptr<Texture> pTitleBG;
+	static std::unique_ptr<Texture> pSkyBG;
 	static std::unique_ptr<Texture> pSelectBG;
-	static std::unique_ptr<Texture> pGameBG;
 };
 #endif

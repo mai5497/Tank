@@ -26,7 +26,7 @@ public:
 		MAX_TEXTURE,
 	};
 
-	Result();
+	Result(int _stageNum);
 	~Result();
 
 	virtual void Init();	// ‰Šú‰»
@@ -35,7 +35,12 @@ public:
 	virtual void Draw();	// •`‰æ
 
 private:
-	static std::unique_ptr<Texture> pTexture[MAX_TEXTURE];
+	static std::unique_ptr<Texture> pFrame;
+	static std::unique_ptr<Texture> pAllClear;
+	static std::unique_ptr<Texture> pStageChar;
+
+
+	int stageNum;
 
 };
 #endif

@@ -8,12 +8,15 @@
 //-------------------- インクルード部 --------------------
 #include "Game.h"
 #include "Sound.h"
+#include "input.h"
+
 #include "shadow.h"
 #include "effect.h"
 #include "DwarfEffect.h"
 #include "smoke.h"
-#include "timer.h"
-#include "input.h"
+
+//#include "timer.h"
+#include "HPUI.h"
 
 #include "BG.h"
 #include "explosion.h"
@@ -73,7 +76,11 @@ void Game::Init() {
 	InitSmoke();
 
 	// タイマー初期化
-	InitTimer();
+	//InitTimer();
+
+	// HPUI初期化
+	pHPUI = std::make_unique<HPUI>();
+	pHPUI->Init(this);
 
 	CSound::Play(BGM_GAME);
 }
@@ -84,8 +91,11 @@ void Game::Init() {
 //
 //====================================================================================
 void Game::Uninit() {
+	// HPUI終了処理
+	pHPUI->Uninit();
+
 	// タイマー終了処理
-	UninitTimer();
+	//UninitTimer();
 
 	// 煙終了処理
 	UninitSmoke();
@@ -143,7 +153,10 @@ void Game::Update() {
 	UpdateSmoke();
 
 	// タイマー更新
-	UpdateTimer();
+	//UpdateTimer();
+
+	// HPUI更新
+	pHPUI->Update();
 }
 
 //====================================================================================
@@ -175,7 +188,10 @@ void Game::Draw() {
 	DrawExplosion();
 
 	// タイマー描画
-	DrawTimer();
+	//DrawTimer();
+
+	// HPUI描画
+	pHPUI->Draw();
 }
 
 
@@ -188,4 +204,20 @@ int Game::GetStageNum() {
 	return stageNum;
 }
 
+//====================================================================================
+//
+//				プレイヤーのHPを保存しておく
+//
+//====================================================================================
+void Game::StoragePlayerHP(int _hp) {
+	playerHP = _hp;
+}
 
+//====================================================================================
+//
+//			保存してあるプレイヤーのHPを取得
+//
+//====================================================================================
+int Game::GetPlayerHP() {
+	return playerHP;
+}

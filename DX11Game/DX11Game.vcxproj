@@ -177,6 +177,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObjManager.cpp" />
     <ClCompile Include="GameSummary.cpp" />
+    <ClCompile Include="HPUI.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PressSpace.cpp" />
     <ClCompile Include="SceneManager.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjManager.h" />
     <ClInclude Include="GameSummary.h" />
+    <ClInclude Include="HPUI.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="main.h" />

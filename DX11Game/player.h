@@ -10,10 +10,11 @@
 
 #define MAX_HP				(3)			// HP最大値
 
+class Game;
 //-------------------- クラス定義 --------------------
 class Player : public GameObject {
 public:
-	Player();
+	Player(Game* _pGameScene);
 	~Player();
 
 	void Init();
@@ -22,11 +23,13 @@ public:
 	void Draw();
 
 	XMFLOAT3& GetPlayerPos();
-	int GetHP();
 private:
 	static std::unique_ptr<CAssimpModel> pMyModel;
 	XMFLOAT3 rotDestModel;	// 目的の向き
 	double m_animTime;
+
+	Game* pGameScene;	// ゲームシーン
+
 
 	int hitPoint;
 };

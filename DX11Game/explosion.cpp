@@ -13,7 +13,7 @@
 #include "Light.h"
 
 //-------------------- íËêîíËã` --------------------
-#define	TEXTURE_FILENAME		L"data/texture/explosion000.png"
+#define	TEXTURE_FILENAME		L"data/texture/FX_Explosion.png"
 
 #define M_DIFFUSE				XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
 #define M_SPECULAR				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)

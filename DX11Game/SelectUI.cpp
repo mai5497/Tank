@@ -4,8 +4,8 @@
 #include "input.h"
 
 
-#define PATH_UI_TEXTURE		L"data/texture/uiSelect.png"
-#define PATH_BOX_TEXTURE	L"data/texture/uiSelectBox.png"
+#define PATH_UI_TEXTURE		L"data/texture/UI_Select.png"
+#define PATH_BOX_TEXTURE	L"data/texture/UI_SelectBox.png"
 
 #define UI_WIDTH			(400)
 #define UI_HEIGHT			(360)

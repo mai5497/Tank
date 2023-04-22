@@ -10,7 +10,7 @@
 #include "Texture.h"
 
 //-------------------- 定数定義 --------------------
-#define PATH_NUMBERTEXTURE	L"data/texture/number001.png"
+#define PATH_NUMBERTEXTURE	L"data/texture/UI_Number.png"
 
 
 //-------------------- グローバル変数定義 --------------------
@@ -50,21 +50,20 @@ void UninitNumber() {
 //				数字描画
 //
 //====================================================================================
-void DrawNumber(XMFLOAT2 vPos,unsigned uNumber,int nWidth,float fSizeX,float fSizeY) {
+void DrawNumber(XMFLOAT2 vPos,unsigned uNumber,int nWidth,float fSizeX) {
 	ID3D11DeviceContext *pDC = GetDeviceContext();
 	SetPolygonColor(1.0f,1.0f, 1.0f);
-	SetPolygonSize(fSizeX, fSizeY);
+	SetPolygonSize(fSizeX, NUMBER_SIZE_Y);
 	SetPolygonTexture(pTexture->GetTexture());
-	SetPolygonFrameSize(1.0f / NUMBER_COUNT_X, 1.0f / NUMBER_COUNT_Y);
+	SetPolygonFrameSize(1.0f / NUMBER_COUNT_X, 1.0f);
 
 	vPos.x += (nWidth - 0.5f) * fSizeX;
-	vPos.y -= fSizeY * 0.5f;
+	vPos.y -= NUMBER_SIZE_Y * 0.5f;
 
 	for (; nWidth > 0 ;--nWidth) {
 		unsigned n = uNumber % 10;
 		SetPolygonPos(vPos.x, vPos.y);
-		SetPolygonUV((n % NUMBER_COUNT_X) / (float)NUMBER_COUNT_X,
-					 (n / NUMBER_COUNT_X) / (float)NUMBER_COUNT_Y);
+		SetPolygonUV((n % NUMBER_COUNT_X) / (float)NUMBER_COUNT_X,0.0f);
 		DrawPolygon(pDC);
 
 		uNumber /= 10;

@@ -61,6 +61,12 @@
     <Filter Include="ヘッダー ファイル\GameSummary">
       <UniqueIdentifier>{74c62900-d346-4720-8000-9898023ebe4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Result">
+      <UniqueIdentifier>{ae9b12ce-a79e-4c66-ba0f-c14fb3739360}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Result">
+      <UniqueIdentifier>{1f16d728-2d21-49bd-906a-2a11dc5a6833}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssimpModel.cpp">
@@ -124,9 +130,6 @@
       <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>ソース ファイル\GameSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Result.cpp">
       <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
@@ -195,6 +198,12 @@
     <ClCompile Include="timer.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
+    <ClCompile Include="HPUI.cpp">
+      <Filter>ソース ファイル\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Result.cpp">
+      <Filter>ソース ファイル\Result</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssimpModel.h">
@@ -262,9 +271,6 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>ヘッダー ファイル\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Result.h">
-      <Filter>ヘッダー ファイル\GameSystem</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>ヘッダー ファイル\GameSystem</Filter>
@@ -337,6 +343,12 @@
     </ClInclude>
     <ClInclude Include="GameSummary.h">
       <Filter>ヘッダー ファイル\GameSummary</Filter>
+    </ClInclude>
+    <ClInclude Include="HPUI.h">
+      <Filter>ヘッダー ファイル\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Result.h">
+      <Filter>ヘッダー ファイル\Result</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,7 @@
 
 class GameObjManager;
 class MeshField;
+class HPUI;
 
 class Game : public Scene {
 public:
@@ -25,11 +26,18 @@ public:
 
 	int GetStageNum();
 
+	void StoragePlayerHP(int _hp);
+	int GetPlayerHP();
+
 private:
 	std::unique_ptr<GameObjManager> pGameObjects;	// ゲームオブジェクト管理クラス
 	std::unique_ptr<MeshField> pMeshField;			// フィールド
 
+	std::unique_ptr<HPUI> pHPUI;					// HPのUI
+
 	int stageNum;
+
+	int playerHP;	// プレイヤーのHPを保存しておく
 };
 
 #endif

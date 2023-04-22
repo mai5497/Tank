@@ -47,7 +47,7 @@ void GameObjManager::Init(Game* _pGameScene) {
 	enemySum = 0;
 	int gameObjNum = 0;
 	// ƒvƒŒƒCƒ„[‰Šú‰»
-	gameObjNum = AddList(std::make_shared<Player>());
+	gameObjNum = AddList(std::make_shared<Player>(pGameScene));
 	pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
 	
 
@@ -107,6 +107,8 @@ void GameObjManager::Update() {
 	if (enemySum < 1) {
 		Fade::StartFadeOut(SCENE_STAGESUMMARY);
 	}
+
+	
 }
 
 //====================================================================================
