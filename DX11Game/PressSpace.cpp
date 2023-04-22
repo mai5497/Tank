@@ -1,6 +1,6 @@
 #include "PressSpace.h"
 
-#define TEXTURE_PATH	L"data/texture/pressspace.png"
+#define TEXTURE_PATH	L"data/texture/UI_PressSpace.png"
 #define TEXTURE_WIDTH	(1280)
 #define TEXTURE_HEIGHT	(195)
 #define TEXTURE_POSX	(0.0f)

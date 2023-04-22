@@ -16,6 +16,8 @@
 #include "DebugCollision.h"
 #include "Texture.h"
 #include "Astar.h"
+#include "Game.h"
+#include "fade.h"
 
 //-------------------- マクロ定義 --------------------
 #define MODEL_PLAYER	"data/model/kobitoblue.fbx"
@@ -35,7 +37,8 @@ std::unique_ptr<CAssimpModel> Player::pMyModel;
 //				コンストラクタ
 //
 //====================================================================================
-Player::Player() {
+Player::Player(Game* _pGameScene) {
+	pGameScene = _pGameScene;
 }
 
 //====================================================================================
@@ -53,6 +56,7 @@ Player::~Player() {
 //
 //====================================================================================
 void Player::Init() {
+
 	// 位置・回転・スケールの初期設定
 	pos = XMFLOAT3(100.0f, 0.0f, 0.0f);
 	moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -87,6 +91,8 @@ void Player::Init() {
 	collType = Collision::DYNAMIC;
 
 	hitPoint = MAX_HP;
+	pGameScene->StoragePlayerHP(hitPoint);	// ゲームシーンにHPを保存する
+
 }
 
 //====================================================================================
@@ -234,9 +240,6 @@ void Player::Update() {
 		pos.y = 150.0f;
 	}
 
-	mapIndex.x = (pos.x + 640.0f) / 80.0f;
-	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
-
 	XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
 
 	// ワールドマトリックスの初期化
@@ -302,6 +305,22 @@ void Player::Update() {
 
 	// A*に自分の座標を渡す
 	SetPlayerIndex(mapIndex);
+
+	//----- 当たり判定 -----
+	if (hitList.size() > 0) {
+		for (int i = 0; i < hitList.size(); i++) {
+			if (hitList[i].myTag == BULLET_ENEMY) {
+				// 弾と当たった時
+				hitPoint--;	//HPを減らす
+			
+				if (hitPoint > 0) {
+					pGameScene->StoragePlayerHP(hitPoint);	// ゲームシーンにHPを保存する
+				} else {
+					Fade::StartFadeOut(SCENE_RESULT);	// リザルトシーンへ移行
+				}
+			}
+		}
+	}
 }
 
 //====================================================================================
@@ -343,13 +362,4 @@ void Player::Draw() {
 //====================================================================================
 XMFLOAT3& Player::GetPlayerPos() {
 	return pos;
-}
-
-//====================================================================================
-//
-//				HP取得
-//
-//====================================================================================
-int Player::GetHP() {
-	return hitPoint;
 }

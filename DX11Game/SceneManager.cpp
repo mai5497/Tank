@@ -43,7 +43,7 @@ SceneManager::~SceneManager() {
 //
 //====================================================================================
 void SceneManager::Init() {
-	stageNum = -1;	// ステージ番号は0から シーンはいるときに加算するので-1で初期化
+	stageNum = 8;	// ステージ番号は0から シーンはいるときに加算するので-1で初期化
 
 	// 最初はタイトル画面
 #if 0
@@ -159,7 +159,7 @@ void SceneManager::ChangeScene() {
 		pNowScene = std::make_shared<Game>(stageNum);
 		break;
 	case SCENE_RESULT:		// リザルトシーン
-		pNowScene = std::make_shared<Result>();
+		pNowScene = std::make_shared<Result>(stageNum);
 		break;
 	default:
 		MessageBox(NULL, _T("シーンの切り替えに失敗しました。\nSceneManager.cpp(159)"), _T("error"), MB_OK);

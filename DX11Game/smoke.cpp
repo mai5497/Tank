@@ -14,7 +14,7 @@
 #include "Light.h"
 
 //-------------------- 定数定義 --------------------
-#define	TEXTURE_SMOKE		L"data/texture/smoke000.png"	// 読み込むテクスチャファイル名
+#define	TEXTURE_SMOKE		L"data/texture/FX_Smoke.png"	// 読み込むテクスチャファイル名
 #define	SMOKE_SIZE_X		(50.0f)							// ビルボードの幅
 #define	SMOKE_SIZE_Y		(50.0f)							// ビルボードの高さ
 

@@ -13,47 +13,46 @@
 #include "number.h"
 #include "timer.h"
 #include "Fade.h"
+#include "BG.h"
+#include "WallObject.h"
 
 
 //-------------------- 定数定義 --------------------
-#define RESULT_POS_X		(0.0f)
-#define RESULT_POS_Y		(0.0f)
-#define RESULT_WIDTH		(SCREEN_WIDTH)
-#define RESULT_HEIGHT		(SCREEN_HEIGHT)
+#define TEX_FRAME			(L"data/texture/UI_Result.png")
+#define TEX_ALLCLEAR		(L"data/texture/UI_AllClear.png")
+#define TEX_STAGECHAR		(L"data/texture/UI_StageChar.png")
 
-#define TIMER_POS_Y			(0.0f + (NUMBER_SIZE_Y*2.5) * 0.5)				// 表示位置
-#define MIN_CHRCNT			(2)												// 分文字数
-#define SEC_CHRCNT			(2)												// 秒文字数
-#define TIMERROGO_POS_Y		(TIMER_POS_Y - (NUMBER_SIZE_Y*2.5) * 0.5)
+#define FRAME_POS_X			(0.0f)
+#define FRAME_POS_Y			(0.0f)
+#define FRAME_WIDTH			(620.0f)
+#define FRAME_HEIGHT		(365.0f)
 
-#define MINCHR_POS_X		(0.0f - (NUMBER_SIZE_X*2.5) * 0.5)															// 分文字位置
-#define MINNUM_POS_X		(MINCHR_POS_X - MIN_CHRCNT * (NUMBER_SIZE_X*2.5) - (NUMBER_SIZE_X*2.5) / 2)	// 分数字位置
-#define SECNUM_POS_X		(MINCHR_POS_X + (NUMBER_SIZE_X*2.5) - (NUMBER_SIZE_X*2.5) / 2)
-#define SECCHR_POS_X		(SECNUM_POS_X + SEC_CHRCNT * (NUMBER_SIZE_X*2.5) + (NUMBER_SIZE_X*2.5) / 2)
+#define AC_WIDTH			(480.0f)
+#define AC_HEIGHT			(75.0f)
+#define AC_POS_X			(0.0f)
+#define AC_POS_Y			(0.0f - AC_HEIGHT)
 
-//-------------------- 列挙体定義 --------------------
-enum TIMERROGONUM {
-	MIN = 10,
-	SEC,
-};
+#define STAGECHAR_WIDTH		(700.0f/2)
+#define STAGECHAR_HEIGHT	(190.0f/2)
+#define STAGECHAR_POS_X		(0.0f - STAGECHAR_WIDTH/2)
+#define STAGECHAR_POS_Y		(0.0f + STAGECHAR_HEIGHT/2)
+
+#define STAGENUM_POS_X		(0.0f + 150.0f)
+#define STAGENUM_POS_Y		(0.0f + STAGECHAR_HEIGHT)
 
 
 //-------------------- グローバル変数定義 --------------------
-static LPCWSTR g_pszTexFName[Result::MAX_TEXTURE] = {
-	L"data/texture/result.png",
-	L"data/texture/number001.png",
-};
-
-//static ID3D11ShaderResourceView *g_pTexture[MAX_TEXTURE];
-std::unique_ptr<Texture> Result::pTexture[MAX_TEXTURE];
+std::unique_ptr<Texture> Result::pFrame;
+std::unique_ptr<Texture> Result::pAllClear;
+std::unique_ptr<Texture> Result::pStageChar;
 
 //====================================================================================
 //
 //				コンストラクタ
 //
 //====================================================================================
-Result::Result() {
-	//Init();
+Result::Result(int _stageNum) {
+	stageNum = _stageNum;
 }
 
 //====================================================================================
@@ -62,7 +61,6 @@ Result::Result() {
 //
 //====================================================================================
 Result::~Result() {
-	//Uninit();
 }
 
 //====================================================================================
@@ -71,13 +69,18 @@ Result::~Result() {
 //
 //====================================================================================
 void Result::Init() {
-	//nowScene = Scene::SCENE_RESULT;
+	ID3D11Device* pDevice = GetDevice();
 
-	ID3D11Device *pDevice = GetDevice();
-	for (int i = 0; i < MAX_TEXTURE; i++) {
-		pTexture[i] = std::make_unique<Texture>();
-		pTexture[i]->SetTexture(pDevice, g_pszTexFName[i]);
-	}
+	//----- テクスチャ読み込み -----
+	pFrame = std::make_unique<Texture>();
+	pFrame->SetTexture(pDevice, TEX_FRAME);
+
+	pAllClear = std::make_unique<Texture>();
+	pAllClear->SetTexture(pDevice, TEX_ALLCLEAR);
+
+	pStageChar = std::make_unique<Texture>();
+	pStageChar->SetTexture(pDevice, TEX_STAGECHAR);
+
 
 	// BGM再生
 	CSound::Play(BGM_RESULT);
@@ -94,10 +97,14 @@ void Result::Uninit() {
 	CSound::Stop(BGM_RESULT);
 
 	// テクスチャ開放
-	for (int i = 0; i < MAX_TEXTURE; i++) {
-		pTexture[i]->ReleaseTexture();
-		pTexture[i].reset();
-	}
+	pStageChar->ReleaseTexture();
+	pStageChar.reset();
+
+	pAllClear->ReleaseTexture();
+	pAllClear.reset();
+
+	pFrame->ReleaseTexture();
+	pFrame.reset();
 }
 
 //====================================================================================
@@ -107,10 +114,10 @@ void Result::Uninit() {
 //====================================================================================
 void Result::Update() {
 	//クリックまたは[Enter]押下
-	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_SPACE)) {
+	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_RETURN)) {
 		CSound::Play(SE_DECIDE);
 		//セレクト画面へ
-		Fade::StartFadeOut(SCENE_MODESELECT);
+		Fade::StartFadeOut(SCENE_TITLE);
 		return;
 	}
 }
@@ -121,53 +128,53 @@ void Result::Update() {
 //
 //====================================================================================
 void Result::Draw() {
-	int min;
-	int sec;
+	ID3D11DeviceContext* pDC = GetDeviceContext();
 
-	ID3D11DeviceContext *pDC = GetDeviceContext();
+	BG::Draw(SCENE_RESULT);
+	
 	// Zバッファ無効(Zチェック無&Z更新無)
+	SetBlendState(BS_ALPHABLEND);
 	SetZBuffer(false);
 
 
+	if (stageNum+1 >= MAXMAP) {
+		// 「ステージ」の文字
+		SetPolygonFrameSize(1.0f, 1.0f);
+		SetPolygonSize(STAGECHAR_WIDTH, STAGECHAR_HEIGHT);
+		SetPolygonPos(STAGECHAR_POS_X, STAGECHAR_POS_Y);
+		SetPolygonUV(1.0f, 1.0f);
+		SetPolygonTexture(pStageChar->GetTexture());
+		DrawPolygon(pDC);
 
-	SetPolygonSize(RESULT_WIDTH, RESULT_HEIGHT);
-	SetPolygonPos(RESULT_POS_X, RESULT_POS_Y);
-	SetPolygonTexture(pTexture[TEX_BG]->GetTexture());
-	DrawPolygon(pDC);
+		// ステージ数
+		DrawNumber(XMFLOAT2(STAGENUM_POS_X, STAGENUM_POS_Y), (unsigned)stageNum+1, 2);
 
-	SetBlendState(BS_ADDITIVE);		// 加算合成
-	SetPolygonFrameSize(1.0f / NUMBER_COUNT_X, 1.0f / NUMBER_COUNT_Y);
-	SetPolygonSize(NUMBER_SIZE_X * 2.5, NUMBER_SIZE_Y * 2.5);
-	SetPolygonPos(MINCHR_POS_X, TIMERROGO_POS_Y);
-	SetPolygonUV((MIN % NUMBER_COUNT_X) / (float)NUMBER_COUNT_X,
-		(MIN / NUMBER_COUNT_X) / (float)NUMBER_COUNT_Y);
-	SetPolygonTexture(pTexture[TEX_TIMER]->GetTexture());
-	DrawPolygon(pDC);
-
-	SetPolygonFrameSize(1.0f / NUMBER_COUNT_X, 1.0f / NUMBER_COUNT_Y);
-	SetPolygonSize(NUMBER_SIZE_X * 2.5, NUMBER_SIZE_Y * 2.5);
-	SetPolygonPos(SECCHR_POS_X, TIMERROGO_POS_Y);
-	SetPolygonUV((SEC % NUMBER_COUNT_X) / (float)NUMBER_COUNT_X,
-		(SEC / NUMBER_COUNT_X) / (float)NUMBER_COUNT_Y);
-	SetPolygonTexture(pTexture[TEX_TIMER]->GetTexture());
-	DrawPolygon(pDC);
+		// AllClear
+		SetPolygonFrameSize(1.0f, 1.0f);
+		SetPolygonSize(AC_WIDTH, AC_HEIGHT);
+		SetPolygonPos(AC_POS_X, AC_POS_Y);
+		SetPolygonUV(1.0f, 1.0f);
+		SetPolygonTexture(pAllClear->GetTexture());
+		DrawPolygon(pDC);
 
 
-	sec = GetTimer();
-	min = sec / 60;
-	if (sec > 59) {
-		sec -= 60 * min;
+	} else {
+		// 「ステージ」の文字
+		SetPolygonFrameSize(1.0f, 1.0f);
+		SetPolygonSize(STAGECHAR_WIDTH, STAGECHAR_HEIGHT);
+		SetPolygonPos(STAGECHAR_POS_X, STAGECHAR_POS_Y);
+		SetPolygonUV(1.0f, 1.0f);
+		SetPolygonTexture(pStageChar->GetTexture());
+		DrawPolygon(pDC);
+
+		// ステージ数
+		DrawNumber(XMFLOAT2(STAGENUM_POS_X, STAGENUM_POS_Y), (unsigned)stageNum+1, 1);
 	}
-
-	DrawNumber(XMFLOAT2(MINNUM_POS_X, TIMER_POS_Y), (unsigned)min, MIN_CHRCNT,NUMBER_SIZE_X * 2.5, NUMBER_SIZE_Y * 2.5);
-	DrawNumber(XMFLOAT2(SECNUM_POS_X, TIMER_POS_Y), (unsigned)sec, SEC_CHRCNT,NUMBER_SIZE_X * 2.5, NUMBER_SIZE_Y * 2.5);
-
-	SetZBuffer(true);
-	SetBlendState(BS_NONE);
-
 
 	// 元に戻す
 	SetPolygonUV(0.0f, 0.0f);
 	SetPolygonFrameSize(1.0f, 1.0f);
 
+	SetZBuffer(true);
+	SetBlendState(BS_NONE);
 }

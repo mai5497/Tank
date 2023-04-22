@@ -1,6 +1,6 @@
 #include "TitleLogo.h"
 
-#define TEXTURE_PATH			L"data/texture/titlelogo.png"
+#define TEXTURE_PATH			L"data/texture/UI_TitleLogo.png"
 #define TEXTURE_WIDTH			(900)
 #define TEXTURE_HEIGHT			(150)
 
