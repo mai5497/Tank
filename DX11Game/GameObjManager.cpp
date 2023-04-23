@@ -104,9 +104,12 @@ void GameObjManager::Update() {
 	// “–‚½‚è”»’è‚ÌXV
 	pCollManager->Update();
 
-	if (enemySum < 1) {
-		Fade::StartFadeOut(SCENE_STAGESUMMARY);
-	}
+
+	pGameScene->StorageEnemySum(enemySum);
+	//
+	//if (enemySum < 1) {
+	//	Fade::StartFadeOut(SCENE_STAGESUMMARY);
+	//}
 
 	
 }
@@ -130,7 +133,7 @@ void GameObjManager::Draw() {
 
 //====================================================================================
 //
-//				Œ‚”j”Žæ“¾
+//				“G‚ÌŒ»Ý‚Ì‘”
 //
 //====================================================================================
 int GameObjManager::GetEnemySum() {
