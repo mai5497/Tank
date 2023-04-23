@@ -50,15 +50,15 @@ void UninitNumber() {
 //				”Žš•`‰æ
 //
 //====================================================================================
-void DrawNumber(XMFLOAT2 vPos,unsigned uNumber,int nWidth,float fSizeX) {
+void DrawNumber(XMFLOAT2 vPos,unsigned uNumber,int nWidth,float fSizeX,float fSizeY) {
 	ID3D11DeviceContext *pDC = GetDeviceContext();
 	SetPolygonColor(1.0f,1.0f, 1.0f);
-	SetPolygonSize(fSizeX, NUMBER_SIZE_Y);
+	SetPolygonSize(fSizeX, fSizeY);
 	SetPolygonTexture(pTexture->GetTexture());
 	SetPolygonFrameSize(1.0f / NUMBER_COUNT_X, 1.0f);
 
 	vPos.x += (nWidth - 0.5f) * fSizeX;
-	vPos.y -= NUMBER_SIZE_Y * 0.5f;
+	vPos.y -= fSizeY * 0.5f;
 
 	for (; nWidth > 0 ;--nWidth) {
 		unsigned n = uNumber % 10;

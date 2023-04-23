@@ -313,11 +313,7 @@ void Player::Update() {
 				// 弾と当たった時
 				hitPoint--;	//HPを減らす
 			
-				if (hitPoint > 0) {
-					pGameScene->StoragePlayerHP(hitPoint);	// ゲームシーンにHPを保存する
-				} else {
-					Fade::StartFadeOut(SCENE_RESULT);	// リザルトシーンへ移行
-				}
+				pGameScene->StoragePlayerHP(hitPoint);	// ゲームシーンにHPを保存する
 			}
 		}
 	}

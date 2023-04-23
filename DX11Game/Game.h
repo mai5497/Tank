@@ -29,6 +29,8 @@ public:
 	void StoragePlayerHP(int _hp);
 	int GetPlayerHP();
 
+	void StorageEnemySum(int _enemySum);
+
 private:
 	std::unique_ptr<GameObjManager> pGameObjects;	// ゲームオブジェクト管理クラス
 	std::unique_ptr<MeshField> pMeshField;			// フィールド
@@ -38,6 +40,7 @@ private:
 	int stageNum;
 
 	int playerHP;	// プレイヤーのHPを保存しておく
+	int enemySum;	// 敵の残数を保存する
 };
 
 #endif

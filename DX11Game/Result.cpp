@@ -23,21 +23,21 @@
 #define TEX_STAGECHAR		(L"data/texture/UI_StageChar.png")
 
 #define FRAME_POS_X			(0.0f)
-#define FRAME_POS_Y			(0.0f)
+#define FRAME_POS_Y			(20.0f)
 #define FRAME_WIDTH			(620.0f)
 #define FRAME_HEIGHT		(365.0f)
 
-#define AC_WIDTH			(480.0f)
-#define AC_HEIGHT			(75.0f)
+#define AC_WIDTH			(480.0f/2)
+#define AC_HEIGHT			(75.0f/2)
 #define AC_POS_X			(0.0f)
 #define AC_POS_Y			(0.0f - AC_HEIGHT)
 
 #define STAGECHAR_WIDTH		(700.0f/2)
 #define STAGECHAR_HEIGHT	(190.0f/2)
-#define STAGECHAR_POS_X		(0.0f - STAGECHAR_WIDTH/2)
+#define STAGECHAR_POS_X		(0.0f - STAGECHAR_WIDTH/4)
 #define STAGECHAR_POS_Y		(0.0f + STAGECHAR_HEIGHT/2)
 
-#define STAGENUM_POS_X		(0.0f + 150.0f)
+#define STAGENUM_POS_X		(0.0f + NUMBER_SIZE_X+NUMBER_SIZE_X/2)
 #define STAGENUM_POS_Y		(0.0f + STAGECHAR_HEIGHT)
 
 
@@ -136,8 +136,16 @@ void Result::Draw() {
 	SetBlendState(BS_ALPHABLEND);
 	SetZBuffer(false);
 
+	// 枠
+	SetPolygonFrameSize(1.0f, 1.0f);
+	SetPolygonSize(FRAME_WIDTH, FRAME_HEIGHT);
+	SetPolygonPos(FRAME_POS_X, FRAME_POS_Y);
+	SetPolygonUV(1.0f, 1.0f);
+	SetPolygonTexture(pFrame->GetTexture());
+	DrawPolygon(pDC);
 
-	if (stageNum+1 >= MAXMAP) {
+
+	if (stageNum >= MAX_STAGE) {
 		// 「ステージ」の文字
 		SetPolygonFrameSize(1.0f, 1.0f);
 		SetPolygonSize(STAGECHAR_WIDTH, STAGECHAR_HEIGHT);
@@ -147,7 +155,7 @@ void Result::Draw() {
 		DrawPolygon(pDC);
 
 		// ステージ数
-		DrawNumber(XMFLOAT2(STAGENUM_POS_X, STAGENUM_POS_Y), (unsigned)stageNum+1, 2);
+		DrawNumber(XMFLOAT2(STAGENUM_POS_X, STAGENUM_POS_Y), (unsigned)stageNum, 2);
 
 		// AllClear
 		SetPolygonFrameSize(1.0f, 1.0f);
@@ -168,7 +176,7 @@ void Result::Draw() {
 		DrawPolygon(pDC);
 
 		// ステージ数
-		DrawNumber(XMFLOAT2(STAGENUM_POS_X, STAGENUM_POS_Y), (unsigned)stageNum+1, 1);
+		DrawNumber(XMFLOAT2(STAGENUM_POS_X, STAGENUM_POS_Y), (unsigned)stageNum+1, 2);
 	}
 
 	// 元に戻す

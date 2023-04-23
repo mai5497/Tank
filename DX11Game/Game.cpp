@@ -23,6 +23,7 @@
 #include "Meshfield.h"
 #include "Fade.h"
 #include "GameObjManager.h"
+#include "WallObject.h"
 
 //====================================================================================
 //
@@ -157,6 +158,18 @@ void Game::Update() {
 
 	// HPUI更新
 	pHPUI->Update();
+
+
+	// シーン遷移
+	if (enemySum < 1) {
+		Fade::StartFadeOut(SCENE_STAGESUMMARY);
+		//if (stageNum == MAX_STAGE - 1) {
+		//	Fade::StartFadeOut(SCENE_RESULT);
+		//}
+	}
+	if (playerHP < 1) {
+		Fade::StartFadeOut(SCENE_RESULT);
+	}
 }
 
 //====================================================================================
@@ -191,7 +204,7 @@ void Game::Draw() {
 	//DrawTimer();
 
 	// HPUI描画
-	pHPUI->Draw();
+	pHPUI->Draw();	
 }
 
 
@@ -220,4 +233,13 @@ void Game::StoragePlayerHP(int _hp) {
 //====================================================================================
 int Game::GetPlayerHP() {
 	return playerHP;
+}
+
+//====================================================================================
+//
+//				敵の残数を保存しておく
+//
+//====================================================================================
+void Game::StorageEnemySum(int _enemySum) {
+	enemySum = _enemySum;
 }

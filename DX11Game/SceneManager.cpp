@@ -18,6 +18,8 @@
 
 #include "Camera.h"
 
+#include "WallObject.h"
+
 //-------------------- グローバル変数定義 --------------------
 eSCENE SceneManager::nextScene = SCENE_NONE;
 
@@ -50,9 +52,9 @@ void SceneManager::Init() {
 	nowScene = nextScene = SCENE_TITLE;
 	if(!pNowScene)pNowScene = std::make_shared<Title>();
 #else
-	stageNum++;
-	nowScene = nextScene = SCENE_GAME;
-	if (!pNowScene)pNowScene = std::make_shared<Game>(stageNum);
+	//stageNum++;
+	nowScene = nextScene = SCENE_MODESELECT;
+	if (!pNowScene)pNowScene = std::make_shared<Select>();
 #endif
 	pNowScene->Init();
 
@@ -140,6 +142,13 @@ void SceneManager::ChangeScene() {
 	// カメラの初期化
 	CCamera::Get()->Init();
 
+	if (nextScene == SCENE_STAGESUMMARY) {
+		stageNum++;
+	}
+	if (stageNum > MAX_STAGE - 1 && nowScene == SCENE_GAME) {
+		nextScene = SCENE_RESULT;
+	}
+
 	// 次のシーンによって格納するものをかえる
 	switch (nextScene) {
 	case SCENE_TITLE:		// タイトル画面
@@ -152,8 +161,8 @@ void SceneManager::ChangeScene() {
 		pNowScene = std::make_shared<Tutorial>();
 		break;
 	case SCENE_STAGESUMMARY:// ステージ概要
-		stageNum++;
-		pNowScene = std::make_shared<GameSummary>();
+		//stageNum++;
+		pNowScene = std::make_shared<GameSummary>(stageNum);
 		break;
 	case SCENE_GAME:		// ゲーム画面
 		pNowScene = std::make_shared<Game>(stageNum);
@@ -162,7 +171,7 @@ void SceneManager::ChangeScene() {
 		pNowScene = std::make_shared<Result>(stageNum);
 		break;
 	default:
-		MessageBox(NULL, _T("シーンの切り替えに失敗しました。\nSceneManager.cpp(159)"), _T("error"), MB_OK);
+		MessageBox(NULL, _T("シーンの切り替えに失敗しました。\nSceneManager.cpp"), _T("error"), MB_OK);
 		break;
 	}
 

@@ -25,7 +25,7 @@
 #define	WALLOBJ_RADIUS		(55.0f)		// ‹«ŠE‹…”¼Œa
 
 std::unique_ptr<CAssimpModel> WallObj::pMyModel;
-int WallObj::wallMap[MAXMAP][MAPHEIGHT][MAPWIDTH] = 
+int WallObj::wallMap[MAX_STAGE][MAPHEIGHT][MAPWIDTH] = 
 { 
 	// 1
 	{

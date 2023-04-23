@@ -20,7 +20,7 @@ class Texture;
 //===========================
 class GameSummary : public Scene {
 public:
-	GameSummary();
+	GameSummary(int _stageNum);
 	~GameSummary();
 
 	virtual void Init();
@@ -30,9 +30,13 @@ public:
 
 
 private:
-	static std::unique_ptr<Texture> pBG;	// îwåi
+	static std::unique_ptr<Texture> pStageChar;
+	static std::unique_ptr<Texture> pKakeruChar;
+	static std::unique_ptr<Texture> pEnemyIcon;
 
 	int sceneChangeTimer;
+	int stageNum;
+	int enemyCnt;
 };
 
 #endif
