@@ -71,11 +71,11 @@ void Enemy::Init() {
 	}
 
 	//----- 位置・回転・スケール・サイズなどオブジェクトに必要な初期設定 -----
-	pos = XMFLOAT3(mapIndex.x * 80.0f - 640.0f, 0.0f, -mapIndex.y * 80.0f + 480.0f);
+	pos = XMFLOAT3(mapIndex.x * 80.0f - 640.0f, 50.0f, -mapIndex.y * 80.0f + 480.0f);
 	moveVal = XMFLOAT3(0.0f, 0.0f,0.0f);
 	rotModel = XMFLOAT3(0.0f, rand() % 360 - 180.0f, 0.0f);
 	rotDest = rotModel;
-	size = XMFLOAT3(50.0f, 50.0f, 50.0f);
+	size = XMFLOAT3(1.0f, 1.0f, 1.0f);
 	collSize = XMFLOAT3(50.0f, 50.0f, 50.0f);
 	myTag = ENEMY;								// オブジェクト識別のタグ
 	collType = Collision::DYNAMIC;				// 動的オブジェクト
@@ -127,8 +127,6 @@ void Enemy::Update() {
 
 	//----- 変数初期化 -----
 	XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
-	XMFLOAT3 ShadowMove = XMFLOAT3(0.0f, 0.0f, 0.0f);
-
 
 	//----- 当たり判定 -----
 	if (hitList.size() > 0) {
@@ -224,21 +222,8 @@ void Enemy::Update() {
 	// ワールドマトリックス設定
 	XMStoreFloat4x4(&mtxWorld, _mtxWorld);
 
-
-	//----- 丸影の移動 -----
-	if (moveVal.x > 0.0f) {
-		ShadowMove.x += 25.0f;
-	} else if (moveVal.x < 0.0f) {
-		ShadowMove.x -= 25.0f;
-	}
-
-	if (moveVal.z > 0.0f) {
-		ShadowMove.z += 25.0f;
-	} else if (moveVal.z < 0.0f) {
-		ShadowMove.z -= 25.0f;
-	}
-
-	MoveShadow(shadowNum, XMFLOAT3(pos.x + ShadowMove.x, pos.y, pos.z + ShadowMove.z));
+	// 影の移動
+	MoveShadow(shadowNum, pos);
 
 	//----- 弾発射 -----
 	int randomtime;

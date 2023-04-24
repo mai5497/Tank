@@ -120,8 +120,6 @@ void HPUI::Draw() {
 		DrawPolygon(pDC);
 	}
 
-	PrintDebugProc("%d",playerHP);
-
 	// Zバッファ有効(Zチェック有&Z更新有)
 	SetZBuffer(true);
 	SetBlendState(BS_NONE);

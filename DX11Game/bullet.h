@@ -30,12 +30,13 @@ public:
 	static void FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag,int objNum,EBulletType _type = BULLETTYPE_NORMAL);
 
 private:
-	void MakeVertexBullet(ID3D11Device* pDevice);
+	void MakeVertexBullet(ID3D11Device* pDevice,ObjTag _objType);
 	void Destroy();
 
 	static MESH mesh_p;					// メッシュ情報
 	static MESH mesh_e;					// メッシュ情報
-	static MATERIAL material;				// マテリアル
+	static MATERIAL material_p;				// マテリアル
+	static MATERIAL material_e;				// マテリアル
 
 	EBulletType	type;		// 種類
 

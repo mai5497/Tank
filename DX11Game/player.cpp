@@ -58,11 +58,11 @@ Player::~Player() {
 void Player::Init() {
 
 	// 位置・回転・スケールの初期設定
-	pos = XMFLOAT3(100.0f, 0.0f, 0.0f);
+	pos = XMFLOAT3(-300.0f, 50.0f, 350.0f);
 	moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	rotDestModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	size = XMFLOAT3(50.0f, 50.0f, 50.0f);
+	size = XMFLOAT3(1.0f, 1.0f, 1.0f);
 	collSize = XMFLOAT3(50.0f, 50.0f, 50.0f);
 
 	isCollision = true;
@@ -85,7 +85,7 @@ void Player::Init() {
 		}
 	}
 	// 丸影の生成
-	shadowNum = CreateShadow(pos, 12.0f);
+	shadowNum = CreateShadow(pos, 20.0f);
 
 	myTag = PLAYER;
 	collType = Collision::DYNAMIC;
