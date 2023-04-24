@@ -57,7 +57,6 @@ Title::~Title() {
 //====================================================================================
 void Title::Init() {
 	ID3D11Device *pDevice = GetDevice();
-	//nowScene = Scene::SCENE_TITLE;
 
 	fadeTimer = FADETIMER;
 	isFade = false;
@@ -68,10 +67,6 @@ void Title::Init() {
 	// プレススペース初期化
 	pStart = std::make_unique<PressSpace>();
 	pStart->Init();
-
-	// フィールド初期化
-	//pMeshField = std::make_unique<MeshField>();
-	//pMeshField->Init(8, 7, 80.0f, 80.0f);
 
 	// パーティクル初期化
 	pParticle = std::make_unique<Particle>();
@@ -87,25 +82,12 @@ void Title::Init() {
 //
 //====================================================================================
 void Title::Uninit() {
-
 	// BGM再生停止
 	CSound::Stop(BGM_TITLE);
 
 	// パーティクル終了処理
 	pParticle->Uninit();
 	pParticle.reset();
-
-	// フィールド終了処理
-	//pMeshField->Uninit();
-	//pMeshField.reset();
-
-	// 背景終了
-	/*
-	* static関数の為ゲームの終了時にBGの終了処理は書く
-	* ->main関数に移動
-	*/
-	//pBG->Uninit();
-	//pBG.reset();
 
 	// プレススペース終了
 	pStart->Uninit();
@@ -122,38 +104,41 @@ void Title::Uninit() {
 //
 //====================================================================================
 void Title::Update() {
-	//クリックまたは[Enter]押下
-	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_SPACE)) {
-		CSound::Play(SE_DECIDE);
-		isFade = true;
+	//----- シーン遷移 -----
+	if (!isFade) {	// 入力を一度だけ受け付ける
+		// クリックまたは[Space]押下
+		if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_SPACE)) {
+			CSound::Play(SE_DECIDE);
+			isFade = true;
+		}
 	}
+
+	// シーン遷移するフェードを行うまで少し待つ
 	if (isFade) {
 		fadeTimer--;
 		if (fadeTimer < 1) {
 			//モード選択画面へ
-			//SetScene(SCENE_GAME);
 			Fade::StartFadeOut(SCENE_MODESELECT);
 			return;
 		}
 	}
-	timer--;
-	if (timer > 0) {
+
+	//----- UIの更新 -----
+	resetTimer--;
+	if (resetTimer > 0) {
 		// ロゴの更新
 		pLogo->Update();
 
 		// プレススペースの更新
 		pStart->Update();
 
-		// フィールド更新
-		//pMeshField->Update();
-
 		// パーティクル
 		pParticle->Update();
 
-	} else {
+	} else {	// 0になったらリセットしてもう一度動かす
 		pLogo->Reset();
 
-		timer = MOVIETIMER;
+		resetTimer = MOVIETIMER;
 	}
 }
 
@@ -163,23 +148,9 @@ void Title::Update() {
 //
 //====================================================================================
 void Title::Draw() {
-	//// Zバッファ無効(Zチェック無&Z更新無)
-	//SetZBuffer(false);
-
-	//ID3D11DeviceContext *pDC = GetDeviceContext();
-	//SetPolygonSize(TITLE_WIDTH, TITLE_HEIGHT);
-	//SetPolygonPos(TITLE_POS_X, TITLE_POS_Y);
-	//SetPolygonTexture(g_pTexture);
-	//SetPolygonUV(0.0f, 0.0f);
-
-	//DrawPolygon(pDC);
-
 
 	// 背景の描画
 	BG::Draw(SCENE_TITLE);
-
-	// フィールド描画
-	//pMeshField->Draw();
 
 	// ロゴの描画
 	pLogo->Draw();

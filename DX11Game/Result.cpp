@@ -41,7 +41,6 @@
 #define STAGENUM_POS_Y		(0.0f + STAGECHAR_HEIGHT)
 
 
-//-------------------- グローバル変数定義 --------------------
 std::unique_ptr<Texture> Result::pFrame;
 std::unique_ptr<Texture> Result::pAllClear;
 std::unique_ptr<Texture> Result::pStageChar;

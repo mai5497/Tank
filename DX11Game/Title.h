@@ -7,20 +7,18 @@
 #ifndef __TITLE_H__
 #define __TITLE_H__
 
+//-------------------- インクルード --------------------
 #include "main.h"
 #include "Scene.h"
 
+//-------------------- 前方定義 --------------------
 class TitleLogo;
 class PressSpace;
 class MeshField;
 class Particle;
 class Texture;
 
-//===========================
-//
-//	クラス定義
-//
-//===========================
+//-------------------- クラス定義 --------------------
 class Title : public Scene {
 public:
 	Title();
@@ -34,10 +32,9 @@ public:
 private:
 	std::unique_ptr<TitleLogo> pLogo;			// タイトルロゴ
 	std::unique_ptr<PressSpace> pStart;			// プレススペース
-	//std::unique_ptr<MeshField> pMeshField;		// フィールド
 	std::unique_ptr<Particle> pParticle;		// パーティクル
 
-	int timer;
+	int resetTimer;
 	int fadeTimer;
 	bool isFade;
 };

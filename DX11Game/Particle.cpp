@@ -1,3 +1,11 @@
+//************************************************************************************
+// 
+// パーティクル[Particle.cpp]
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
+
+//-------------------- インクルード部 --------------------
 #include "Particle.h"
 #include "input.h"
 #include "Light.h"
@@ -5,14 +13,15 @@
 
 #include "polygon.h"
 
-#define PATH_BGTEXTURE	L"data/texture/effect000.jpg"
+//-------------------- 定数定義 --------------------
+#define PATH_BGTEXTURE			(L"data/texture/effect000.jpg")
 
-#define PARTICLE_POSX (0)		// パーティクル表示基準位置
-#define PARTICLE_POSY (-200.0f)	
-#define PARTICLE_SIZE (100)		// パーティクルの最大の大きさ
-#define PARTICLE_DISP (0.2)		// パーティクルの散り具合
+#define PARTICLE_POSX			(0)			// パーティクル表示基準位置
+#define PARTICLE_POSY			(-200.0f)	
+#define PARTICLE_SIZE			(100)		// パーティクルの最大の大きさ
+#define PARTICLE_DISP			(0.2)		// パーティクルの散り具合
 
-#define PARTICLE_TIME (120)		// 消えるまでの時間
+#define PARTICLE_TIME			(120)		// 消えるまでの時間
 
 
 #define MATERIAL_DIFFUSE		XMFLOAT4(1,1,1,1)
@@ -23,18 +32,37 @@
 
 std::unique_ptr<Texture> Particle::pTexture;
 
+//====================================================================================
+//
+//				コンストラクタ
+//
+//====================================================================================
 Particle::Particle() {
 
 }
 
+//====================================================================================
+//
+//				デストラクタ
+//
+//====================================================================================
 Particle::~Particle() {
 
 }
 
+//====================================================================================
+//
+//				初期化
+//
+//====================================================================================
 void Particle::Init() {
-	float sizeRate = 0.0f;
+	//----- 変数初期化 -----
+	isButtonOnce = false;
 
+
+	//----- パーティクル初期化 -----
 	ID3D11Device* pDevice = GetDevice();
+	float sizeRate = 0.0f;
 
 	for (int i = 0; i < PARTICLE_MAX; i++) {
 		particles[i].status = 0;	// ステータスを初期化
@@ -91,64 +119,73 @@ void Particle::Init() {
 		HRESULT  hr = pTexture->SetTexture(pDevice, PATH_BGTEXTURE);
 
 		particles[i].color = XMFLOAT4((rand() % 9) * 0.1 + 0.1, (rand() % 9) * 0.1 + 0.1, (rand() % 9) * 0.1 + 0.1, 0.8f);
-
 	}
 }
 
+//====================================================================================
+//
+//				終了
+//
+//====================================================================================
 void Particle::Uninit() {
-	//for (int i = 0; i < PARTICLE_MAX; i++) {
-	//	// メッシュの開放
-	//	ReleaseMesh(&particles[i].mesh);
-	//}
-	
 	// テクスチャの開放
 	pTexture->ReleaseTexture();
 	pTexture.reset();
 }
 
+//====================================================================================
+//
+//				更新
+//
+//====================================================================================
 void Particle::Update() {
+	//----- 変数初期化 -----
 	float posx, posy;
 	bool bBorn = false;
 
+	//----- 入力があったら開始 -----
 	if (GetKeyRelease(VK_SPACE)) {
-		for (int i = 0; i < PARTICLE_MAX; i++) {
-			particles[i].status = 1;
+		if (!isButtonOnce) {
+			for (int i = 0; i < PARTICLE_MAX; i++) {
+				particles[i].status = 1;
+			}
 		}
+		isButtonOnce = true;	// 一度だけ処理したいのでtrueにして二回目以降はスルー
 	}
 
 	for (int i = 0; i < PARTICLE_MAX; i++) {
 		switch (particles[i].status) {
-		case 0:					// 待機状態
-			break;
-		case 1:
-			particles[i].pos.x = PARTICLE_POSX;
-			particles[i].pos.y = PARTICLE_POSY;
-			posx = (i * PARTICLE_SIZE * (PARTICLE_MAX / 2)) - PARTICLE_SIZE * (PARTICLE_MAX / 4);
-			particles[i].velocity.x = (posx) * particles[i].acceleration.x;
-			posy = (i * PARTICLE_SIZE * (PARTICLE_MAX / 2)) - PARTICLE_SIZE * (PARTICLE_MAX / 4);
-			particles[i].velocity.y = (posy) * particles[i].acceleration.y;
-			//particles[i].ax = 0.0f;
-			//particles[i].ay = -0.9f;
-			particles[i].status = 2;
-			// THRU
-			break;
-		case 2:
-			//particles[i].velocity.x += particles[i].acceleration.x;
-			//particles[i].velocity.y += particles[i].acceleration.x;
+			case 0:					// 待機状態
+				break;
+			case 1:
+				particles[i].pos.x = PARTICLE_POSX;
+				particles[i].pos.y = PARTICLE_POSY;
+				posx = (i * PARTICLE_SIZE * (PARTICLE_MAX / 2)) - PARTICLE_SIZE * (PARTICLE_MAX / 4);
+				particles[i].velocity.x = (posx)*particles[i].acceleration.x;
+				posy = (i * PARTICLE_SIZE * (PARTICLE_MAX / 2)) - PARTICLE_SIZE * (PARTICLE_MAX / 4);
+				particles[i].velocity.y = (posy)*particles[i].acceleration.y;
+				particles[i].status = 2;
 
-			particles[i].pos.x += particles[i].velocity.x;
-			particles[i].pos.y += particles[i].velocity.y;
+				break;
+			case 2:
+				particles[i].pos.x += particles[i].velocity.x;
+				particles[i].pos.y += particles[i].velocity.y;
 
-			particles[i].timer--;
-			if (particles[i].timer < 1) {
-				particles[i].status = 0;
-			}
-			break;
+				particles[i].timer--;
+				if (particles[i].timer < 1) {
+					particles[i].status = 0;
+				}
+				break;
 		}
 	}
-
 }
 
+
+//====================================================================================
+//
+//				　描画
+//
+//====================================================================================
 void Particle::Draw() {
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 	XMMATRIX mtxWorld, mtxScale, mtxTranslate;
@@ -173,10 +210,10 @@ void Particle::Draw() {
 		}
 	}
 
+	//----- 元に戻す -----
 	SetPolygonColor(1.0f, 1.0f, 1.0f);
 	SetPolygonAlpha(1.0f);
 	SetZWrite(true);
 	SetBlendState(BS_NONE);
 	CLight::Get()->SetEnable();
-
 }

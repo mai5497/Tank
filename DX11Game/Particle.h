@@ -1,13 +1,21 @@
+//************************************************************************************
+// 
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
+
 #ifndef __PARTICLE_H__
 #define __PARTICLE_H__
 
+//-------------------- インクルード --------------------
 #include "main.h"
 #include "Texture.h"
 #include "mesh.h"
 
-
+//-------------------- 定数 --------------------
 #define PARTICLE_MAX	(20)	// パーティクルの数
 
+//-------------------- クラス定義 --------------------
 class Particle {
 public:
 	Particle();
@@ -18,6 +26,7 @@ public:
 	void Update();
 	void Draw();
 
+	//---パーティクル関連
 	struct PARTICLE {
 		int status;					// 状態
 		int timer;					// タイマー	
@@ -34,8 +43,9 @@ public:
 	PARTICLE particles[PARTICLE_MAX];
 
 private:
-	//HRESULT MakeVertex(ID3D11Device* pDevice);
 	static std::unique_ptr<Texture> pTexture;
+
+	bool isButtonOnce;	// 一度だけ入力をうけつける
 };
 
 
