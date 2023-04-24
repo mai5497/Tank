@@ -13,7 +13,7 @@
 #include "Light.h"
 
 //-------------------- 定数定義 --------------------
-#define	TEXTURE_FILENAME		L"data/texture/FX_Explosion.png"
+#define	TEXTURE_FILENAME		(L"data/texture/FX_Explosion.png")
 
 #define M_DIFFUSE				XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
 #define M_SPECULAR				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
@@ -147,7 +147,10 @@ void DrawExplosion(void)
 
 	CLight::Get()->SetDisable();	// 光源無効
 	SetBlendState(BS_ALPHABLEND);	// αブレンディング有効
+	SetZBuffer(false);	// Zバッファ有効(Zチェック有&Z更新有)
+
 	XMFLOAT4X4& mView = CCamera::Get()->GetViewMatrix();
+
 	TExplosion* pExplosion = g_explosion;
 	for (int i = 0; i < MAX_EXPLOSION; ++i, ++pExplosion) {
 		// 未使用ならスキップ
@@ -186,6 +189,9 @@ void DrawExplosion(void)
 		// 描画
 		DrawMesh(pDC, &g_mesh);
 	}
+
+	SetZBuffer(true);	// Zバッファ有効(Zチェック有&Z更新有)
+
 	SetBlendState(BS_NONE);		// αブレンディング無効
 	CLight::Get()->SetEnable();	// 光源有効
 }

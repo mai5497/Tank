@@ -12,7 +12,7 @@
 #include "Light.h"
 
 //-------------------- 定数定義 --------------------
-#define	TEXTURE_FILENAME		L"data/texture/FX_BlueNoom.png.png"
+#define	TEXTURE_FILENAME		(L"data/texture/FX_BlueNoom.png")
 
 #define M_DIFFUSE				XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
 #define M_SPECULAR				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
@@ -75,6 +75,8 @@ HRESULT InitDwarfEffect(void) {
 	pTexture.reset();
 
 	if (FAILED(hr)) {
+		MessageBox(NULL, _T("青小人エフェクトテクスチャ読み込み失敗"), _T("error"), MB_OK);
+
 		return hr;
 	}
 	XMStoreFloat4x4(&g_mesh.mtxTexture, XMMatrixIdentity());
@@ -142,6 +144,8 @@ void DrawDwarfEffect(void) {
 	CLight::Get()->SetDisable();	// 光源無効
 	SetBlendState(BS_ALPHABLEND);	// αブレンディング有効
 	XMFLOAT4X4& mView = CCamera::Get()->GetViewMatrix();
+	SetZBuffer(false);	// Zバッファ有効(Zチェック有&Z更新有)
+
 	TDwarf* pDwarf = g_explosion;
 	for (int i = 0; i < MAX_DWARF; ++i, ++pDwarf) {
 		// 未使用ならスキップ
@@ -180,6 +184,8 @@ void DrawDwarfEffect(void) {
 		// 描画
 		DrawMesh(pDC, &g_mesh);
 	}
+
+	SetZBuffer(true);	// Zバッファ有効(Zチェック有&Z更新有)
 	SetBlendState(BS_NONE);		// αブレンディング無効
 	CLight::Get()->SetEnable();	// 光源有効
 }

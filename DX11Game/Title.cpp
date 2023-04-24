@@ -151,6 +151,8 @@ void Title::Draw() {
 
 	// ”wŒi‚Ì•`‰æ
 	BG::Draw(SCENE_TITLE);
+	// ƒp[ƒeƒBƒNƒ‹‚Ì•`‰æ
+	pParticle->Draw();
 
 	// ƒƒS‚Ì•`‰æ
 	pLogo->Draw();
@@ -158,6 +160,4 @@ void Title::Draw() {
 	// ƒvƒŒƒXƒXƒy[ƒX‚Ì•`‰æ
 	pStart->Draw();
 
-	// ƒp[ƒeƒBƒNƒ‹‚Ì•`‰æ
-	pParticle->Draw();
 }

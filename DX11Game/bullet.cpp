@@ -17,34 +17,35 @@
 #include "GameObjManager.h"
 
 //-------------------- 定数定義 --------------------
-#define	PLAYERBULLET_FILENAME	L"data/texture/bullet_p.png"	// テクスチャ ファイル名
-#define	ENEMYBULLET_FILENAME	L"data/texture/bullet_e.png"	// テクスチャ ファイル名
+#define	PLAYERBULLET_FILENAME	(L"data/texture/bullet_p.png")	// テクスチャ ファイル名
+#define	ENEMYBULLET_FILENAME	(L"data/texture/bullet_e.png")	// テクスチャ ファイル名
 
-#define M_DIFFUSE			XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
-#define M_SPECULAR			XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
-#define M_POWER				(1.0f)
-#define M_AMBIENT			XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
-#define M_EMISSIVE			XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
+#define M_DIFFUSE				XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
+#define M_SPECULAR				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
+#define M_POWER					(1.0f)
+#define M_AMBIENT				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
+#define M_EMISSIVE				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
 
-#define MAX_BULLET			100
+#define MAX_BULLET				(100)
 
-#define BULLET_SPEED		7.5f
-#define EBULLET_SPEED		5.5f
-#define BULLET_RADIUS		10.0f
-#define BULLET_STRENGTH		1.0f
-#define BULLET_GRAVITY		0.95f
+#define BULLET_SPEED			(7.5f)
+#define EBULLET_SPEED			(5.5f)
+#define BULLET_RADIUS			(10.0f)
+#define BULLET_STRENGTH			(1.0f)
+#define BULLET_GRAVITY			(0.95f)
+								
+#define MIN_FIELD_X				(-640.0f)
+#define MAX_FIELD_X				(640.0f)
 
-#define MIN_FIELD_X			-640.0f
-#define MAX_FIELD_X			640.0f
+#define MIN_FIELD_Y				(10.0f)
 
-#define MIN_FIELD_Y			(10.0f)
-
-#define MIN_FIELD_Z			-640.0f
-#define MAX_FIELD_Z			640.0f
+#define MIN_FIELD_Z				(-640.0f)
+#define MAX_FIELD_Z				(640.0f)
 
 MESH Bullet::mesh_p;					// メッシュ情報
 MESH Bullet::mesh_e;					// メッシュ情報
-MATERIAL Bullet::material;				// マテリアル
+MATERIAL Bullet::material_p;				// マテリアル
+MATERIAL Bullet::material_e;				// マテリアル
 
 
 //====================================================================================
@@ -75,23 +76,38 @@ void Bullet::Init(void) {
 	ID3D11Device* pDevice = GetDevice();
 
 	// 頂点情報の作成
-	MakeVertexBullet(pDevice);
+	MakeVertexBullet(pDevice,BULLET_PLAYER);
 
 	// マテリアルの設定
-	material.Diffuse = M_DIFFUSE;
-	material.Ambient = M_AMBIENT;
-	material.Specular = M_SPECULAR;
-	material.Power = M_POWER;
-	material.Emissive = M_EMISSIVE;
-	mesh_p.pMaterial = &material;
-	mesh_e.pMaterial = &material;
-
+	material_p.Diffuse = M_DIFFUSE;
+	material_p.Ambient = M_AMBIENT;
+	material_p.Specular = M_SPECULAR;
+	material_p.Power = M_POWER;
+	material_p.Emissive = M_EMISSIVE;
+	mesh_p.pMaterial = &material_p;
 	// テクスチャの読み込み
 	std::unique_ptr<Texture> pTexture_p = std::make_unique<Texture>();
-	std::unique_ptr<Texture> pTexture_e = std::make_unique<Texture>();
-	pTexture_p->SetTexture(pDevice, PLAYERBULLET_FILENAME);
+	HRESULT isLoad_p = pTexture_p->SetTexture(pDevice, PLAYERBULLET_FILENAME);
+	if (FAILED(isLoad_p)) {
+		MessageBox(NULL, _T("プレイヤーの弾テクスチャ読み込み失敗"), _T("error"), MB_OK);
+	}
 	mesh_p.pTexture = pTexture_p->GetTexture();
-	pTexture_e->SetTexture(pDevice, ENEMYBULLET_FILENAME);
+
+	// 頂点情報の作成
+	MakeVertexBullet(pDevice, BULLET_ENEMY);
+
+	material_e.Diffuse = M_DIFFUSE;
+	material_e.Ambient = M_AMBIENT;
+	material_e.Specular = M_SPECULAR;
+	material_e.Power = M_POWER;
+	material_e.Emissive = M_EMISSIVE;
+	mesh_e.pMaterial = &material_e;
+
+	std::unique_ptr<Texture> pTexture_e = std::make_unique<Texture>();
+	HRESULT isLoad_e = pTexture_e->SetTexture(pDevice, ENEMYBULLET_FILENAME);
+	if (FAILED(isLoad_e)) {
+		MessageBox(NULL, _T("敵の弾テクスチャ読み込み失敗"), _T("error"), MB_OK);
+	}
 	mesh_e.pTexture = pTexture_e->GetTexture();
 	//pTexture->ReleaseTexture();
 	pTexture_p.reset();
@@ -218,6 +234,7 @@ void Bullet::Draw() {
 	CLight::Get()->SetDisable();	// 光源無効
 	SetBlendState(BS_ALPHABLEND);	// αブレンディング有効
 	XMFLOAT4X4& mView = CCamera::Get()->GetViewMatrix();
+	SetZBuffer(false);	// Zバッファ有効(Zチェック有&Z更新有)
 
 	if (myTag == BULLET_PLAYER) {
 		// ビュー行列の回転成分の転置行列を設定
@@ -264,7 +281,7 @@ void Bullet::Draw() {
 		DrawMesh(pDC, &mesh_e);
 	}
 
-
+	SetZBuffer(true);	// Zバッファ有効(Zチェック有&Z更新有)
 	SetBlendState(BS_NONE);		// αブレンディング無効
 	CLight::Get()->SetEnable();	// 光源有効
 }
@@ -311,10 +328,17 @@ void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag,int objNum, EB
 //				頂点情報の作成
 //
 //====================================================================================
-void Bullet::MakeVertexBullet(ID3D11Device* pDevice) {
+void Bullet::MakeVertexBullet(ID3D11Device* pDevice, ObjTag _objType) {
 	// 一時的な頂点配列を生成
-	mesh_p.nNumVertex = 4;
-	VERTEX_3D* pVertexWk = new VERTEX_3D[mesh_p.nNumVertex];
+	MESH *pWork;
+	if (_objType == BULLET_PLAYER) {
+		pWork = &mesh_p;
+	} else {
+		pWork = &mesh_e;
+	}
+
+	pWork->nNumVertex = 4;
+	VERTEX_3D* pVertexWk = new VERTEX_3D[pWork->nNumVertex];
 
 	// 頂点配列の中身を埋める
 	pVertexWk[0].vtx = XMFLOAT3(-BULLET_RADIUS, BULLET_RADIUS, 0.0f);
@@ -335,7 +359,7 @@ void Bullet::MakeVertexBullet(ID3D11Device* pDevice) {
 	pVertexWk[3].tex = XMFLOAT2(1.0f, 1.0f);
 
 	// 一時的なインデックス配列を生成
-	mesh_p.nNumIndex = 4;
+	pWork->nNumIndex = 4;
 	int* pIndexWk = new int[4];
 
 	// インデックス配列の中身を埋める
@@ -345,7 +369,7 @@ void Bullet::MakeVertexBullet(ID3D11Device* pDevice) {
 	pIndexWk[3] = 3;
 
 	// 頂点バッファ/インデックス バッファ生成
-	MakeMeshVertex(pDevice, &mesh_p, pVertexWk, pIndexWk);
+	MakeMeshVertex(pDevice, pWork, pVertexWk, pIndexWk);
 
 	// 一時的な頂点配列/インデックス配列を解放
 	delete[] pIndexWk;
