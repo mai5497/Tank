@@ -7,16 +7,14 @@
 #ifndef __RESULT__H__
 #define __RESULT__H__
 
+//-------------------- インクルード --------------------
 #include "main.h"
 #include "Scene.h"
 
+//-------------------- 前方定義 --------------------
 class Texture;
 
-//===========================
-//
-//	プロトタイプ宣言
-//
-//===========================
+//-------------------- クラス定義 --------------------
 class Result : public Scene {
 public:
 	enum TEXNUM {
@@ -35,12 +33,12 @@ public:
 	virtual void Draw();	// 描画
 
 private:
-	static std::unique_ptr<Texture> pFrame;
-	static std::unique_ptr<Texture> pAllClear;
-	static std::unique_ptr<Texture> pStageChar;
+	static std::unique_ptr<Texture> pFrame;		// UI枠
+	static std::unique_ptr<Texture> pAllClear;	// UIオールクリア
+	static std::unique_ptr<Texture> pStageChar;	// UI「ステージ」の文字
 
 
-	int stageNum;
+	int stageNum;	// ステージの番号
 
 };
 #endif

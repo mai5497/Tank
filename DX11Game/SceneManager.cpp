@@ -45,10 +45,10 @@ SceneManager::~SceneManager() {
 //
 //====================================================================================
 void SceneManager::Init() {
-	stageNum = 8;	// ステージ番号は0から シーンはいるときに加算するので-1で初期化
+	stageNum = -1;	// ステージ番号は0から シーンはいるときに加算するので-1で初期化
 
 	// 最初はタイトル画面
-#if 0
+#if 1
 	nowScene = nextScene = SCENE_TITLE;
 	if(!pNowScene)pNowScene = std::make_shared<Title>();
 #else

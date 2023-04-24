@@ -107,7 +107,7 @@ void Bullet::Init(void) {
 	// 弾情報初期化
 	pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	collSize = XMFLOAT3(25.0f, 25.0f, 25.0f);
+	collSize = XMFLOAT3(50.0f, 50.0f, 50.0f);
 	use = false;
 	isCollision = false;
 	shadowNum = -1;
@@ -138,8 +138,7 @@ void Bullet::Uninit() {
 //
 //====================================================================================
 void Bullet::Update() {
-	//for (int i = 0; i < MAX_BULLET; ++i, ++pBullet) {
-		// 未使用ならスキップ
+	// 未使用ならスキップ
 	if (!use) {
 		return;
 	}
