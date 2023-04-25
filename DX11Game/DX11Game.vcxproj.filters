@@ -195,14 +195,14 @@
     <ClCompile Include="GameSummary.cpp">
       <Filter>ソース ファイル\GameSummary</Filter>
     </ClCompile>
-    <ClCompile Include="timer.cpp">
-      <Filter>ソース ファイル\Game</Filter>
-    </ClCompile>
     <ClCompile Include="HPUI.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
     <ClCompile Include="Result.cpp">
       <Filter>ソース ファイル\Result</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletLine.cpp">
+      <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -293,9 +293,6 @@
     <ClInclude Include="Texture.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
-    <ClInclude Include="timer.h">
-      <Filter>ヘッダー ファイル\GameSystem</Filter>
-    </ClInclude>
     <ClInclude Include="WallObject.h">
       <Filter>ヘッダー ファイル\Game</Filter>
     </ClInclude>
@@ -349,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="Result.h">
       <Filter>ヘッダー ファイル\Result</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletLine.h">
+      <Filter>ヘッダー ファイル\GameSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

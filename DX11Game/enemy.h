@@ -6,7 +6,11 @@
 #ifndef __ENEMY_H__
 #define __ENEMY_H__
 
+//-------------------- インクルード --------------------
 #include "GameObject.h"
+
+//-------------------- 前方定義 --------------------
+class BulletLine;
 
 //-------------------- クラス定義 --------------------
 class Enemy : public GameObject {
@@ -18,8 +22,7 @@ public:
 	void Uninit();
 	void Update();
 	void Draw();
-	//int CollisionEnemy(XMFLOAT3 pos, float radius, float damage);
-	//void CollisionEnemy(GameObject collision);
+
 	void Destroy();
 	void SetRootIndex(XMINT2 index);
 	XMINT2 SetStartIndex();
@@ -32,6 +35,8 @@ private:
 	int	rootTimer;		// ルート検索タイマー
 	std::vector<XMINT2>::iterator rootIndexNum;	// 検索したルートの何番目かに使う
 	std::vector<XMINT2> rootIndex;	// 検索したルートが格納される
+
+	std::unique_ptr<BulletLine> pBulletLine;
 };
 
 #endif

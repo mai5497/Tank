@@ -7,17 +7,23 @@
 
 //-------------------- インクルード部 --------------------
 #include "Player.h"
+
 #include "input.h"
 #include "debugproc.h"
-#include "shadow.h"
-#include "Bullet.h"
-#include "effect.h"
-#include "explosion.h"
 #include "DebugCollision.h"
+
 #include "Texture.h"
-#include "Astar.h"
-#include "Game.h"
+
 #include "fade.h"
+
+#include "shadow.h"
+#include "explosion.h"
+#include "effect.h"
+
+#include "Game.h"
+#include "Bullet.h"
+#include "Astar.h"
+#include "BulletLine.h"
 
 //-------------------- マクロ定義 --------------------
 #define MODEL_PLAYER	"data/model/kobitoblue.fbx"
@@ -93,6 +99,9 @@ void Player::Init() {
 	hitPoint = MAX_HP;
 	pGameScene->StoragePlayerHP(hitPoint);	// ゲームシーンにHPを保存する
 
+	// 弾の予測線の初期化
+	pBulletLine = std::make_unique<BulletLine>();
+	pBulletLine->Init(this);
 }
 
 //====================================================================================
@@ -101,6 +110,10 @@ void Player::Init() {
 //
 //====================================================================================
 void Player::Uninit() {
+	// 弾の予測線の開放
+	pBulletLine->Uninit();
+	pBulletLine.reset();
+
 	// 丸影の解放
 	ReleaseShadow(shadowNum);
 
@@ -296,12 +309,25 @@ void Player::Update() {
 	//}
 
 
+	//----- 弾 -----
 	// 弾発射
-	if (GetKeyRepeat(VK_SPACE)) {
-		Bullet::FireBullet(pos, XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
+	//if (GetKeyRelease(VK_SPACE) || GetMouseRelease(MOUSEBUTTON_L)) {
+	//	Bullet::FireBullet(pos, XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
+	//		BULLET_PLAYER,
+	//		gameObjNum);
+	//}
+	XMFLOAT3 dir = XMFLOAT3(GetMousePosition()->x-SCREEN_WIDTH / 2 - pos.x, 0.0f, -(GetMousePosition()->y - SCREEN_HEIGHT / 2) - pos.z);
+	if (GetKeyRelease(VK_SPACE) || GetMouseRelease(MOUSEBUTTON_L)) {
+		Bullet::FireBullet(pos, XMFLOAT3(dir.x, -dir.y, dir.z),
 			BULLET_PLAYER,
 			gameObjNum);
+
+
 	}
+
+	// 弾の予測線の更新
+	pBulletLine->SetDir(XMFLOAT3(dir.x,dir.y, dir.z));
+	pBulletLine->Update();
 
 	// A*に自分の座標を渡す
 	SetPlayerIndex(mapIndex);
@@ -339,11 +365,13 @@ void Player::Draw() {
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
 
+	// 弾の予測線の描画
+	pBulletLine->Draw();
 
 	//PrintDebugProc("index:%d,%d\n",mapIndex.x, mapIndex.y);
 	//PrintDebugProc("pos:%f,%f,%f\n",pos.x, pos.y,pos.z);
 	//PrintDebugProc("pos:%f,%f,%f\n",testPos.x, testPos.y, testPos.z);
-	//PrintDebugProc("%f\n", moveVal.x);
+	//PrintDebugProc("%f\n", mtxWorld._32);
 	//PrintDebugProc("%f\n", moveVal.y);
 	//PrintDebugProc("%f\n", moveVal.z);
 

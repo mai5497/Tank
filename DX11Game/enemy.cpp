@@ -15,6 +15,7 @@
 #include "collision.h"
 #include "Astar.h"
 #include "GameObjManager.h"
+#include "BulletLine.h"
 
 //-------------------- 定数定義 --------------------
 #define MODEL_ENEMY			"data/model/kobitored.fbx"
@@ -95,6 +96,10 @@ void Enemy::Init() {
 	rootTimer = 0;							// ルート検索の間隔
 	rootIndex = search_Root(mapIndex);		// ルートを検索して入れる
 	rootIndexNum = rootIndex.end()-1;		// ルートの検索結果が後ろから入るので後ろを初期値とする
+
+	// 弾の予測線の初期化
+	pBulletLine = std::make_unique<BulletLine>();
+	pBulletLine->Init(this);
 }
 
 //====================================================================================
@@ -103,6 +108,10 @@ void Enemy::Init() {
 //
 //====================================================================================
 void Enemy::Uninit() {
+	// 弾の予測線の開放
+	pBulletLine->Uninit();
+	pBulletLine.reset();
+
 	ReleaseShadow(shadowNum);
 
 	rootIndex.clear();
@@ -249,6 +258,10 @@ void Enemy::Update() {
 		rootIndexNum = rootIndex.end()-1;
 		rootTimer = ROOT_TIME;
 	}
+
+	// 弾の予測線の更新
+	pBulletLine->SetDir(XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33));
+	pBulletLine->Update();
 }
 
 //====================================================================================
@@ -271,6 +284,9 @@ void Enemy::Draw() {
 	pMyModel->Draw(pDC, mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
+
+	// 弾の予測線の描画
+	pBulletLine->Draw();
 
 	PrintDebugProc("moveval:%f,%f\n", moveVal.x, moveVal.y);
 	PrintDebugProc("mapIndex:%d,%d\n", mapIndex.x, mapIndex.y);

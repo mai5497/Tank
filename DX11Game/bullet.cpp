@@ -234,6 +234,8 @@ void Bullet::Draw() {
 	CLight::Get()->SetDisable();	// 光源無効
 	SetBlendState(BS_ALPHABLEND);	// αブレンディング有効
 	XMFLOAT4X4& mView = CCamera::Get()->GetViewMatrix();
+	// Zバッファ有効
+	SetZBuffer(true);
 
 	if (myTag == BULLET_PLAYER) {
 		// ビュー行列の回転成分の転置行列を設定
@@ -280,6 +282,8 @@ void Bullet::Draw() {
 		DrawMesh(pDC, &mesh_e);
 	}
 
+	// Zバッファ無効
+	SetZBuffer(false);
 	SetBlendState(BS_NONE);		// αブレンディング無効
 	CLight::Get()->SetEnable();	// 光源有効
 }
@@ -337,6 +341,8 @@ void Bullet::MakeVertexBullet(ID3D11Device* pDevice, ObjTag _objType) {
 
 	pWork->nNumVertex = 4;
 	VERTEX_3D* pVertexWk = new VERTEX_3D[pWork->nNumVertex];
+
+	pWork->primitiveType = PT_TRIANGLESTRIP;
 
 	// 頂点配列の中身を埋める
 	pVertexWk[0].vtx = XMFLOAT3(-BULLET_RADIUS, BULLET_RADIUS, 0.0f);
