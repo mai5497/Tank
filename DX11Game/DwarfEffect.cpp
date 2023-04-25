@@ -144,6 +144,8 @@ void DrawDwarfEffect(void) {
 	CLight::Get()->SetDisable();	// 光源無効
 	SetBlendState(BS_ALPHABLEND);	// αブレンディング有効
 	XMFLOAT4X4& mView = CCamera::Get()->GetViewMatrix();
+	// Zバッファ有効
+	SetZBuffer(true);
 
 	TDwarf* pDwarf = g_explosion;
 	for (int i = 0; i < MAX_DWARF; ++i, ++pDwarf) {
@@ -184,6 +186,8 @@ void DrawDwarfEffect(void) {
 		DrawMesh(pDC, &g_mesh);
 	}
 
+	// Zバッファ無効
+	SetZBuffer(false);
 	SetBlendState(BS_NONE);		// αブレンディング無効
 	CLight::Get()->SetEnable();	// 光源有効
 }
@@ -221,6 +225,8 @@ HRESULT MakeVertexDwarf(ID3D11Device* pDevice) {
 	// 一時的な頂点配列を生成
 	g_mesh.nNumVertex = 4;
 	VERTEX_3D* pVertexWk = new VERTEX_3D[g_mesh.nNumVertex];
+
+	g_mesh.primitiveType = PT_TRIANGLESTRIP;
 
 	// 頂点配列の中身を埋める
 	pVertexWk[0].vtx = XMFLOAT3(-0.5f, 0.5f, 0.0f);
