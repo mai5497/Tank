@@ -11,7 +11,6 @@
 #include "input.h"
 #include "Sound.h"
 #include "number.h"
-#include "timer.h"
 #include "Fade.h"
 #include "BG.h"
 #include "WallObject.h"
