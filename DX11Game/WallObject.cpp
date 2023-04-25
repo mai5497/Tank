@@ -251,10 +251,10 @@ void WallObj::Init() {
 
 	if (wallMap[mapIndex.y][mapIndex.x] != 0) {
 		// 位置・回転・スケールの初期設定
-		size = XMFLOAT3(25.0f, 25.0f, 25.0f);
+		size = XMFLOAT3(1.0f, 1.0f, 1.0f);
 		moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		collRadius = WALLOBJ_RADIUS;
-		collSize = XMFLOAT3(50.0f, 50.0f, 50.0f);
+		collSize = XMFLOAT3(45.0f, 45.0f, 45.0f);
 
 		rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
@@ -262,7 +262,7 @@ void WallObj::Init() {
 
 		XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
 
-		pos = XMFLOAT3(mapIndex.x * 80.0f - 640.0f, 0.0f, -mapIndex.y * 80.0f + 480.0f);
+		pos = XMFLOAT3(mapIndex.x * 80.0f - 640.0f, 25.0f, -mapIndex.y * 80.0f + 480.0f);
 		// ワールドマトリックスの初期化
 		_mtxWorld = XMMatrixIdentity();
 

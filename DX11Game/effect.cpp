@@ -137,7 +137,6 @@ void DrawEffect(void)
 
 	CLight::Get()->SetDisable();
 	SetBlendState(BS_ADDITIVE);		// 加算合成
-	SetZWrite(false);	// 半透明描画はZバッファを更新しない(Zチェックは行う)
 
 	// ビューマトリックスを取得
 	XMFLOAT4X4& mtxView = CCamera::Get()->GetViewMatrix();
@@ -179,7 +178,6 @@ void DrawEffect(void)
 		}
 	}
 
-	SetZWrite(true);
 	SetBlendState(BS_NONE);
 	CLight::Get()->SetEnable();
 }

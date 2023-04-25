@@ -148,23 +148,23 @@ void Enemy::Update() {
 	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
 
 	// 向かうルートと現在の位置を比較して移動量を決める
-	if (mapIndex.x < (*rootIndexNum).x) {
+	if ((*rootIndexNum).x != -1 && mapIndex.x < (*rootIndexNum).x) {
 		moveVal.x = VALUE_MOVE_ENEMY;
 		rotDest.y = rotCamera.y - 90.0f;
-	} else if (mapIndex.x > (*rootIndexNum).x) {
+	} else if ((*rootIndexNum).x != -1 && mapIndex.x > (*rootIndexNum).x) {
 		moveVal.x = -VALUE_MOVE_ENEMY;
 		rotDest.y = rotCamera.y + 90.0f;
-	} else if (mapIndex.x == (*rootIndexNum).x) {
+	} else if ((*rootIndexNum).x == -1 || mapIndex.x == (*rootIndexNum).x) {
 		moveVal.x = 0.0f;
 	}
 
-	if (mapIndex.y < (*rootIndexNum).y) {
+	if ((*rootIndexNum).y != -1 && mapIndex.y < (*rootIndexNum).y) {
 		moveVal.z = -VALUE_MOVE_ENEMY;
 		rotDest.y = rotCamera.y;
-	} else if (mapIndex.y > (*rootIndexNum).y) {
+	} else if ((*rootIndexNum).y != -1 && mapIndex.y > (*rootIndexNum).y) {
 		moveVal.z = VALUE_MOVE_ENEMY;
 		rotDest.y = rotCamera.y + 180.0f;
-	} else if (mapIndex.y == (*rootIndexNum).y) {
+	} else if ((*rootIndexNum).y == -1 || mapIndex.y == (*rootIndexNum).y) {
 		moveVal.z = 0.0f;
 	}
 
@@ -271,6 +271,10 @@ void Enemy::Draw() {
 	pMyModel->Draw(pDC, mtxWorld, eTransparentOnly);
 	SetZWrite(true);				// Zバッファ更新する
 	SetBlendState(BS_NONE);			// アルファブレンド無効
+
+	PrintDebugProc("moveval:%f,%f\n", moveVal.x, moveVal.y);
+	PrintDebugProc("mapIndex:%d,%d\n", mapIndex.x, mapIndex.y);
+	PrintDebugProc("rootIndex:%d,%d\n", (*rootIndexNum).x, (*rootIndexNum).y);
 }
 
 //====================================================================================

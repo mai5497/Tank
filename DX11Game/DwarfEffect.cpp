@@ -144,7 +144,6 @@ void DrawDwarfEffect(void) {
 	CLight::Get()->SetDisable();	// 光源無効
 	SetBlendState(BS_ALPHABLEND);	// αブレンディング有効
 	XMFLOAT4X4& mView = CCamera::Get()->GetViewMatrix();
-	SetZBuffer(false);	// Zバッファ有効(Zチェック有&Z更新有)
 
 	TDwarf* pDwarf = g_explosion;
 	for (int i = 0; i < MAX_DWARF; ++i, ++pDwarf) {
@@ -185,7 +184,6 @@ void DrawDwarfEffect(void) {
 		DrawMesh(pDC, &g_mesh);
 	}
 
-	SetZBuffer(true);	// Zバッファ有効(Zチェック有&Z更新有)
 	SetBlendState(BS_NONE);		// αブレンディング無効
 	CLight::Get()->SetEnable();	// 光源有効
 }

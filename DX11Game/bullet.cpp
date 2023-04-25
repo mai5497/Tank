@@ -234,7 +234,6 @@ void Bullet::Draw() {
 	CLight::Get()->SetDisable();	// 光源無効
 	SetBlendState(BS_ALPHABLEND);	// αブレンディング有効
 	XMFLOAT4X4& mView = CCamera::Get()->GetViewMatrix();
-	SetZBuffer(false);	// Zバッファ有効(Zチェック有&Z更新有)
 
 	if (myTag == BULLET_PLAYER) {
 		// ビュー行列の回転成分の転置行列を設定
@@ -281,7 +280,6 @@ void Bullet::Draw() {
 		DrawMesh(pDC, &mesh_e);
 	}
 
-	SetZBuffer(true);	// Zバッファ有効(Zチェック有&Z更新有)
 	SetBlendState(BS_NONE);		// αブレンディング無効
 	CLight::Get()->SetEnable();	// 光源有効
 }
