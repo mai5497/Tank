@@ -23,7 +23,7 @@
 #define MODEL_PLAYER	"data/model/kobitoblue.fbx"
 #define TOON_TEXTURE	"data/model/ramp.png"
 
-#define	VALUE_MOVE_PLAYER	(0.5f)	// 移動速度
+#define	VALUE_MOVE_PLAYER	(1.0f)	// 移動速度
 #define	RATE_MOVE_PLAYER	(0.25f)	// 移動慣性係数
 #define	VALUE_ROTATE_PLAYER	(4.5f)		// 回転速度
 #define	RATE_ROTATE_PLAYER	(0.1f)		// 回転慣性係数
@@ -210,16 +210,16 @@ void Player::Update() {
 		rotModel.y += 360.0f;
 	}
 
-	// 位置移動
-	pos.x += moveVal.x;
-	pos.y += moveVal.y;
-	pos.z += moveVal.z;
 
 	// 移動量に慣性をかける
 	moveVal.x += (0.0f - moveVal.x) * RATE_MOVE_PLAYER;
 	moveVal.y += (0.0f - moveVal.y) * RATE_MOVE_PLAYER;
 	moveVal.z += (0.0f - moveVal.z) * RATE_MOVE_PLAYER;
 
+	// 位置移動
+	pos.x += moveVal.x;
+	pos.y += moveVal.y;
+	pos.z += moveVal.z;
 
 	if (pos.x < -630.0f) {
 		pos.x = -630.0f;

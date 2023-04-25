@@ -104,14 +104,8 @@ void GameObjManager::Update() {
 	// 当たり判定の更新
 	pCollManager->Update();
 
-
+	// ゲームシーンに敵の現在の数を保存する
 	pGameScene->StorageEnemySum(enemySum);
-	//
-	//if (enemySum < 1) {
-	//	Fade::StartFadeOut(SCENE_STAGESUMMARY);
-	//}
-
-	
 }
 
 //====================================================================================

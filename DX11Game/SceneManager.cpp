@@ -48,13 +48,13 @@ void SceneManager::Init() {
 	stageNum = -1;	// ステージ番号は0から シーンはいるときに加算するので-1で初期化
 
 	// 最初はタイトル画面
-#if 1
+#if 0
 	nowScene = nextScene = SCENE_TITLE;
 	if(!pNowScene)pNowScene = std::make_shared<Title>();
 #else
-	//stageNum++;
-	nowScene = nextScene = SCENE_MODESELECT;
-	if (!pNowScene)pNowScene = std::make_shared<Select>();
+	stageNum++;
+	nowScene = nextScene = SCENE_GAME;
+	if (!pNowScene)pNowScene = std::make_shared<Game>(stageNum);
 #endif
 	pNowScene->Init();
 
@@ -153,6 +153,8 @@ void SceneManager::ChangeScene() {
 	switch (nextScene) {
 	case SCENE_TITLE:		// タイトル画面
 		pNowScene = std::make_shared<Title>();
+
+		stageNum = -1;	// ステージ番号は0から シーンはいるときに加算するので-1で初期化
 		break;
 	case SCENE_MODESELECT:	// セレクト画面
 		pNowScene = std::make_shared<Select>();
@@ -161,7 +163,6 @@ void SceneManager::ChangeScene() {
 		pNowScene = std::make_shared<Tutorial>();
 		break;
 	case SCENE_STAGESUMMARY:// ステージ概要
-		//stageNum++;
 		pNowScene = std::make_shared<GameSummary>(stageNum);
 		break;
 	case SCENE_GAME:		// ゲーム画面
