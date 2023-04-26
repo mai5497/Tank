@@ -102,6 +102,9 @@ void Player::Init() {
 	// 弾の予測線の初期化
 	pBulletLine = std::make_unique<BulletLine>();
 	pBulletLine->Init(this);
+
+	// 座標をゲームシーンに保存
+	pGameScene->StoragePlayerPos(pos);
 }
 
 //====================================================================================
@@ -318,7 +321,7 @@ void Player::Update() {
 	//}
 	XMFLOAT3 dir = XMFLOAT3(GetMousePosition()->x-SCREEN_WIDTH / 2 - pos.x, 0.0f, -(GetMousePosition()->y - SCREEN_HEIGHT / 2) - pos.z);
 	if (GetKeyRelease(VK_SPACE) || GetMouseRelease(MOUSEBUTTON_L)) {
-		Bullet::FireBullet(pos, XMFLOAT3(dir.x, -dir.y, dir.z),
+		Bullet::FireBullet(pos, XMFLOAT3(dir.x, dir.y, dir.z),
 			BULLET_PLAYER,
 			gameObjNum);
 
@@ -326,11 +329,14 @@ void Player::Update() {
 	}
 
 	// 弾の予測線の更新
-	pBulletLine->SetDir(XMFLOAT3(dir.x,dir.y, dir.z));
+	pBulletLine->SetDir(dir);
 	pBulletLine->Update();
 
 	// A*に自分の座標を渡す
 	SetPlayerIndex(mapIndex);
+
+	// 座標をゲームシーンに保存
+	pGameScene->StoragePlayerPos(pos);
 
 	//----- 当たり判定 -----
 	if (hitList.size() > 0) {

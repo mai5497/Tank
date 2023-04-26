@@ -61,7 +61,7 @@ void GameObjManager::Init(Game* _pGameScene) {
 				pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
 			} else if (WallObj::wallMap[stageNum][j][i] == 2) {
 				// “G‰Šú‰»
-				gameObjNum = AddList(std::make_shared<Enemy>(i,j));
+				gameObjNum = AddList(std::make_shared<Enemy>(i,j,pGameScene));
 				pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
 			}
 		}
@@ -142,6 +142,9 @@ int GameObjManager::GetEnemySum() {
 int GameObjManager::AddList(const std::shared_ptr<GameObject>& _pGameobj, bool _isInit) {
 	pGameObjects.emplace_back(_pGameobj);
 	if (_isInit) {
+		if (_pGameobj->myTag == GameObject::ENEMY) {
+			pGameObjects[pGameObjects.size() - 1]->Init();
+		}
 		pGameObjects[pGameObjects.size() - 1]->Init();
 	}
 	Collision::AddList(_pGameobj);

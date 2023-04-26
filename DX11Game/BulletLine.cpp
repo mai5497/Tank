@@ -63,11 +63,12 @@ void BulletLine::Uninit() {
 }
 
 void BulletLine::Update() {
-	//XMFLOAT3 dir = XMFLOAT3(-pObj->mtxWorld._31, -pObj->mtxWorld._32, -pObj->mtxWorld._33);
-	XMStoreFloat3(&dir, XMVector3Normalize(XMLoadFloat3(&dir)));
-
+	XMStoreFloat3(&dir, XMVector3Normalize(XMLoadFloat3(&dir)));	// ³‹K‰»
 	pos = XMFLOAT3(pObj->pos.x  + dir.x * LINE_WIDTH , 5.0f, pObj->pos.z + dir.z * LINE_WIDTH);
-	angle = XMFLOAT3(90.0f, pObj->rotModel.y *dir.x + dir.z + 90, pObj->rotModel.z);
+	
+	float radian = atan2f(dir.z, dir.x);
+	float degree = radian * 180 / 3.14f;
+	angle = XMFLOAT3(90.0f, -degree, pObj->rotModel.z);
 
 	XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate;
 

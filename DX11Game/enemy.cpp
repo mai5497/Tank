@@ -16,6 +16,7 @@
 #include "Astar.h"
 #include "GameObjManager.h"
 #include "BulletLine.h"
+#include "Game.h"
 
 //-------------------- 定数定義 --------------------
 #define MODEL_ENEMY			"data/model/kobitored.fbx"
@@ -38,9 +39,11 @@ std::unique_ptr<CAssimpModel> Enemy::pMyModel;
 //				コンストラクタ
 //
 //====================================================================================
-Enemy::Enemy(int mapIndex_x, int mapindex_y) {
+Enemy::Enemy(int mapIndex_x, int mapindex_y,Game *_pGameScene) {
 	mapIndex.x = mapIndex_x;
 	mapIndex.y = mapindex_y;
+
+	pGameScene = _pGameScene;
 }
 
 
@@ -97,9 +100,12 @@ void Enemy::Init() {
 	rootIndex = search_Root(mapIndex);		// ルートを検索して入れる
 	rootIndexNum = rootIndex.end()-1;		// ルートの検索結果が後ろから入るので後ろを初期値とする
 
-	// 弾の予測線の初期化
+	//----- 弾の予測線の初期化 -----
 	pBulletLine = std::make_unique<BulletLine>();
 	pBulletLine->Init(this);
+
+	//----- プレイヤーの位置取得 -----
+	playerPos = pGameScene->GetPlayerPos();
 }
 
 //====================================================================================
@@ -234,6 +240,20 @@ void Enemy::Update() {
 	// 影の移動
 	MoveShadow(shadowNum, pos);
 
+	//----- 弾の予測線の更新 -----
+	XMFLOAT3 dir;
+
+	// プレイヤーの位置取得
+	playerPos = pGameScene->GetPlayerPos();
+
+	if (abs(playerPos.x - pos.x + playerPos.z - pos.z) < 300.0f) {
+		dir = XMFLOAT3(playerPos.x - pos.x, 0.0f, playerPos.z - pos.z);
+	} else {
+		dir = XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33);
+	}
+	pBulletLine->SetDir(dir);
+	pBulletLine->Update();
+
 	//----- 弾発射 -----
 	int randomtime;
 	randomtime = rand() % 3;
@@ -241,7 +261,7 @@ void Enemy::Update() {
 	if (bulletTimer < 0) {
 		Bullet::FireBullet(
 			pos,
-			XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
+			XMFLOAT3(dir),
 			BULLET_ENEMY,
 			gameObjNum);
 
@@ -251,17 +271,13 @@ void Enemy::Update() {
 	//----- ルート検索 -----
 	rootTimer--;
 	if (rootTimer < 0) {
-	// マップの要素番号であったら現在の位置がどこになるのかを求める
+		// マップの要素番号であったら現在の位置がどこになるのかを求める
 		mapIndex.x = (pos.x + 640.0f) / 80.0f;
 		mapIndex.y = abs(pos.z - 480.0) / 80.0f;
 		rootIndex = search_Root(mapIndex);
-		rootIndexNum = rootIndex.end()-1;
+		rootIndexNum = rootIndex.end() - 1;
 		rootTimer = ROOT_TIME;
 	}
-
-	// 弾の予測線の更新
-	pBulletLine->SetDir(XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33));
-	pBulletLine->Update();
 }
 
 //====================================================================================
@@ -288,9 +304,10 @@ void Enemy::Draw() {
 	// 弾の予測線の描画
 	pBulletLine->Draw();
 
-	PrintDebugProc("moveval:%f,%f\n", moveVal.x, moveVal.y);
-	PrintDebugProc("mapIndex:%d,%d\n", mapIndex.x, mapIndex.y);
-	PrintDebugProc("rootIndex:%d,%d\n", (*rootIndexNum).x, (*rootIndexNum).y);
+	PrintDebugProc("moveval:%f\n", abs(playerPos.x - pos.x + playerPos.z - pos.z));
+	//PrintDebugProc("moveval:%f,%f\n", moveVal.x, moveVal.y);
+	//PrintDebugProc("mapIndex:%d,%d\n", mapIndex.x, mapIndex.y);
+	//PrintDebugProc("rootIndex:%d,%d\n", (*rootIndexNum).x, (*rootIndexNum).y);
 }
 
 //====================================================================================
