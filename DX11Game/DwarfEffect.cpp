@@ -14,17 +14,17 @@
 //-------------------- 定数定義 --------------------
 #define	TEXTURE_FILENAME		(L"data/texture/FX_BlueNoom.png")
 
-#define M_DIFFUSE				XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
-#define M_SPECULAR				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
+#define M_DIFFUSE				(XMFLOAT4(1.0f,1.0f,1.0f,1.0f))
+#define M_SPECULAR				(XMFLOAT4(0.0f,0.0f,0.0f,1.0f))
 #define M_POWER					(1.0f)
-#define M_AMBIENT				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
-#define M_EMISSIVE				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
+#define M_AMBIENT				(XMFLOAT4(0.0f,0.0f,0.0f,1.0f))
+#define M_EMISSIVE				(XMFLOAT4(0.0f,0.0f,0.0f,1.0f))
 
-#define MAX_DWARF			(100)
+#define MAX_DWARF				(100)
 
-#define DWARF_FRAME_X		(10)		// 横フレーム数(テクスチャに合)
-#define DWARF_FRAME_Y		(6)		// 縦フレーム数(わせて変更する)
-#define DWARF_ANIM_COUNT	(1)		// 一コマ当たりの表示回数
+#define DWARF_FRAME_X			(10)	// 横フレーム数(テクスチャに合)
+#define DWARF_FRAME_Y			(6)		// 縦フレーム数(わせて変更する)
+#define DWARF_ANIM_COUNT		(1)		// 一コマ当たりの表示回数
 
 //-------------------- 構造体定義 --------------------
 struct TDwarf {
@@ -39,7 +39,7 @@ struct TDwarf {
 //-------------------- グローバル変数定義 --------------------
 static MESH			g_mesh;						// メッシュ情報
 static MATERIAL		g_material;					// マテリアル
-static TDwarf	g_explosion[MAX_DWARF];	// 爆発情報
+static TDwarf		g_explosion[MAX_DWARF];		// 爆発情報
 
 //-------------------- プロトタイプ宣言 --------------------
 static HRESULT MakeVertexDwarf(ID3D11Device* pDevice);
@@ -71,7 +71,6 @@ HRESULT InitDwarfEffect(void) {
 	std::unique_ptr<Texture> pTexture = std::make_unique<Texture>();
 	hr = pTexture->SetTexture(pDevice, TEXTURE_FILENAME);
 	g_mesh.pTexture = pTexture->GetTexture();
-	//pTexture->ReleaseTexture();
 	pTexture.reset();
 
 	if (FAILED(hr)) {
@@ -226,6 +225,7 @@ HRESULT MakeVertexDwarf(ID3D11Device* pDevice) {
 	g_mesh.nNumVertex = 4;
 	VERTEX_3D* pVertexWk = new VERTEX_3D[g_mesh.nNumVertex];
 
+	// 描画のタイプを設定
 	g_mesh.primitiveType = PT_TRIANGLESTRIP;
 
 	// 頂点配列の中身を埋める

@@ -75,9 +75,6 @@
     <ClCompile Include="BG.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Boss.cpp">
-      <Filter>ソース ファイル\Game</Filter>
-    </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
@@ -207,9 +204,6 @@
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
     <ClInclude Include="BG.h">
-      <Filter>ヘッダー ファイル\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Boss.h">
       <Filter>ヘッダー ファイル\Game</Filter>
     </ClInclude>
     <ClInclude Include="Bullet.h">

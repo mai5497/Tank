@@ -74,13 +74,12 @@ void HPUI::Init(Game* _pGameScene) {
 //
 //====================================================================================
 void HPUI::Uninit() {
-	// ”wŒiƒeƒNƒXƒ`ƒƒ‰ð•ú
+	//----- HPUI‰ð•ú -----
 	pFull->ReleaseTexture();
 	pFull.reset();
 
 	pEmpty->ReleaseTexture();
-	pEmpty.reset();
-
+	pEmpty.reset();	
 }
 
 //====================================================================================
@@ -89,6 +88,7 @@ void HPUI::Uninit() {
 //
 //====================================================================================
 void HPUI::Update() {
+	// HP‚ÌŽæ“¾
 	playerHP = pGameScene->GetPlayerHP();
 }
 
@@ -110,7 +110,7 @@ void HPUI::Draw() {
 	SetPolygonColor(1.0f, 1.0f, 1.0f);
 
 	for (int i = 0; i < MAX_HP; i++) {
-		if (i < MAX_HP - playerHP) {
+		if (i < MAX_HP - playerHP) {	// HP‚ª‚ ‚é‚©‚È‚¢‚©‚Ç‚Á‚¿‚ð•`‰æ‚·‚é‚©‚Ì”»’è
 			SetPolygonTexture(pEmpty->GetTexture());
 		} else {
 			SetPolygonTexture(pFull->GetTexture());

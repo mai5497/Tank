@@ -16,6 +16,7 @@ class Game;
 //-------------------- クラス定義 --------------------
 class Enemy : public GameObject {
 public:
+	//---関数
 	Enemy(int mapIndex_x, int mapindex_y,Game *_pGameScene);
 	~Enemy();
 
@@ -29,6 +30,7 @@ public:
 	XMINT2 SetStartIndex();
 	bool GetUse();
 private:
+	//---変数
 	Game* pGameScene;									// ゲームシーンを保持
 	
 	static std::unique_ptr<CAssimpModel> pMyModel;		// モデル
@@ -42,7 +44,6 @@ private:
 	std::unique_ptr<BulletLine> pBulletLine;			// 撃つ方向を描画
 
 	XMFLOAT3 playerPos;									// プレイヤーに照準を向ける為座標を保存
-
 };
 
 #endif

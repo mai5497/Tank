@@ -14,16 +14,16 @@
 #include "Light.h"
 
 //-------------------- 定数定義 --------------------
-#define	TEXTURE_SMOKE		L"data/texture/FX_Smoke.png"	// 読み込むテクスチャファイル名
-#define	SMOKE_SIZE_X		(50.0f)							// ビルボードの幅
-#define	SMOKE_SIZE_Y		(50.0f)							// ビルボードの高さ
+#define	TEXTURE_SMOKE			(L"data/texture/FX_Smoke.png")	// 読み込むテクスチャファイル名
+#define	SMOKE_SIZE_X			(50.0f)							// ビルボードの幅
+#define	SMOKE_SIZE_Y			(50.0f)							// ビルボードの高さ
 
-#define	MAX_SMOKE			(512)							// ビルボード最大数
+#define	MAX_SMOKE				(512)							// ビルボード最大数
 
-#define MATERIAL_DIFFUSE		XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
-#define MATERIAL_AMBIENT		XMFLOAT4(0,0,0,1)
-#define MATERIAL_SPECULAR		XMFLOAT4(0,0,0,1)
-#define MATERIAL_EMISSIVE		XMFLOAT4(0,0,0,1)
+#define MATERIAL_DIFFUSE		(XMFLOAT4(1.0f,1.0f,1.0f,1.0f))
+#define MATERIAL_AMBIENT		(XMFLOAT4(0,0,0,1))
+#define MATERIAL_SPECULAR		(XMFLOAT4(0,0,0,1))
+#define MATERIAL_EMISSIVE		(XMFLOAT4(0,0,0,1))
 #define MATERIAL_POWER			(1.0f)
 
 //-------------------- 構造体定義 --------------------

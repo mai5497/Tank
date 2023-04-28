@@ -42,9 +42,11 @@ std::unique_ptr<CAssimpModel> Enemy::pMyModel;
 //
 //====================================================================================
 Enemy::Enemy(int mapIndex_x, int mapindex_y,Game *_pGameScene) {
+	// インデックスを保存
 	mapIndex.x = mapIndex_x;
 	mapIndex.y = mapindex_y;
 
+	// ゲームシーンを保存
 	pGameScene = _pGameScene;
 }
 
@@ -126,8 +128,10 @@ void Enemy::Uninit() {
 	pBulletLine->Uninit();
 	pBulletLine.reset();
 
+	// 影の解放
 	ReleaseShadow(shadowNum);
 
+	// 探索のルートのvectorの終了
 	rootIndex.clear();
 
 	// モデルの解放
@@ -305,10 +309,12 @@ void Enemy::Update() {
 //
 //====================================================================================
 void Enemy::Draw() {
-	ID3D11DeviceContext* pDC = GetDeviceContext();
+	// 未使用ならスキップ
 	if (!use) {
 		return;
 	}
+
+	ID3D11DeviceContext* pDC = GetDeviceContext();
 
 	// 不透明部分を描画
 	pMyModel->Draw(pDC, mtxWorld, eOpacityOnly);
@@ -324,8 +330,8 @@ void Enemy::Draw() {
 	pBulletLine->Draw();
 
 	//PrintDebugProc("moveval:%f,%f\n", moveVal.x, moveVal.y);
-	PrintDebugProc("mapIndex:%d,%d\n", mapIndex.x, mapIndex.y);
-	PrintDebugProc("rootIndex:%d,%d\n", (*rootIndexNum).x, (*rootIndexNum).y);
+	//PrintDebugProc("mapIndex:%d,%d\n", mapIndex.x, mapIndex.y);
+	//PrintDebugProc("rootIndex:%d,%d\n", (*rootIndexNum).x, (*rootIndexNum).y);
 }
 
 //====================================================================================
@@ -339,6 +345,7 @@ void Enemy::Destroy() {
 	// 丸影解放
 	ReleaseShadow(shadowNum);
 	shadowNum = -1;
+
 	// 爆発開始
 	pos.x -= moveVal.x;
 	pos.y -= moveVal.y;
@@ -349,7 +356,7 @@ void Enemy::Destroy() {
 	isCollision = false;
 
 	GameObjManager::DelList(gameObjNum, false);		// Uninitがモデルと丸影の開放のみなのでなし。ちょい上で丸影の開放は行った、
-																// モデルの開放はシングルトンの為別の敵描画に影響が出るため行わない
+													// モデルの開放はシングルトンの為別の敵描画に影響が出るため行わない
 }
 
 

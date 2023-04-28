@@ -10,10 +10,9 @@
 #include "Texture.h"
 
 //-------------------- 定数定義 --------------------
-#define PATH_NUMBERTEXTURE	L"data/texture/UI_Number.png"
+#define PATH_NUMBERTEXTURE	(L"data/texture/UI_Number.png")
 
 
-//-------------------- グローバル変数定義 --------------------
 static std::unique_ptr<Texture> pTexture;
 
 

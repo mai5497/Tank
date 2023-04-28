@@ -163,7 +163,6 @@
     <ClCompile Include="AssimpModel.cpp" />
     <ClCompile Include="Astar.cpp" />
     <ClCompile Include="BG.cpp" />
-    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="BulletLine.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -209,7 +208,6 @@
     <ClInclude Include="AssimpModel.h" />
     <ClInclude Include="Astar.h" />
     <ClInclude Include="BG.h" />
-    <ClInclude Include="Boss.h" />
     <ClInclude Include="BulletLine.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />

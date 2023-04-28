@@ -45,8 +45,8 @@
 
 MESH Bullet::mesh_p;					// メッシュ情報
 MESH Bullet::mesh_e;					// メッシュ情報
-MATERIAL Bullet::material_p;				// マテリアル
-MATERIAL Bullet::material_e;				// マテリアル
+MATERIAL Bullet::material_p;			// マテリアル
+MATERIAL Bullet::material_e;			// マテリアル
 
 
 //====================================================================================
@@ -76,6 +76,7 @@ Bullet::~Bullet() {
 void Bullet::Init(void) {
 	ID3D11Device* pDevice = GetDevice();
 
+	//----- プレイヤーの弾初期化 -----
 	// 頂点情報の作成
 	MakeVertexBullet(pDevice, BULLET_PLAYER);
 
@@ -86,6 +87,7 @@ void Bullet::Init(void) {
 	material_p.Power = M_POWER;
 	material_p.Emissive = M_EMISSIVE;
 	mesh_p.pMaterial = &material_p;
+
 	// テクスチャの読み込み
 	std::unique_ptr<Texture> pTexture_p = std::make_unique<Texture>();
 	HRESULT isLoad_p = pTexture_p->SetTexture(pDevice, PLAYERBULLET_FILENAME);
@@ -93,10 +95,17 @@ void Bullet::Init(void) {
 		MessageBox(NULL, _T("プレイヤーの弾テクスチャ読み込み失敗"), _T("error"), MB_OK);
 	}
 	mesh_p.pTexture = pTexture_p->GetTexture();
+	pTexture_p.reset();
 
+	XMStoreFloat4x4(&mesh_p.mtxTexture, XMMatrixIdentity());
+	XMStoreFloat4x4(&mesh_p.mtxWorld, XMMatrixIdentity());
+
+
+	//----- 敵の弾初期化 -----
 	// 頂点情報の作成
 	MakeVertexBullet(pDevice, BULLET_ENEMY);
 
+	// マテリアルの設定
 	material_e.Diffuse = M_DIFFUSE;
 	material_e.Ambient = M_AMBIENT;
 	material_e.Specular = M_SPECULAR;
@@ -104,24 +113,19 @@ void Bullet::Init(void) {
 	material_e.Emissive = M_EMISSIVE;
 	mesh_e.pMaterial = &material_e;
 
+	// テクスチャの読み込み
 	std::unique_ptr<Texture> pTexture_e = std::make_unique<Texture>();
 	HRESULT isLoad_e = pTexture_e->SetTexture(pDevice, ENEMYBULLET_FILENAME);
 	if (FAILED(isLoad_e)) {
 		MessageBox(NULL, _T("敵の弾テクスチャ読み込み失敗"), _T("error"), MB_OK);
 	}
 	mesh_e.pTexture = pTexture_e->GetTexture();
-	//pTexture->ReleaseTexture();
-	pTexture_p.reset();
 	pTexture_e.reset();
 
-	XMStoreFloat4x4(&mesh_p.mtxTexture, XMMatrixIdentity());
 	XMStoreFloat4x4(&mesh_e.mtxTexture, XMMatrixIdentity());
-
-	// ワールド マトリックス初期化
-	XMStoreFloat4x4(&mesh_p.mtxWorld, XMMatrixIdentity());
 	XMStoreFloat4x4(&mesh_e.mtxWorld, XMMatrixIdentity());
 
-	// 弾情報初期化
+	//----- 弾情報初期化 -----
 	pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	collSize = XMFLOAT3(50.0f, 50.0f, 50.0f);
@@ -139,11 +143,14 @@ void Bullet::Init(void) {
 //
 //====================================================================================
 void Bullet::Uninit() {
+	// 影の開放
 	if (use) {
 		use = false;
 		ReleaseShadow(shadowNum);
 		shadowNum = -1;
 	}
+
+	// メッシュの開放
 	ReleaseMesh(&mesh_p);
 	ReleaseMesh(&mesh_e);
 }
@@ -159,20 +166,19 @@ void Bullet::Update() {
 	if (!use) {
 		return;
 	}
-	// 位置を更新
+
+	//----- 移動 -----
 	pos.x += moveVal.x;
 	pos.y += moveVal.y;
-	pos.y *= BULLET_GRAVITY;
 	pos.z += moveVal.z;
-	// 範囲チェック
+
+	//----- 当たり判定 -----
 	if (pos.x < MIN_FIELD_X || pos.x > MAX_FIELD_X ||
-		//pBullet->pos.y < MIN_FIELD_Y ||
 		pos.z < MIN_FIELD_Z || pos.z > MAX_FIELD_Z) {
-
 		Destroy();
-
 		return;
 	}
+
 	if (hitList.size() > 0) {
 		for (int i = 0; i < hitList.size(); i++) {
 			if (myTag == BULLET_PLAYER) {
@@ -203,13 +209,12 @@ void Bullet::Update() {
 					return;
 				}
 			}
-
 		}
-
 	}
 
 	// 丸影移動
 	MoveShadow(shadowNum, pos);
+
 	// エフェクトの設定
 	if (type == BULLETTYPE_NORMAL) {
 		// 煙生成
@@ -298,9 +303,9 @@ void Bullet::Draw() {
 void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag, int objNum, EBulletType _type) {
 	std::shared_ptr<Bullet> pBullet = std::make_shared<Bullet>();
 
-	pBullet->Init();
+	pBullet->Init();	// 初期化
 
-	pBullet->pos = _pos;
+
 	// 方向ベクトルを正規化
 	XMStoreFloat3(&_dir, XMVector3Normalize(XMLoadFloat3(&_dir)));
 	if (_tag == BULLET_PLAYER) {
@@ -319,10 +324,10 @@ void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag, int objNum, E
 		}
 	}
 
+	pBullet->pos = _pos;
 	pBullet->shadowNum = CreateShadow(_pos, BULLET_RADIUS);
 	XMFLOAT4X4 _mtxWorld;
-	XMStoreFloat4x4(&_mtxWorld,
-					XMMatrixTranslation(pBullet->pos.x, pBullet->pos.y, pBullet->pos.z));
+	XMStoreFloat4x4(&_mtxWorld,XMMatrixTranslation(pBullet->pos.x, pBullet->pos.y, pBullet->pos.z));
 	pBullet->use = true;
 	pBullet->type = _type;
 	pBullet->isCollision = true;
@@ -397,9 +402,11 @@ void Bullet::MakeVertexBullet(ID3D11Device* pDevice, ObjTag _objType) {
 //====================================================================================
 void Bullet::Destroy() {
 	use = false;
+	
 	// 丸影解放
 	ReleaseShadow(shadowNum);
 	shadowNum = -1;
+
 	// 爆発開始
 	pos.x -= moveVal.x;
 	pos.y -= moveVal.y;

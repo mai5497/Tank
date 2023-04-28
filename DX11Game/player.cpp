@@ -26,11 +26,11 @@
 #include "BulletLine.h"
 
 //-------------------- マクロ定義 --------------------
-#define MODEL_PLAYER	("data/model/kobitoblue.fbx")
-#define TOON_TEXTURE	("data/model/ramp.png")
+#define MODEL_PLAYER		("data/model/kobitoblue.fbx")
+#define TOON_TEXTURE		("data/model/ramp.png")
 
-#define	VALUE_MOVE_PLAYER	(1.0f)	// 移動速度
-#define	RATE_MOVE_PLAYER	(0.25f)	// 移動慣性係数
+#define	VALUE_MOVE_PLAYER	(1.0f)		// 移動速度
+#define	RATE_MOVE_PLAYER	(0.25f)		// 移動慣性係数
 #define	VALUE_ROTATE_PLAYER	(4.5f)		// 回転速度
 #define	RATE_ROTATE_PLAYER	(0.1f)		// 回転慣性係数
 
@@ -63,7 +63,7 @@ Player::~Player() {
 //====================================================================================
 void Player::Init() {
 
-	// 位置・回転・スケールの初期設定
+	//----- 位置・回転・スケールなどオブジェクトに必要な初期設定 -----
 	pos = XMFLOAT3(-300.0f, 50.0f, 350.0f);
 	moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -72,6 +72,9 @@ void Player::Init() {
 	collSize = XMFLOAT3(50.0f, 50.0f, 50.0f);
 
 	isCollision = true;
+
+	myTag = PLAYER;
+	collType = Collision::DYNAMIC;
 
 	// モデルデータの読み込み
 	if (!pMyModel) {
@@ -90,14 +93,14 @@ void Player::Init() {
 			MessageBoxA(GetMainWnd(), "プレイヤーモデルデータ読み込みエラー", "InitModel", MB_OK);
 		}
 	}
+
 	// 丸影の生成
 	shadowNum = CreateShadow(pos, 20.0f);
 
-	myTag = PLAYER;
-	collType = Collision::DYNAMIC;
-
+	// HPの初期化
 	hitPoint = MAX_HP;
-	pGameScene->StoragePlayerHP(hitPoint);	// ゲームシーンにHPを保存する
+	// ゲームシーンにHPを保存する
+	pGameScene->StoragePlayerHP(hitPoint);	
 
 	// 弾の予測線の初期化
 	pBulletLine = std::make_unique<BulletLine>();
@@ -133,12 +136,10 @@ void Player::Uninit() {
 //
 //====================================================================================
 void Player::Update() {
-	mapIndex.x = (pos.x + 640.0f) / 80.0f;
-	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
-
-	// カメラの向き取得
+	//----- カメラの向き取得 -----
 	XMFLOAT3 rotCamera = CCamera::Get()->GetAngle();
 
+	//----- 移動の入力処理 -----
 	if (GetKeyPress(VK_A)) {
 		if (GetKeyPress(VK_W)) {
 			// 左前移動
@@ -226,7 +227,6 @@ void Player::Update() {
 		rotModel.y += 360.0f;
 	}
 
-
 	// 移動量に慣性をかける
 	moveVal.x += (0.0f - moveVal.x) * RATE_MOVE_PLAYER;
 	moveVal.y += (0.0f - moveVal.y) * RATE_MOVE_PLAYER;
@@ -237,25 +237,7 @@ void Player::Update() {
 	pos.y += moveVal.y;
 	pos.z += moveVal.z;
 
-	if (pos.x < -630.0f) {
-		pos.x = -630.0f;
-	}
-	if (pos.x > 630.0f) {
-		pos.x = 630.0f;
-	}
-	if (pos.z < -630.0f) {
-		pos.z = -630.0f;
-	}
-	if (pos.z > 630.0f) {
-		pos.z = 630.0f;
-	}
-	if (pos.y < 10.0f) {
-		pos.y = 10.0f;
-	}
-	if (pos.y > 150.0f) {
-		pos.y = 150.0f;
-	}
-
+	//----- 移動をワールド座標に変換 -----
 	XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
 
 	// ワールドマトリックスの初期化
@@ -277,9 +259,11 @@ void Player::Update() {
 	// ワールドマトリックス設定
 	XMStoreFloat4x4(&mtxWorld, _mtxWorld);
 
-	// 丸影の移動
+
+	//----- 丸影の移動 -----
 	MoveShadow(shadowNum, pos);
 
+	//----- 移動中のエフェクト -----
 	if ((moveVal.x * moveVal.x
 		+ moveVal.y * moveVal.y
 		+ moveVal.z * moveVal.z) > 1.0f) {
@@ -301,17 +285,6 @@ void Player::Update() {
 			XMFLOAT2(5.0f, 5.0f), 20);
 	}
 
-	// アニメーション
-	//static double dLastTime = clock() / double(CLOCKS_PER_SEC);
-	//double dNowTime = clock() / double(CLOCKS_PER_SEC);
-	//double dSlice = dNowTime - dLastTime;
-	//dLastTime = dNowTime;
-	//m_animTime += dSlice;
-	//if (m_animTime >= myModel.GetAnimDuration(0)) {
-	//	m_animTime = 0.0;
-	//}
-
-
 	//----- 弾 -----
 	// 弾発射
 	XMFLOAT3 dir = XMFLOAT3(GetMousePosition()->x-SCREEN_WIDTH / 2 - pos.x, 0.0f, -(GetMousePosition()->y - SCREEN_HEIGHT / 2) - pos.z);
@@ -327,10 +300,14 @@ void Player::Update() {
 	pBulletLine->SetDir(dir);
 	pBulletLine->Update();
 
-	// A*に自分の座標を渡す
+	//----- 現在の座標をマップの配列の要素番号におこす -----
+	mapIndex.x = (pos.x + 640.0f) / 80.0f;
+	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
+
+	//----- A*に自分の座標を渡す -----
 	SetPlayerIndex(mapIndex);
 
-	// 座標をゲームシーンに保存
+	//----- 座標をゲームシーンに保存 -----
 	pGameScene->StoragePlayerPos(pos);
 
 	//----- 当たり判定 -----
@@ -357,9 +334,6 @@ void Player::Draw() {
 	// 不透明部分を描画
 	pMyModel->Draw(pDC, mtxWorld, eOpacityOnly);
 
-	// 半透明部分を描画
-	//myModel.SetAnimIndex(1);	// アニメーション
-	//myModel.SetAnimTime(m_animTime);
 	SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
 	SetZWrite(false);				// Zバッファ更新しない
 	pMyModel->Draw(pDC, mtxWorld, eTransparentOnly);

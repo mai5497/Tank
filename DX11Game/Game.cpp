@@ -15,7 +15,6 @@
 #include "DwarfEffect.h"
 #include "smoke.h"
 
-//#include "timer.h"
 #include "HPUI.h"
 
 #include "BG.h"
@@ -59,11 +58,6 @@ void Game::Init() {
 	pMeshField = std::make_unique<MeshField>();
 	pMeshField->Init(16, 14, 80.0f, 80.0f);
 
-	// 背景初期化
-	/*
-	 * タイトルに移動
-	 */
-
 	// 爆発初期化
 	InitExplosion();
 
@@ -72,12 +66,8 @@ void Game::Init() {
 
 	InitDwarfEffect();
 
-
 	// 煙初期化
 	InitSmoke();
-
-	// タイマー初期化
-	//InitTimer();
 
 	// HPUI初期化
 	pHPUI = std::make_unique<HPUI>();
@@ -95,9 +85,6 @@ void Game::Uninit() {
 	// HPUI終了処理
 	pHPUI->Uninit();
 
-	// タイマー終了処理
-	//UninitTimer();
-
 	// 煙終了処理
 	UninitSmoke();
 
@@ -107,11 +94,6 @@ void Game::Uninit() {
 
 	// 爆発終了処理
 	UninitExplosion();
-
-	// 背景終了処理
-	/*
-	* main関数に移動
-	*/
 
 	// フィールド終了処理
 	pMeshField->Uninit();
@@ -153,19 +135,13 @@ void Game::Update() {
 	// 煙更新
 	UpdateSmoke();
 
-	// タイマー更新
-	//UpdateTimer();
-
 	// HPUI更新
 	pHPUI->Update();
 
 
-	// シーン遷移
+	//----- シーン遷移 -----
 	if (enemySum < 1) {
 		Fade::StartFadeOut(SCENE_STAGESUMMARY);
-		//if (stageNum == MAX_STAGE - 1) {
-		//	Fade::StartFadeOut(SCENE_RESULT);
-		//}
 	}
 	if (playerHP < 1) {
 		Fade::StartFadeOut(SCENE_RESULT);
@@ -199,9 +175,6 @@ void Game::Draw() {
 
 	// 爆発描画
 	DrawExplosion();
-
-	// タイマー描画
-	//DrawTimer();
 
 	// HPUI描画
 	pHPUI->Draw();	
