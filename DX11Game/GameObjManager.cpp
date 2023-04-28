@@ -1,3 +1,11 @@
+//************************************************************************************
+// 
+// ゲームオブジェクト管理[GameObjManager.cpp]
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
+
+//-------------------- インクルード部 --------------------
 #include "GameObjManager.h"
 
 #include "fade.h"
@@ -38,19 +46,25 @@ GameObjManager::~GameObjManager() {
 //
 //====================================================================================
 void GameObjManager::Init(Game* _pGameScene) {
+	// ゲームシーンを保存
 	pGameScene = _pGameScene;
+
+	// ステージ数を取得
 	int stageNum = pGameScene->GetStageNum();
 
 	// 当たり判定管理クラスの初期化
 	pCollManager = std::make_shared<Collision>();
 
+	// 敵の数の初期化
 	enemySum = 0;
+	// 何番目のゲームオブジェクトかの変数初期化
 	int gameObjNum = 0;
-	// プレイヤー初期化
+
+	//----- プレイヤー初期化 -----
 	gameObjNum = AddList(std::make_shared<Player>(pGameScene));
 	pGameObjects[gameObjNum]->gameObjNum = gameObjNum;
 	
-
+	//----- マップ番号で配置が決まるオブジェクトの初期化 -----
 	for (int j = 0; j < MAPHEIGHT; j++) {
 		for (int i = 0; i < MAPWIDTH; i++) {
 			std::shared_ptr<GameObject> work;
@@ -66,13 +80,6 @@ void GameObjManager::Init(Game* _pGameScene) {
 			}
 		}
 	}
-
-
-	//for (int i = 0; i < pGameObjects.size(); i++) {
-	//	pGameObjects[i]->Init();
-	//	pCollManager->AddList(pGameObjects[i]);
-	//}
-
 }
 
 //====================================================================================
@@ -81,6 +88,7 @@ void GameObjManager::Init(Game* _pGameScene) {
 //
 //====================================================================================
 void GameObjManager::Uninit() {
+	// オブジェクトの開放
 	int delCnt = pGameObjects.size();
 	for (int i = 0; i < delCnt; i++) {
 		pGameObjects[i]->Uninit();
@@ -118,9 +126,7 @@ void GameObjManager::Draw() {
 	SetZBuffer(true);
 
 	for (int i = 0; i < pGameObjects.size(); i++) {
-
 		pGameObjects[i]->Draw();
-
 	}
 }
 
@@ -140,15 +146,14 @@ int GameObjManager::GetEnemySum() {
 //
 //====================================================================================
 int GameObjManager::AddList(const std::shared_ptr<GameObject>& _pGameobj, bool _isInit) {
-	pGameObjects.emplace_back(_pGameobj);
-	if (_isInit) {
-		if (_pGameobj->myTag == GameObject::ENEMY) {
-			pGameObjects[pGameObjects.size() - 1]->Init();
-		}
+	pGameObjects.emplace_back(_pGameobj);	// リストに追加
+	if (_isInit) {	// 初期化するかどうかデフォルトはする
 		pGameObjects[pGameObjects.size() - 1]->Init();
 	}
+	// 当たり判定のリストへの追加
 	Collision::AddList(_pGameobj);
 
+	// 敵だったら敵の総数を加算
 	if (_pGameobj->myTag == GameObject::ENEMY) {
 		enemySum++;
 	}
@@ -164,17 +169,23 @@ int GameObjManager::AddList(const std::shared_ptr<GameObject>& _pGameobj, bool _
 void GameObjManager::DelList(int _index, bool _isUninit) {
 	updateIndex = _index - 1;	// 今更新しているところがeraseすることにより消えて、消えたところは詰められて更新がうまく回らなくなるため
 
+	// 敵だったら総数を減算
 	if (pGameObjects[_index]->myTag == GameObject::ENEMY) {
 		enemySum--;
 	}
-	if (_isUninit) {
+	// 終了処理
+	if (_isUninit) {	// 基本は終了処理を行う
 		pGameObjects[_index]->Uninit();
 	}
 
+	// リストから削除
 	pGameObjects.erase(pGameObjects.begin() + _index);
 
+	// 何番目のオブジェクトかをきえたオブジェクトの分合わせる
 	for (int i = _index; i < pGameObjects.size(); i++) {
 		pGameObjects[i]->gameObjNum--;
 	}
+
+	// 当たり判定のリストから削除
 	Collision::DelList(_index);
 }

@@ -65,6 +65,7 @@ void BulletLine::Uninit() {
 void BulletLine::Update() {
 	XMStoreFloat3(&dir, XMVector3Normalize(XMLoadFloat3(&dir)));	// ³‹K‰»
 	pos = XMFLOAT3(pObj->pos.x  + dir.x * LINE_WIDTH , 5.0f, pObj->pos.z + dir.z * LINE_WIDTH);
+	//pos = XMFLOAT3(0.0, 5.0f, 0.0);
 	
 	float radian = atan2f(dir.z, dir.x);
 	float degree = radian * 180 / 3.14f;

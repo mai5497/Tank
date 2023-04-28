@@ -17,7 +17,7 @@ std::vector<std::shared_ptr<GameObject>> Collision::pObjects;
 //
 //====================================================================================
 Collision::Collision() {
-	
+
 }
 
 //====================================================================================
@@ -78,7 +78,7 @@ void Collision::Update() {
 				*/
 				continue;
 			} else if (pObjects[j]->isCollision == false ||
-				pObjects[i]->isCollision == false) {
+					   pObjects[i]->isCollision == false) {
 				/*
 				* 当たり判定が無効になっているオブジェクトは当たり判定を無視する
 				*/
@@ -88,12 +88,21 @@ void Collision::Update() {
 			if (CollisionAABB(*pObjects[j], *pObjects[i])) {
 				if (pObjects[j]->collType == Collision::DYNAMIC &&
 					pObjects[i]->collType == Collision::STATIC) {
-					Push(pObjects[j], pObjects[i]);
+					if (pObjects[j]->myTag == GameObject::ObjTag::ENEMY && pObjects[i]->myTag == GameObject::ObjTag::WALL) {
+						break;
+					} else {
+						Push(pObjects[j], pObjects[i]);
+					}
 				} else if (pObjects[j]->collType == Collision::STATIC &&
-					pObjects[i]->collType == Collision::DYNAMIC) {
-					Push(pObjects[i], pObjects[j]);
+						   pObjects[i]->collType == Collision::DYNAMIC) {
+					if (pObjects[i]->myTag == GameObject::ObjTag::ENEMY && pObjects[j]->myTag == GameObject::ObjTag::WALL) {
+						break;
+					} else {
+						Push(pObjects[i], pObjects[j]);
+
+					}
 				} else if (pObjects[j]->collType == Collision::DYNAMIC &&
-					pObjects[i]->collType == Collision::DYNAMIC) {
+						   pObjects[i]->collType == Collision::DYNAMIC) {
 					Push(pObjects[j], pObjects[i]);
 					Push(pObjects[i], pObjects[j]);
 				}
@@ -116,8 +125,7 @@ void Collision::Update() {
 //				球の当たり判定
 //
 //====================================================================================
-bool Collision::CollisionSphere(XMFLOAT3 Apos, float Ar, XMFLOAT3 Bpos, float Br)
-{
+bool Collision::CollisionSphere(XMFLOAT3 Apos, float Ar, XMFLOAT3 Bpos, float Br) {
 	float dx = Apos.x - Bpos.x;
 	float dy = Apos.y - Bpos.y;
 	float dz = Apos.z - Bpos.z;
@@ -147,8 +155,7 @@ bool Collision::CollisionSphere(GameObject A, GameObject B) {
 //				AABB同士の当たり判定
 //
 //====================================================================================
-bool Collision::CollisionAABB(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 Bpos, XMFLOAT3 Bsize)
-{
+bool Collision::CollisionAABB(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 Bpos, XMFLOAT3 Bsize) {
 	return (Apos.x - Asize.x <= Bpos.x + Bsize.x) &&
 		(Bpos.x - Bsize.x <= Apos.x + Asize.x) &&
 		(Apos.y - Asize.y <= Bpos.y + Bsize.y) &&
@@ -158,12 +165,12 @@ bool Collision::CollisionAABB(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 Bpos, XMFL
 }
 
 bool Collision::CollisionAABB(GameObject A, GameObject B) {
-	return (A.pos.x - A.collSize.x/2 <= B.pos.x + B.collSize.x/2) &&
-		(B.pos.x - B.collSize.x/2 <= A.pos.x + A.collSize.x/2) &&
-		(A.pos.y - A.collSize.y/2 <= B.pos.y + B.collSize.y/2) &&
-		(B.pos.y - B.collSize.y/2 <= A.pos.y + A.collSize.y/2) &&
-		(A.pos.z - A.collSize.z/2 <= B.pos.z + B.collSize.z/2) &&
-		(B.pos.z - B.collSize.z/2 <= A.pos.z + A.collSize.z/2);
+	return (A.pos.x - A.collSize.x / 2 <= B.pos.x + B.collSize.x / 2) &&
+		(B.pos.x - B.collSize.x / 2 <= A.pos.x + A.collSize.x / 2) &&
+		(A.pos.y - A.collSize.y / 2 <= B.pos.y + B.collSize.y / 2) &&
+		(B.pos.y - B.collSize.y / 2 <= A.pos.y + A.collSize.y / 2) &&
+		(A.pos.z - A.collSize.z / 2 <= B.pos.z + B.collSize.z / 2) &&
+		(B.pos.z - B.collSize.z / 2 <= A.pos.z + A.collSize.z / 2);
 }
 
 
@@ -172,7 +179,7 @@ bool Collision::CollisionAABB(GameObject A, GameObject B) {
 //				オブジェクトの押出処理
 //
 //====================================================================================
-GameObject* Collision::Push(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 move, XMFLOAT3 Bpos, XMFLOAT3 Bsize){
+GameObject* Collision::Push(XMFLOAT3 Apos, XMFLOAT3 Asize, XMFLOAT3 move, XMFLOAT3 Bpos, XMFLOAT3 Bsize) {
 	//---事前に各オブジェクトの情報を抜き取る
 	//DirectX::XMFLOAT3 dPos = pDynamic->GetPos();
 	//DirectX::XMFLOAT3 sPos = pStatic->GetPos();

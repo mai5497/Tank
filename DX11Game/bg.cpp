@@ -10,12 +10,12 @@
 #include "Texture.h"
 
 //-------------------- 定数定義 --------------------
-#define PATH_TITLE_TEXTURE	L"data/texture/BG_Sky.jpg"
-#define PATH_SELECT_TEXTURE	L"data/texture/BG_Select.png"
-#define BG_POS_X		0.0f
-#define BG_POS_Y		0.0f
-#define BG_WIDTH		SCREEN_WIDTH
-#define BG_HEIGHT		SCREEN_HEIGHT
+#define PATH_TITLE_TEXTURE	(L"data/texture/BG_Sky.jpg")
+#define PATH_SELECT_TEXTURE	(L"data/texture/BG_Select.png")
+#define BG_POS_X			(0.0f)
+#define BG_POS_Y			(0.0f)
+#define BG_WIDTH			(SCREEN_WIDTH)
+#define BG_HEIGHT			(SCREEN_HEIGHT)
 
 std::unique_ptr<Texture> BG::pSkyBG;
 std::unique_ptr<Texture> BG::pSelectBG;
@@ -82,7 +82,7 @@ void BG::Uninit() {
 //
 //====================================================================================
 void BG::Draw(eSCENE _nowScene) {
-	// Zバッファ有効(Zチェック有&Z更新有)
+	// Zバッファ無効
 	SetZBuffer(false);
 
 	ID3D11DeviceContext* pDC = GetDeviceContext();

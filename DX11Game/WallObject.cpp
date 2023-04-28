@@ -20,8 +20,8 @@
 #include "Texture.h"
 
 //-------------------- マクロ定義 --------------------
-#define MODEL_WALLOBJ		"data/model/rubikcube.fbx"
-#define BUMP_WALLOBJ		"data/model/rubikcube_bump.png"
+#define MODEL_WALLOBJ		("data/model/rubikcube.fbx")
+#define TOON_TEXTURE		("data/model/ramp.png")
 #define	WALLOBJ_RADIUS		(55.0f)		// 境界球半径
 
 std::unique_ptr<CAssimpModel> WallObj::pMyModel;
@@ -48,7 +48,7 @@ int WallObj::wallMap[MAX_STAGE][MAPHEIGHT][MAPWIDTH] =
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,
+	1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
@@ -198,6 +198,7 @@ WallObj::WallObj() {
 }
 
 WallObj::WallObj(int mapIndex_x, int mapindex_y) {
+	// インデックスを保存
 	mapIndex.x = mapIndex_x;
 	mapIndex.y = mapindex_y;
 }
@@ -225,20 +226,6 @@ void WallObj::Init() {
 		ID3D11Device* pDevice = GetDevice();
 		ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
 
-		// バンプマップ読込
-		//std::unique_ptr<Texture> _pTexture = std::make_unique<Texture>();		// テクスチャ
-		//_pTexture->SetTexture(pDevice, BUMP_WALLOBJ);
-		//pMyModel->SetShaderMode(CAssimpModel::SM_BUMP);	// バンプマップする		
-		//pMyModel->SetShaderMat(_pTexture->GetTexture());
-		////_pTexture->ReleaseTexture();
-		//_pTexture.reset();
-
-		//if (_pTexture) {
-		//	pDeviceContext->PSSetShaderResources(4, 1, &_pTexture);
-		//} else {
-		//	MessageBoxA(GetMainWnd(), "バンプマップ画像読み込みエラー", "InitWallObj", MB_OK);
-		//}
-
 		// モデルデータ読込
 		if (!pMyModel->Load(pDevice, pDeviceContext, MODEL_WALLOBJ)) {
 			MessageBoxA(GetMainWnd(), "壁モデルデータ読み込みエラー", "InitWallObj", MB_OK);
@@ -254,15 +241,17 @@ void WallObj::Init() {
 		size = XMFLOAT3(1.0f, 1.0f, 1.0f);
 		moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		collRadius = WALLOBJ_RADIUS;
-		collSize = XMFLOAT3(45.0f, 45.0f, 45.0f);
+		collSize = XMFLOAT3(30.0f, 30.0f, 30.0f);
 
 		rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 		isCollision = true;
+		collType = Collision::STATIC;
+		myTag = WALL;
 
 		XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
 
-		pos = XMFLOAT3(mapIndex.x * 80.0f - 640.0f, 25.0f, -mapIndex.y * 80.0f + 480.0f);
+		pos = XMFLOAT3(mapIndex.x * 80.0f + 40.0f - 640.0f, 40.0f, -mapIndex.y * 80.0f - 40.0f + 480.0f);
 		// ワールドマトリックスの初期化
 		_mtxWorld = XMMatrixIdentity();
 
@@ -281,8 +270,6 @@ void WallObj::Init() {
 		// ワールドマトリックス設定
 		XMStoreFloat4x4(&mtxWorld, _mtxWorld);
 	}
-	collType = Collision::STATIC;
-	myTag = WALL;
 }
 
 //====================================================================================
@@ -313,10 +300,8 @@ void WallObj::Update() {
 //====================================================================================
 void WallObj::Draw() {
 	ID3D11DeviceContext* pDC = GetDeviceContext();
-	
-	if (wallMap[mapIndex.y][mapIndex.x] == 0) {
-		return;
-	}
+	SetZWrite(true);				// Zバッファ更新する
+	SetBlendState(BS_NONE);			// アルファブレンド無効
 
 	// 不透明部分を描画
 	pMyModel->Draw(pDC, mtxWorld, eOpacityOnly);
@@ -331,80 +316,3 @@ void WallObj::Draw() {
 	// デバッグ表示
 	//DrawCollisionSphere(this);
 }
-
-//====================================================================================
-//
-//				位置取得
-//
-//====================================================================================
-//XMFLOAT3& GetWallObjPos() {
-//	return g_posModel;
-//}
-
-//====================================================================================
-//
-//				衝突判定
-//
-//====================================================================================
-//void CollisionWallObj() {
-//	//bool isHit;
-//	for (int j = 0; j < MAPHEIGHT; j++) {
-//		for (int i = 0; i < MAPWIDTH; i++) {
-//			if (g_wallMap[j][i] == 0) {
-//				continue;
-//			}
-//
-//			//isHit = CollisionPlayer(g_wallobj[j * MAPNUM + i]->m_pos, g_wallobj[j * MAPNUM + i]->m_radius, g_wallobj[j * MAPNUM + i]->m_size);
-//			
-//			/*
-//			* あとでオブジェクト同士の受け渡し書く！！！！！！
-//			*/
-//			
-//			
-//			//CollisionPlayer(*g_wallobj[j * MAPWIDTH + i]);
-//			//CollisionEnemy(*g_wallobj[j * MAPWIDTH + i]);
-//			
-//			
-//			
-//			
-//			
-//			//if (isHit) {
-//			//	return;
-//			//}
-//		}
-//	}
-//}
-
-/// <summary>
-/// 弾と壁の当たり判定
-/// </summary>
-/// <param name="pos"></param>
-/// <param name="radius"></param>
-/// <param name="damage"></param>
-/// <returns></returns>
-//bool CollisionWalltoBullet(XMFLOAT3 pos, float radius, float damage) {
-//	bool hit;
-//	Collision _collision;
-//	for (int j = 0; j < MAPHEIGHT; j++) {
-//		for (int i = 0; i < MAPWIDTH; i++) {
-//			if (g_wallMap[j][i] == 0) {
-//				continue;
-//			}
-//			hit = _collision.CollisionSphere(g_wallobj[j][i].pos, 45, pos, radius);
-//			if (hit) {
-//				// 爆発開始
-//				int nExp = -1;
-//				if (damage > 0.0f) {
-//					StartExplosion(g_wallobj[j][i].pos, XMFLOAT2(40.0f, 40.0f));
-//					//nExp = SetEffect(g_enemy[i].m_pos, XMFLOAT4(0.85f, 0.05f, 0.25f, 0.80f), XMFLOAT2(8.0f, 8.0f), 50);
-//
-//				} else {
-//					nExp = StartExplosion(g_wallobj[j][i].pos, XMFLOAT2(20.0f, 20.0f));
-//				}
-//				SetExplosionColor(nExp, XMFLOAT4(1.0f, 0.7f, 0.7f, 1.0f));
-//			}
-//		}
-//	}
-//	return hit;
-//}
-

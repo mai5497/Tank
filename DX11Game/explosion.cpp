@@ -75,7 +75,6 @@ HRESULT InitExplosion(void)
 		hr = pTexture->SetTexture(pDevice, TEXTURE_FILENAME);
 		g_mesh.pTexture = pTexture->GetTexture();
 	}
-	//pTexture->ReleaseTexture();
 	pTexture.reset();
 	if (FAILED(hr)) {
 		return hr;
@@ -230,6 +229,9 @@ HRESULT MakeVertexExplosion(ID3D11Device* pDevice)
 	// 一時的な頂点配列を生成
 	g_mesh.nNumVertex = 4;
 	VERTEX_3D* pVertexWk = new VERTEX_3D[g_mesh.nNumVertex];
+
+	// 描画のタイプを設定
+	g_mesh.primitiveType = PT_TRIANGLESTRIP;
 
 	// 頂点配列の中身を埋める
 	pVertexWk[0].vtx = XMFLOAT3(-0.5f,  0.5f, 0.0f);

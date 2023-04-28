@@ -3,22 +3,21 @@
 // 編集者：伊地田真衣
 // 
 //************************************************************************************
-// 背景描画 [bg.h]
 #ifndef __BG_H__
 #define __BG_H__
+
+//-------------------- インクルード部 --------------------
 #include "main.h"
 
 #include "SceneManager.h"
 
+//-------------------- 前方定義 --------------------
 class Texture; 
 
-//===========================
-//
-//	クラス定義
-//
-//===========================
+//-------------------- 背景 --------------------
 class BG {
 public:
+	//---関数
 	BG();
 	~BG();
 
@@ -26,6 +25,7 @@ public:
 	static void Uninit();				// 終了処理
 	static void Draw(eSCENE _nowScene);	// 描画
 private:
+	//---変数
 	static std::unique_ptr<Texture> pSkyBG;
 	static std::unique_ptr<Texture> pSelectBG;
 };

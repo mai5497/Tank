@@ -30,15 +30,14 @@ public:
 	XMFLOAT3& GetPlayerPos();
 private:
 	//---変数
-	static std::unique_ptr<CAssimpModel> pMyModel;
-	XMFLOAT3 rotDestModel;	// 目的の向き
-	double m_animTime;
+	static std::unique_ptr<CAssimpModel> pMyModel;	// モデル
+	XMFLOAT3 rotDestModel;							// 目的の向き
 
-	Game* pGameScene;	// ゲームシーン
+	Game* pGameScene;								// ゲームシーン
 
-	int hitPoint;	// HP
+	int hitPoint;									// HP
 
-	std::unique_ptr<BulletLine> pBulletLine;
+	std::unique_ptr<BulletLine> pBulletLine;		// 弾の出る向きのガイド
 
 };
 

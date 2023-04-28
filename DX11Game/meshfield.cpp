@@ -11,21 +11,19 @@
 
 
 //-------------------- 定数定義 --------------------
-#define	TEXTURE_FILENAME	L"data/texture/field004.jpg"	// テクスチャファイル名
-#define	BUMP_TEXTURE		L"data/texture/field004_bump.png"	// テクスチャファイル名
+#define	TEXTURE_FILENAME	(L"data/texture/field004.jpg")		// テクスチャファイル名
+#define	BUMP_TEXTURE		(L"data/texture/field004_bump.png")	// テクスチャファイル名
 
-#define M_DIFFUSE			XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
-#define M_SPECULAR			XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
+#define M_DIFFUSE			(XMFLOAT4(1.0f,1.0f,1.0f,1.0f))
+#define M_SPECULAR			(XMFLOAT4(0.0f,0.0f,0.0f,1.0f))
 #define M_POWER				(50.0f)
-#define M_AMBIENT			XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
-#define M_EMISSIVE			XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
+#define M_AMBIENT			(XMFLOAT4(1.0f,1.0f,1.0f,1.0f))
+#define M_EMISSIVE			(XMFLOAT4(0.0f,0.0f,0.0f,1.0f))
 
 #define	VALUE_MOVE			(5.0f)							// 移動量
 #define	VALUE_ROTATE		(0.2f)							// 回転量
 
 MESH MeshField::mesh;
-//std::unique_ptr<Texture> MeshField::pTexture;
-
 
 //====================================================================================
 //
@@ -77,25 +75,10 @@ HRESULT MeshField::Init(int nNumBlockX, int nNumBlockZ,
 	if (mesh.pTexture == nullptr) {
 		hr = pTexture->SetTexture(pDevice, TEXTURE_FILENAME);
 		mesh.pTexture = pTexture->GetTexture();
-		//mesh.pTexture = std::move(pTexture->GetTexture());
 	}
-	//pTexture->ReleaseTexture();
 	pTexture.reset();
 
 	XMStoreFloat4x4(&mesh.mtxTexture, XMMatrixIdentity());
-
-	//pShaderTex = std::make_unique<Texture>();
-
-	//hr = pShaderTex->SetTexture(pDevice, BUMP_TEXTURE);
-	//if (FAILED(hr))
-	//	return hr;
-
-	//if (_pTexture) {
-	//	pDC->PSSetShaderResources(4, 1, &_pTexture);
-	//} else {
-	//	MessageBoxA(GetMainWnd(), "バンプマップ画像読み込みエラー", "MeshFieldDraw", MB_OK);
-	//}
-
 
 	// 頂点情報の作成
 	hr = MakeVertexField(pDevice, nNumBlockX, nNumBlockZ,
@@ -112,11 +95,6 @@ HRESULT MeshField::Init(int nNumBlockX, int nNumBlockZ,
 void MeshField::Uninit(void) {
 	// メッシュ解放
 	ReleaseMesh(&mesh);
-
-	// テクスチャ開放
-
-	//pShaderTex->ReleaseTexture();
-	//pShaderTex.reset();
 }
 
 //====================================================================================

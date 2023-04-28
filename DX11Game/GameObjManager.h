@@ -1,20 +1,23 @@
+//************************************************************************************
+// 
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
 #ifndef __GAMEOBJMANAGER_H__
 #define __GAMEOBJMANAGER_H__
 
+//-------------------- インクルード --------------------
 #include "main.h"
 
-#ifdef _DEBUG
-#define MAX_ENEMY			(1)		// 敵最大(デバッグ用)
-#else
-#define MAX_ENEMY			(10)	// 敵最大(ほんちゃん)
-#endif
-
+//-------------------- 前方定義 --------------------
 class GameObject;
 class Collision;
 class Game;
 
+//-------------------- クラス定義 --------------------
 class GameObjManager {
 public:
+	//---関数
 	GameObjManager();
 	~GameObjManager();
 
@@ -29,13 +32,14 @@ public:
 	int GetEnemySum();
 
 private:
-	static int enemySum;
-	static std::vector<std::shared_ptr<GameObject>> pGameObjects;
-	std::shared_ptr<Collision> pCollManager;
+	//---変数
+	static int enemySum;											// 敵の総数
+	static std::vector<std::shared_ptr<GameObject>> pGameObjects;	// オブジェクトたち
+	std::shared_ptr<Collision> pCollManager;						// 当たり判定管理
 
-	static int updateIndex;
+	static int updateIndex;											// 更新するオブジェクトの要素番号
 
-	Game* pGameScene;
+	Game* pGameScene;												// ゲームシーンを保存
 };
 
 

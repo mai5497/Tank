@@ -17,9 +17,11 @@
 #include "GameObjManager.h"
 #include "BulletLine.h"
 #include "Game.h"
+#include "Texture.h"
 
 //-------------------- 定数定義 --------------------
-#define MODEL_ENEMY			"data/model/kobitored.fbx"
+#define MODEL_ENEMY			("data/model/kobitored.fbx")
+#define TOON_TEXTURE		("data/model/ramp.png")
 
 #define	VALUE_MOVE_ENEMY	(0.50f)		// 移動速度
 #define	RATE_MOVE_ENEMY		(0.20f)		// 移動慣性係数
@@ -40,9 +42,11 @@ std::unique_ptr<CAssimpModel> Enemy::pMyModel;
 //
 //====================================================================================
 Enemy::Enemy(int mapIndex_x, int mapindex_y,Game *_pGameScene) {
+	// インデックスを保存
 	mapIndex.x = mapIndex_x;
 	mapIndex.y = mapindex_y;
 
+	// ゲームシーンを保存
 	pGameScene = _pGameScene;
 }
 
@@ -67,6 +71,12 @@ void Enemy::Init() {
 		pMyModel = std::make_unique<CAssimpModel>();
 		ID3D11Device* pDevice = GetDevice();
 		ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
+
+		// トゥーンシェーダー
+		std::unique_ptr<Texture> _pTexture = std::make_unique<Texture>();
+		_pTexture->SetTexture(pDevice, TOON_TEXTURE);
+		pMyModel->SetShaderMode(CAssimpModel::SM_TOON);	// トゥーンシェーダーにする
+		pMyModel->SetShaderMat(_pTexture->GetTexture());
 
 
 		if (!pMyModel->Load(pDevice, pDeviceContext, MODEL_ENEMY)) {
@@ -118,8 +128,10 @@ void Enemy::Uninit() {
 	pBulletLine->Uninit();
 	pBulletLine.reset();
 
+	// 影の解放
 	ReleaseShadow(shadowNum);
 
+	// 探索のルートのvectorの終了
 	rootIndex.clear();
 
 	// モデルの解放
@@ -162,24 +174,26 @@ void Enemy::Update() {
 	mapIndex.x = (pos.x + 640.0f) / 80.0f;
 	mapIndex.y = abs(pos.z - 480.0) / 80.0f;
 
-	// 向かうルートと現在の位置を比較して移動量を決める
-	if ((*rootIndexNum).x != -1 && mapIndex.x < (*rootIndexNum).x) {
-		moveVal.x = VALUE_MOVE_ENEMY;
-		rotDest.y = rotCamera.y - 90.0f;
-	} else if ((*rootIndexNum).x != -1 && mapIndex.x > (*rootIndexNum).x) {
-		moveVal.x = -VALUE_MOVE_ENEMY;
-		rotDest.y = rotCamera.y + 90.0f;
-	} else if ((*rootIndexNum).x == -1 || mapIndex.x == (*rootIndexNum).x) {
-		moveVal.x = 0.0f;
-	}
+	moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-	if ((*rootIndexNum).y != -1 && mapIndex.y < (*rootIndexNum).y) {
-		moveVal.z = -VALUE_MOVE_ENEMY;
-		rotDest.y = rotCamera.y;
-	} else if ((*rootIndexNum).y != -1 && mapIndex.y > (*rootIndexNum).y) {
-		moveVal.z = VALUE_MOVE_ENEMY;
-		rotDest.y = rotCamera.y + 180.0f;
-	} else if ((*rootIndexNum).y == -1 || mapIndex.y == (*rootIndexNum).y) {
+	// 向かうルートと現在の位置を比較して移動量を決める
+	if ((*rootIndexNum).x != -1 && abs(pos.x - ((*rootIndexNum).x * 80 - 640 + 40)) > 1.0f) {
+		if (pos.x - ((*rootIndexNum).x * 80 - 640 + 40) < -1.0f) {
+			moveVal.x = VALUE_MOVE_ENEMY;
+			rotDest.y = rotCamera.y - 90.0f;
+		} else if (pos.x - ((*rootIndexNum).x * 80 - 640 + 40) > 1.0f) {
+			moveVal.x = -VALUE_MOVE_ENEMY;
+			rotDest.y = rotCamera.y + 90.0f;
+		}
+	} else if ((*rootIndexNum).y != -1 && abs(pos.y - ((-(*rootIndexNum).y * 80.0f) - 480.0f)) > 1.0f) {
+		if (pos.y - ((-(*rootIndexNum).y * 80.0f) - 480.0f) < -1.0f) {
+			moveVal.z = -VALUE_MOVE_ENEMY;
+			rotDest.y = rotCamera.y;
+		} else if (pos.y - ((-(*rootIndexNum).y * 80.0f) - 480.0f) > 1.0f) {
+			moveVal.z = VALUE_MOVE_ENEMY;
+			rotDest.y = rotCamera.y + 180.0f;
+		}
+	} else {
 		moveVal.z = 0.0f;
 	}
 
@@ -245,8 +259,9 @@ void Enemy::Update() {
 
 	// プレイヤーの位置取得
 	playerPos = pGameScene->GetPlayerPos();
+	int distanceRate = pGameScene->GetStageNum()+1 / MAX_STAGE-1;
 
-	if (abs(playerPos.x - pos.x + playerPos.z - pos.z) < 300.0f) {
+	if (abs(playerPos.x - pos.x + playerPos.z - pos.z) < 500.0f * distanceRate) {
 		dir = XMFLOAT3(playerPos.x - pos.x, 0.0f, playerPos.z - pos.z);
 	} else {
 		dir = XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33);
@@ -259,11 +274,19 @@ void Enemy::Update() {
 	randomtime = rand() % 3;
 	bulletTimer -= randomtime;
 	if (bulletTimer < 0) {
-		Bullet::FireBullet(
-			pos,
-			XMFLOAT3(dir),
-			BULLET_ENEMY,
-			gameObjNum);
+		if (pGameScene->GetStageNum()+1 > MAX_STAGE / 2) {
+			Bullet::FireBullet(pos, XMFLOAT3(dir), BULLET_ENEMY, gameObjNum, BULLETTYPE_MISSILE);
+		} else {
+			Bullet::FireBullet(pos, XMFLOAT3(dir), BULLET_ENEMY, gameObjNum, BULLETTYPE_NORMAL);
+		}
+		//float angle = 45 * 3.14 / 180;
+
+		//afterDir.x = dir.x * cos(angle) - dir.z * sin(angle);
+		//afterDir.z= dir.x * sin(angle) + dir.z * cos(angle);
+
+
+		//Bullet::FireBullet(pos,XMFLOAT3(bulletWorld._31, bulletWorld._32, bulletWorld._33),BULLET_ENEMY,gameObjNum);
+		//Bullet::FireBullet(pos,XMFLOAT3(-afterDir.x,0,afterDir.z),BULLET_ENEMY,gameObjNum);
 
 		bulletTimer = BULLET_TIME;
 	}
@@ -286,10 +309,12 @@ void Enemy::Update() {
 //
 //====================================================================================
 void Enemy::Draw() {
-	ID3D11DeviceContext* pDC = GetDeviceContext();
+	// 未使用ならスキップ
 	if (!use) {
 		return;
 	}
+
+	ID3D11DeviceContext* pDC = GetDeviceContext();
 
 	// 不透明部分を描画
 	pMyModel->Draw(pDC, mtxWorld, eOpacityOnly);
@@ -304,7 +329,6 @@ void Enemy::Draw() {
 	// 弾の予測線の描画
 	pBulletLine->Draw();
 
-	PrintDebugProc("moveval:%f\n", abs(playerPos.x - pos.x + playerPos.z - pos.z));
 	//PrintDebugProc("moveval:%f,%f\n", moveVal.x, moveVal.y);
 	//PrintDebugProc("mapIndex:%d,%d\n", mapIndex.x, mapIndex.y);
 	//PrintDebugProc("rootIndex:%d,%d\n", (*rootIndexNum).x, (*rootIndexNum).y);
@@ -321,6 +345,7 @@ void Enemy::Destroy() {
 	// 丸影解放
 	ReleaseShadow(shadowNum);
 	shadowNum = -1;
+
 	// 爆発開始
 	pos.x -= moveVal.x;
 	pos.y -= moveVal.y;
@@ -331,7 +356,7 @@ void Enemy::Destroy() {
 	isCollision = false;
 
 	GameObjManager::DelList(gameObjNum, false);		// Uninitがモデルと丸影の開放のみなのでなし。ちょい上で丸影の開放は行った、
-																// モデルの開放はシングルトンの為別の敵描画に影響が出るため行わない
+													// モデルの開放はシングルトンの為別の敵描画に影響が出るため行わない
 }
 
 

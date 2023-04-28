@@ -163,7 +163,6 @@
     <ClCompile Include="AssimpModel.cpp" />
     <ClCompile Include="Astar.cpp" />
     <ClCompile Include="BG.cpp" />
-    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="BulletLine.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -191,7 +190,6 @@
     <ClCompile Include="number.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="polygon.cpp" />
-    <ClCompile Include="polyline.cpp" />
     <ClCompile Include="Result.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Select.cpp" />
@@ -210,7 +208,6 @@
     <ClInclude Include="AssimpModel.h" />
     <ClInclude Include="Astar.h" />
     <ClInclude Include="BG.h" />
-    <ClInclude Include="Boss.h" />
     <ClInclude Include="BulletLine.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
@@ -236,7 +233,6 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="polygon.h" />
-    <ClInclude Include="polyline.h" />
     <ClInclude Include="PressSpace.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Result.h" />

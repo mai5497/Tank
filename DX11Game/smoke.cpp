@@ -14,16 +14,16 @@
 #include "Light.h"
 
 //-------------------- 定数定義 --------------------
-#define	TEXTURE_SMOKE		L"data/texture/FX_Smoke.png"	// 読み込むテクスチャファイル名
-#define	SMOKE_SIZE_X		(50.0f)							// ビルボードの幅
-#define	SMOKE_SIZE_Y		(50.0f)							// ビルボードの高さ
+#define	TEXTURE_SMOKE			(L"data/texture/FX_Smoke.png")	// 読み込むテクスチャファイル名
+#define	SMOKE_SIZE_X			(50.0f)							// ビルボードの幅
+#define	SMOKE_SIZE_Y			(50.0f)							// ビルボードの高さ
 
-#define	MAX_SMOKE			(512)							// ビルボード最大数
+#define	MAX_SMOKE				(512)							// ビルボード最大数
 
-#define MATERIAL_DIFFUSE		XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
-#define MATERIAL_AMBIENT		XMFLOAT4(0,0,0,1)
-#define MATERIAL_SPECULAR		XMFLOAT4(0,0,0,1)
-#define MATERIAL_EMISSIVE		XMFLOAT4(0,0,0,1)
+#define MATERIAL_DIFFUSE		(XMFLOAT4(1.0f,1.0f,1.0f,1.0f))
+#define MATERIAL_AMBIENT		(XMFLOAT4(0,0,0,1))
+#define MATERIAL_SPECULAR		(XMFLOAT4(0,0,0,1))
+#define MATERIAL_EMISSIVE		(XMFLOAT4(0,0,0,1))
 #define MATERIAL_POWER			(1.0f)
 
 //-------------------- 構造体定義 --------------------
@@ -124,13 +124,13 @@ void UpdateSmoke(void)
 			SetVertexSmoke(i, pSmoke->size);
 
 			// 頂点カラーの設定
-			pSmoke->fAlpha -= 0.002f;
+			pSmoke->fAlpha -= 0.01f;
 			if (pSmoke->fAlpha < 0.0f) {
 				pSmoke->fAlpha = 0.0f;
 				pSmoke->use = false;
 				continue;
 			}
-			SetColorSmoke(i, XMFLOAT4(1.0f, 1.0f, 1.0f, pSmoke->fAlpha));
+			SetColorSmoke(i, XMFLOAT4(pSmoke->col.x, pSmoke->col.y, pSmoke->col.z, pSmoke->fAlpha));
 		}
 	}
 }
@@ -283,7 +283,7 @@ void SetColorSmoke(int nIdxSmoke, XMFLOAT4 col)
 //				頂点情報の作成
 //
 //====================================================================================
-int SetSmoke(XMFLOAT3 pos, XMFLOAT2 size)
+int SetSmoke(XMFLOAT3 pos, XMFLOAT2 size,XMFLOAT4 col)
 {
 	int nIdxSmoke = -1;
 
@@ -294,8 +294,8 @@ int SetSmoke(XMFLOAT3 pos, XMFLOAT2 size)
 			XMMATRIX mRot = XMMatrixRotationY(XMConvertToRadians((float)(rand() % 360)));
 			XMVECTOR vAxis = XMVector3TransformNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), mRot);
 			XMStoreFloat3(&pSmoke->vel, XMVector3TransformNormal(XMVectorSet(0.0f, 0.5f, 0.0f, 0.0f), XMMatrixRotationAxis(vAxis, XMConvertToRadians(10))));
-			pSmoke->col = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			pSmoke->fAlpha = 0.2f;
+			pSmoke->col = col;
+			pSmoke->fAlpha = 0.5f;
 			pSmoke->use = true;
 
 			// 頂点座標の設定

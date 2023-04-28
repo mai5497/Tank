@@ -46,7 +46,6 @@ void SetColorEffect(int nIdxEffect, XMFLOAT4 col);
 static MESH				g_mesh;
 static MATERIAL			g_material;
 static TEffect			g_effect[MAX_EFFECT];	// エフェクト情報
-static bool				g_burstFlg;				// 爆散フラグ
 
 //====================================================================================
 //
@@ -310,9 +309,6 @@ int SetEffect(XMFLOAT3 pos, XMFLOAT4 col, XMFLOAT2 size, int nTimer) {
 			g_effect[nCntEffect].move.y = ((rand() % 100) * 2.0f * 0.05f);
 			g_effect[nCntEffect].move.z = rand() % 50 - 25;	// -25~25の乱数
 
-
-
-
 			// 頂点座標の設定
 			SetVertexEffect(nCntEffect, size);
 
@@ -326,23 +322,4 @@ int SetEffect(XMFLOAT3 pos, XMFLOAT4 col, XMFLOAT2 size, int nTimer) {
 	}
 
 	return nIdxEffect;
-}
-
-//====================================================================================
-//
-//				爆散フラグ
-//
-//====================================================================================
-void SetBurstFlg(bool flg) {
-	g_burstFlg = flg;	// フラグのオンオフ
-}
-
-
-//====================================================================================
-//
-//				爆散エフェクト開始
-//
-//====================================================================================
-void StartBurst() {
-
 }
