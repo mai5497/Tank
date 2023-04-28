@@ -20,8 +20,8 @@
 #include "Texture.h"
 
 //-------------------- マクロ定義 --------------------
-#define MODEL_WALLOBJ		"data/model/rubikcube.fbx"
-#define BUMP_WALLOBJ		"data/model/rubikcube_bump.png"
+#define MODEL_WALLOBJ		("data/model/rubikcube.fbx")
+#define TOON_TEXTURE		("data/model/ramp.png")
 #define	WALLOBJ_RADIUS		(55.0f)		// 境界球半径
 
 std::unique_ptr<CAssimpModel> WallObj::pMyModel;
@@ -48,7 +48,7 @@ int WallObj::wallMap[MAX_STAGE][MAPHEIGHT][MAPWIDTH] =
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,
+	1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
@@ -225,19 +225,13 @@ void WallObj::Init() {
 		ID3D11Device* pDevice = GetDevice();
 		ID3D11DeviceContext* pDeviceContext = GetDeviceContext();
 
-		// バンプマップ読込
+		//// バンプマップ読込
 		//std::unique_ptr<Texture> _pTexture = std::make_unique<Texture>();		// テクスチャ
-		//_pTexture->SetTexture(pDevice, BUMP_WALLOBJ);
-		//pMyModel->SetShaderMode(CAssimpModel::SM_BUMP);	// バンプマップする		
+		//_pTexture->SetTexture(pDevice, TOON_TEXTURE);
+		//pMyModel->SetShaderMode(CAssimpModel::SM_TOON);	// トゥーンシェーダーにする		
 		//pMyModel->SetShaderMat(_pTexture->GetTexture());
-		////_pTexture->ReleaseTexture();
 		//_pTexture.reset();
 
-		//if (_pTexture) {
-		//	pDeviceContext->PSSetShaderResources(4, 1, &_pTexture);
-		//} else {
-		//	MessageBoxA(GetMainWnd(), "バンプマップ画像読み込みエラー", "InitWallObj", MB_OK);
-		//}
 
 		// モデルデータ読込
 		if (!pMyModel->Load(pDevice, pDeviceContext, MODEL_WALLOBJ)) {
@@ -254,7 +248,7 @@ void WallObj::Init() {
 		size = XMFLOAT3(1.0f, 1.0f, 1.0f);
 		moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		collRadius = WALLOBJ_RADIUS;
-		collSize = XMFLOAT3(45.0f, 45.0f, 45.0f);
+		collSize = XMFLOAT3(30.0f, 30.0f, 30.0f);
 
 		rotModel = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
@@ -262,7 +256,7 @@ void WallObj::Init() {
 
 		XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate, _mtxScale;
 
-		pos = XMFLOAT3(mapIndex.x * 80.0f - 640.0f, 25.0f, -mapIndex.y * 80.0f + 480.0f);
+		pos = XMFLOAT3(mapIndex.x * 80.0f + 40.0f - 640.0f, 40.0f, -mapIndex.y * 80.0f - 40.0f + 480.0f);
 		// ワールドマトリックスの初期化
 		_mtxWorld = XMMatrixIdentity();
 

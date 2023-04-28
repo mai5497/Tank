@@ -126,9 +126,6 @@
     <ClCompile Include="polygon.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
-    <ClCompile Include="polyline.cpp">
-      <Filter>ソース ファイル\GameSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>ソース ファイル\GameSystem</Filter>
     </ClCompile>
@@ -264,9 +261,6 @@
       <Filter>ヘッダー ファイル\Game</Filter>
     </ClInclude>
     <ClInclude Include="polygon.h">
-      <Filter>ヘッダー ファイル\GameSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="polyline.h">
       <Filter>ヘッダー ファイル\GameSystem</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">

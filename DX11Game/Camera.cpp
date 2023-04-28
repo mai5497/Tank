@@ -12,10 +12,10 @@
 
 //-------------------- グローバル変数定義 --------------------
 namespace {
-	const float CAM_POS_P_X = -40.0f;				// カメラの視点初期位置(X座標)
+	const float CAM_POS_P_X = 0.0f;				// カメラの視点初期位置(X座標)
 	const float CAM_POS_P_Y = 1000.0f;				// カメラの視点初期位置(Y座標)
-	const float CAM_POS_P_Z = -350.0f;				// カメラの視点初期位置(Z座標)
-	const float CAM_POS_R_X = -40.0f;				// カメラの注視点初期位置(X座標)
+	const float CAM_POS_P_Z = -250.0f;				// カメラの視点初期位置(Z座標)
+	const float CAM_POS_R_X = 0.0f;				// カメラの注視点初期位置(X座標)
 	const float CAM_POS_R_Y = 50.0f;				// カメラの注視点初期位置(Y座標)
 	const float CAM_POS_R_Z = 0.0f;					// カメラの注視点初期位置(Z座標)
 	const float VIEW_ANGLE = 45.0f;					// ビュー平面の視野角

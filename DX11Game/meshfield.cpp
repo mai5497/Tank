@@ -77,9 +77,7 @@ HRESULT MeshField::Init(int nNumBlockX, int nNumBlockZ,
 	if (mesh.pTexture == nullptr) {
 		hr = pTexture->SetTexture(pDevice, TEXTURE_FILENAME);
 		mesh.pTexture = pTexture->GetTexture();
-		//mesh.pTexture = std::move(pTexture->GetTexture());
 	}
-	//pTexture->ReleaseTexture();
 	pTexture.reset();
 
 	XMStoreFloat4x4(&mesh.mtxTexture, XMMatrixIdentity());

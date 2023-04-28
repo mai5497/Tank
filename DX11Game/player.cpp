@@ -26,8 +26,8 @@
 #include "BulletLine.h"
 
 //-------------------- ƒ}ƒNƒ’è‹` --------------------
-#define MODEL_PLAYER	"data/model/kobitoblue.fbx"
-#define TOON_TEXTURE	"data/model/ramp.png"
+#define MODEL_PLAYER	("data/model/kobitoblue.fbx")
+#define TOON_TEXTURE	("data/model/ramp.png")
 
 #define	VALUE_MOVE_PLAYER	(1.0f)	// ˆÚ“®‘¬“x
 #define	RATE_MOVE_PLAYER	(0.25f)	// ˆÚ“®Šµ«ŒW”
@@ -314,11 +314,6 @@ void Player::Update() {
 
 	//----- ’e -----
 	// ’e”­ŽË
-	//if (GetKeyRelease(VK_SPACE) || GetMouseRelease(MOUSEBUTTON_L)) {
-	//	Bullet::FireBullet(pos, XMFLOAT3(-mtxWorld._31, -mtxWorld._32, -mtxWorld._33),
-	//		BULLET_PLAYER,
-	//		gameObjNum);
-	//}
 	XMFLOAT3 dir = XMFLOAT3(GetMousePosition()->x-SCREEN_WIDTH / 2 - pos.x, 0.0f, -(GetMousePosition()->y - SCREEN_HEIGHT / 2) - pos.z);
 	if (GetKeyRelease(VK_SPACE) || GetMouseRelease(MOUSEBUTTON_L)) {
 		Bullet::FireBullet(pos, XMFLOAT3(dir.x, dir.y, dir.z),

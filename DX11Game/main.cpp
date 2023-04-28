@@ -12,12 +12,11 @@
 #include "polygon.h"
 #include "debugproc.h"
 #include "mesh.h"
-//#include "polyline.h"
 #include "SceneManager.h"
 #include "number.h"
 #include "Sound.h"
 
-#include "bg.h"
+#include "BG.h"
 
 //-------------------- ライブラリのリンク --------------------
 #pragma comment(lib, "winmm")
@@ -26,7 +25,7 @@
 
 //-------------------- マクロ定義 --------------------
 #define CLASS_NAME		_T("AppClass")			// ウインドウのクラス名
-#define WINDOW_NAME		_T("課題０７")			// ウインドウのキャプション名
+#define WINDOW_NAME		_T("こびとせんそう")	// ウインドウのキャプション名
 
 #define MAX_POLYLINE	(20)					// ポリライン数
 #define THICKNESS		(10.0f)					// 線の太さ
@@ -55,8 +54,6 @@ ID3D11BlendState*			g_pBlendState[MAX_BLENDSTATE];// ブレンド ステート
 ID3D11DepthStencilState*	g_pDSS[2];				// Z/ステンシル ステート
 
 int							g_nCountFPS;			// FPSカウンタ
-
-//TPolyline					g_polyline[MAX_POLYLINE];	// ポリライン情報
 
 std::shared_ptr<SceneManager>		pSceneManager;
 

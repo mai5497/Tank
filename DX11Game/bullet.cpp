@@ -30,10 +30,11 @@
 
 #define BULLET_SPEED			(7.5f)
 #define EBULLET_SPEED			(5.5f)
+#define EMISSILE_SPEED			(9.0f)
 #define BULLET_RADIUS			(10.0f)
 #define BULLET_STRENGTH			(1.0f)
 #define BULLET_GRAVITY			(0.95f)
-								
+
 #define MIN_FIELD_X				(-640.0f)
 #define MAX_FIELD_X				(640.0f)
 
@@ -76,7 +77,7 @@ void Bullet::Init(void) {
 	ID3D11Device* pDevice = GetDevice();
 
 	// 頂点情報の作成
-	MakeVertexBullet(pDevice,BULLET_PLAYER);
+	MakeVertexBullet(pDevice, BULLET_PLAYER);
 
 	// マテリアルの設定
 	material_p.Diffuse = M_DIFFUSE;
@@ -172,40 +173,39 @@ void Bullet::Update() {
 
 		return;
 	}
-	if (type == BULLETTYPE_NORMAL) {
-		if (hitList.size() > 0) {
-			for (int i = 0; i < hitList.size(); i++) {
-				if (myTag == BULLET_PLAYER) {
-					if (hitList[i].myTag == ENEMY) {	// プレイヤーとの当たり判定
-						Destroy();
-						return;
-					} else if (hitList[i].myTag == WALL) {	// 壁との当たり判定
-						Destroy();
-						return;
-					} else if (hitList[i].myTag == BULLET_ENEMY) {	// 弾との当たり判定
-						Destroy();
-						return;
-					}
-				} else if (myTag == BULLET_ENEMY) {
-					if (hitList[i].myTag == PLAYER) {	// プレイヤーとの当たり判定
-						Destroy();
-						return;
-					} else if (hitList[i].myTag == ENEMY) {	// 自分以外の敵との当たり判定
-						if (hitList[i].gameObjNum != fireBulletObjNum) {
-							Destroy();
-						}
-						return;
-					} else if (hitList[i].myTag == WALL) {	// 壁との当たり判定
-						Destroy();
-						return;
-					} else if (hitList[i].myTag == BULLET_PLAYER) {	// 弾との当たり判定
-						Destroy();
-						return;
-					}
+	if (hitList.size() > 0) {
+		for (int i = 0; i < hitList.size(); i++) {
+			if (myTag == BULLET_PLAYER) {
+				if (hitList[i].myTag == ENEMY) {	// プレイヤーとの当たり判定
+					Destroy();
+					return;
+				} else if (hitList[i].myTag == WALL) {	// 壁との当たり判定
+					Destroy();
+					return;
+				} else if (hitList[i].myTag == BULLET_ENEMY) {	// 弾との当たり判定
+					Destroy();
+					return;
 				}
-
+			} else if (myTag == BULLET_ENEMY) {
+				if (hitList[i].myTag == PLAYER) {	// プレイヤーとの当たり判定
+					Destroy();
+					return;
+				} else if (hitList[i].myTag == ENEMY) {	// 自分以外の敵との当たり判定
+					if (hitList[i].gameObjNum != fireBulletObjNum) {
+						Destroy();
+					}
+					return;
+				} else if (hitList[i].myTag == WALL) {	// 壁との当たり判定
+					Destroy();
+					return;
+				} else if (hitList[i].myTag == BULLET_PLAYER) {	// 弾との当たり判定
+					Destroy();
+					return;
+				}
 			}
+
 		}
+
 	}
 
 	// 丸影移動
@@ -214,6 +214,8 @@ void Bullet::Update() {
 	if (type == BULLETTYPE_NORMAL) {
 		// 煙生成
 		SetSmoke(pos, XMFLOAT2(8.0f, 8.0f));
+	} else if (type == BULLETTYPE_MISSILE) {
+		SetSmoke(pos, XMFLOAT2(8.0f, 8.0f), XMFLOAT4(1.0, 1.0f, 0.0f, 1.0f));
 	}
 
 }
@@ -293,7 +295,7 @@ void Bullet::Draw() {
 //				発射
 //
 //====================================================================================
-void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag,int objNum, EBulletType _type) {
+void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag, int objNum, EBulletType _type) {
 	std::shared_ptr<Bullet> pBullet = std::make_shared<Bullet>();
 
 	pBullet->Init();
@@ -306,19 +308,26 @@ void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag,int objNum, EB
 		pBullet->moveVal.y = _dir.y * BULLET_SPEED;
 		pBullet->moveVal.z = _dir.z * BULLET_SPEED;
 	} else {
-		pBullet->moveVal.x = _dir.x * EBULLET_SPEED;
-		pBullet->moveVal.y = _dir.y * EBULLET_SPEED;
-		pBullet->moveVal.z = _dir.z * EBULLET_SPEED;
+		if (_type == BULLETTYPE_NORMAL) {
+			pBullet->moveVal.x = _dir.x * EBULLET_SPEED;
+			pBullet->moveVal.y = _dir.y * EBULLET_SPEED;
+			pBullet->moveVal.z = _dir.z * EBULLET_SPEED;
+		} else if (_type == BULLETTYPE_MISSILE) {
+			pBullet->moveVal.x = _dir.x * EMISSILE_SPEED;
+			pBullet->moveVal.y = _dir.y * EMISSILE_SPEED;
+			pBullet->moveVal.z = _dir.z * EMISSILE_SPEED;
+		}
 	}
+
 	pBullet->shadowNum = CreateShadow(_pos, BULLET_RADIUS);
 	XMFLOAT4X4 _mtxWorld;
 	XMStoreFloat4x4(&_mtxWorld,
-		XMMatrixTranslation(pBullet->pos.x, pBullet->pos.y, pBullet->pos.z));
+					XMMatrixTranslation(pBullet->pos.x, pBullet->pos.y, pBullet->pos.z));
 	pBullet->use = true;
 	pBullet->type = _type;
 	pBullet->isCollision = true;
 	pBullet->myTag = _tag;
-	pBullet->fireBulletObjNum = objNum;
+	pBullet->fireBulletObjNum = objNum;	// 撃ったオブジェクトの番号を保存する
 
 	pBullet->gameObjNum = GameObjManager::AddList(pBullet, false);	// 上ですでに初期化はしているので初期化は必要ない
 
@@ -332,7 +341,7 @@ void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag,int objNum, EB
 //====================================================================================
 void Bullet::MakeVertexBullet(ID3D11Device* pDevice, ObjTag _objType) {
 	// 一時的な頂点配列を生成
-	MESH *pWork;
+	MESH* pWork;
 	if (_objType == BULLET_PLAYER) {
 		pWork = &mesh_p;
 	} else {
@@ -399,6 +408,6 @@ void Bullet::Destroy() {
 
 	isCollision = false;
 
-	GameObjManager::DelList(gameObjNum,false);
+	GameObjManager::DelList(gameObjNum, false);
 }
 
