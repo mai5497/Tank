@@ -3,12 +3,17 @@
 // 編集者：伊地田真衣
 // 
 //************************************************************************************
-#pragma once
+#ifndef __CAMERA_H__
+#define __CAMERA_H__
+
+//-------------------- インクルード部 --------------------
 #include "main.h"
 #include "SceneManager.h"
 
+//-------------------- クラス定義 --------------------
 class CCamera {
 private:
+	//---変数
 	XMFLOAT3 m_vPos;				// 視点
 	XMFLOAT3 m_vTarget;				// 注視点
 	XMFLOAT3 m_vUp;					// 上方ベクトル
@@ -27,6 +32,7 @@ private:
 	static CCamera* m_pCamera;		// 現在のカメラ
 
 public:
+	//---関数
 	CCamera();
 
 	void Init();
@@ -53,3 +59,5 @@ public:
 	static CCamera* Get() { return m_pCamera; }
 	static void Set(CCamera* pCamera) { m_pCamera = pCamera; }
 };
+
+#endif // !__CAMERA_H__

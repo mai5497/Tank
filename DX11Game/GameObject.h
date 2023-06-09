@@ -3,17 +3,19 @@
 // 編集者：伊地田真衣
 // 
 //************************************************************************************
-
 #ifndef __GAMEOBJECT_H__
 #define __GAMEOBJECT_H__
 
+//-------------------- インクルード部 --------------------
 #include "main.h"
 #include "AssimpModel.h"
 #include "collision.h"
 
+//-------------------- クラス定義 --------------------
 class GameObject {
 public:
-	enum ObjTag {
+	//---列挙定数
+	enum ObjTag {	// オブジェクトの種類
 		NONE = 0,
 		PLAYER,
 		ENEMY,

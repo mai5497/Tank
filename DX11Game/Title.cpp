@@ -19,6 +19,7 @@
 #include "Particle.h"
 
 //-------------------- 定数定義 --------------------
+#define TITLE_TEX			(L"data/texture/title.png")
 #define TITLE_POS_X			(0.0f)
 #define TITLE_POS_Y			(0.0f)
 #define TITLE_WIDTH			(SCREEN_WIDTH)
@@ -26,10 +27,6 @@
 #define MOVIETIMER			(600)
 #define FADETIMER			(120)
 
-//-------------------- グローバル変数定義 --------------------
-static LPCWSTR g_pszTexFName = {
-	L"data/texture/title.png"
-};
 
 //====================================================================================
 //

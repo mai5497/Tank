@@ -17,13 +17,7 @@ class Texture;
 //-------------------- クラス定義 --------------------
 class Result : public Scene {
 public:
-	enum TEXNUM {
-		TEX_BG = 0,
-		TEX_TIMER,
-
-		MAX_TEXTURE,
-	};
-
+	//---関数
 	Result(int _stageNum);
 	~Result();
 
@@ -33,12 +27,12 @@ public:
 	virtual void Draw();	// 描画
 
 private:
+	//---変数
 	static std::unique_ptr<Texture> pFrame;		// UI枠
 	static std::unique_ptr<Texture> pAllClear;	// UIオールクリア
 	static std::unique_ptr<Texture> pStageChar;	// UI「ステージ」の文字
 
-
-	int stageNum;	// ステージの番号
+	int stageNum;								// ステージの番号
 
 };
 #endif

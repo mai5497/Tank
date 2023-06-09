@@ -5,24 +5,25 @@
 //************************************************************************************
 #ifndef __SELECT_UI_H__
 #define __SELECT_UI_H__
+
+//-------------------- インクルード部 --------------------
 #include "main.h"
 
+//-------------------- 前方定義 --------------------
 class Texture;
 
-//===========================
-//
-//	クラス定義
-//
-//===========================
+//-------------------- クラス定義 --------------------
 class SelectUI {
 public:
+	//---列挙定数
 	enum SELECT{
 		START = 0,
 		TUTORIAL,
-		SCORE,
 
 		MAX
 	};
+
+	//---関数
 	SelectUI();
 	~SelectUI();
 
@@ -31,9 +32,10 @@ public:
 	int Update();					// 更新
 	void Draw();	// 描画
 private:
+	//---変数
 	static std::unique_ptr<Texture> pUI;
 	static std::unique_ptr<Texture> pBox;
 
-	int selectNum;
+	int selectNum;		// 選択番号
 };
 #endif

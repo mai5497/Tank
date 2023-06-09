@@ -1,13 +1,22 @@
+//************************************************************************************
+// 
+// A*[Astar.cpp]
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
+
+//-------------------- インクルード部 --------------------
 #include "Astar.h"
 #include "WallObject.h"
 #include "enemy.h"
 #include "player.h"
 
+//-------------------- 定数定義 --------------------
 #define ARRAY_NUM(a) (sizeof(a)/sizeof(a[0]))
 #define NODE_MAX 1000
 
 
-
+//-------------------- 構造体 --------------------
 struct NODE {
     int i;
     int j;
@@ -20,18 +29,24 @@ struct LIST {
     int index;
 };
 
+//-------------------- グローバル変数 --------------------
 int g_Map[MAPHEIGHT][MAPWIDTH];
-//XMINT2 g_root[(MAPHEIGHT-2)*(MAPWIDTH-2)];
 std::vector<XMINT2> g_root;
 XMINT2 g_playerIndex=XMINT2(0,0);
 XMINT2 g_enemyIndex;
 
+//-------------------- プロトタイプ宣言 --------------------
 NODE* create_node(int i, int j, int cost);
 int g(NODE* s, NODE* n);
 int h(NODE* e, NODE* n);
 void search_node(LIST* open, LIST* close, NODE* s, NODE* e, NODE* n, NODE* m);
 
 
+//====================================================================================
+//
+//				ノード作成
+//
+//====================================================================================
 NODE* create_node(int i, int j, int cost) {
     static NODE n[NODE_MAX];
     static int index = 0;
@@ -41,14 +56,29 @@ NODE* create_node(int i, int j, int cost) {
     return &n[index++];
 }
 
+//====================================================================================
+//
+//				実コストを返す
+//
+//====================================================================================
 int g(NODE* s, NODE* n) {
     return n->cost;
 }
 
+//====================================================================================
+//
+//				推定コストを返す
+//
+//====================================================================================
 int h(NODE* e, NODE* n) {
     return 0;
 }
 
+//====================================================================================
+//
+//				経路探索
+//
+//====================================================================================
 void search_node(LIST* open, LIST* close, NODE* s, NODE* e, NODE* n, NODE* m) {
     int in_open = -1;
     int in_close = -1;
@@ -94,15 +124,18 @@ void search_node(LIST* open, LIST* close, NODE* s, NODE* e, NODE* n, NODE* m) {
 }
 
 
+//====================================================================================
+//
+//				経路探索
+//
+//====================================================================================
 std::vector<XMINT2> search_Root(XMINT2 _index) {
     FILE* fp;
-    //char map[MAPHEIGHT][MAPWIDTH];
-    //char buf[28];
 
     /*i = y j = x*/
     int i = 0;
     int j = 0;
-    //std::vector<XMINT2>::iterator rootIndex = g_root.begin();
+
     int loop = 0;
     NODE s = { 0,0,0 };
     NODE e = { 0,0,0 };
@@ -133,8 +166,6 @@ std::vector<XMINT2> search_Root(XMINT2 _index) {
     s.j = _index.x;
     open.node[open.index++] = &s;
 
-    //XMINT2 playerIndex/* = SetPlayerIndex()*/;
-    //XMINT2 playerIndex = XMINT2(12,1);// x,yの順
     e.i = g_playerIndex.y;
     e.j = g_playerIndex.x;
 
@@ -162,10 +193,6 @@ std::vector<XMINT2> search_Root(XMINT2 _index) {
 
         // openからリストがなくなったので終了する
         if (n == NULL) {
-            //ルートが見つかりませんでした
-            //*rootIndex = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
-            //g_root.push_back(XMINT2( - 1, -1));
-
             std::vector<XMINT2> pRoot = g_root;
             return pRoot;
         }
@@ -180,8 +207,6 @@ std::vector<XMINT2> search_Root(XMINT2 _index) {
 
                 n = n->parent;
             }
-            //*rootIndex = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
-            //g_root.push_back(XMINT2(-1, -1));
 
             std::vector<XMINT2> pRoot = g_root;
             return pRoot;
@@ -212,24 +237,15 @@ std::vector<XMINT2> search_Root(XMINT2 _index) {
         if (loop++ > 1000) {  break; }  // 探索エラー
     }
 
-    //for (i = 0; i < ARRAY_NUM(map); i++) {
-    //    for (j = 0; j < 26; j++) {
-    //        printf("%c", map[i][j]);
-    //    }
-    //    printf("\n");
-    //}
-
-    //*rootIndex = XMINT2(-1, -1);    // ルートの要素番号がマイナスになることはありえないので、最後尾として判別させる
-    //g_root.push_back(XMINT2(-1, -1));
-
     std::vector<XMINT2> pRoot = g_root;
     return pRoot;
 }
 
-/// <summary>
-/// マップ情報の登録
-/// </summary>
-/// <param name="Map"></param>
+//====================================================================================
+//
+//				マップの登録
+//
+//====================================================================================
 void SetMap(int *Map) {
     for (int j = 0; j < MAPHEIGHT; j++) {
         for (int i = 0; i < MAPWIDTH; i++) {
@@ -238,9 +254,11 @@ void SetMap(int *Map) {
     }
 }
 
-/// <summary>
-/// Playerの座標をもとにしたMapの配列の要素番号
-/// </summary>
+//====================================================================================
+//
+//				プレイヤーの座標をマップの要素番号にしたものを格納
+//
+//====================================================================================
 void SetPlayerIndex(XMINT2 _index) {
     g_playerIndex = _index;
 }

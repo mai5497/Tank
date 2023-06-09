@@ -15,6 +15,7 @@
 #include "effect.h"
 #include "debugproc.h"
 #include "GameObjManager.h"
+#include "Sound.h"
 
 //-------------------- 定数定義 --------------------
 #define	PLAYERBULLET_FILENAME	(L"data/texture/bullet_p.png")	// テクスチャ ファイル名
@@ -305,6 +306,7 @@ void Bullet::FireBullet(XMFLOAT3 _pos, XMFLOAT3 _dir, ObjTag _tag, int objNum, E
 
 	pBullet->Init();	// 初期化
 
+	CSound::Play(SE_NORMALBULLET);
 
 	// 方向ベクトルを正規化
 	XMStoreFloat3(&_dir, XMVector3Normalize(XMLoadFloat3(&_dir)));
@@ -402,6 +404,8 @@ void Bullet::MakeVertexBullet(ID3D11Device* pDevice, ObjTag _objType) {
 //====================================================================================
 void Bullet::Destroy() {
 	use = false;
+
+	CSound::Play(SE_DAMAGE);
 	
 	// 丸影解放
 	ReleaseShadow(shadowNum);

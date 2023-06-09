@@ -8,17 +8,15 @@
 //-------------------- インクルード部 --------------------
 #include "Fade.h"
 #include "polygon.h"
-//#include "Sound.h"
 
 //-------------------- 静的メンバ --------------------
 eSCENE Fade::nextScene = SCENE_NONE;
 eFade Fade::stateFade = FADE_NONE;
+float Fade::alpha;
 
 //-------------------- 定数定義 --------------------
 #define FADE_RATE	0.02f		// フェードインフェードアウトの速度
 
-//-------------------- グローバル変数定義 --------------------
-float g_alpha;
 
 //====================================================================================
 //
@@ -26,7 +24,6 @@ float g_alpha;
 //
 //====================================================================================
 Fade::Fade(){
-	//eNowScene = Scene::SCENE_NONE;
 	Init();
 }
 
@@ -51,7 +48,7 @@ void Fade::Init() {
 	red = 1.0f;		// フェードアウト色
 	green = 1.0f;
 	blue = 1.0f;
-	g_alpha = 1.0f;	// 透明度
+	alpha = 1.0f;	// 透明度
 	stateFade = FADE_IN;
 	nextScene = SCENE_TITLE;
 }
@@ -64,7 +61,7 @@ void Fade::Init() {
 //====================================================================================
 void Fade::Uninit() {
 	stateFade = FADE_NONE;
-	g_alpha = 0.0f;
+	alpha = 0.0f;
 }
 
 
@@ -78,24 +75,22 @@ void Fade::Update() {
 	case FADE_NONE:
 		break;
 	case FADE_OUT:
-		g_alpha += FADE_RATE;		// 不透明度を増す
-		if (g_alpha >= 1.0f) {
+		alpha += FADE_RATE;		// 不透明度を増す
+		if (alpha >= 1.0f) {
 			// フェードイン処理に切り替え
-			g_alpha = 1.0f;
+			alpha = 1.0f;
 			stateFade = FADE_IN;
 			SceneManager::SetScene(nextScene);
 		}
 		//CSound::SetVolume(1.0f - g_fAlpha);
 		break;
 	case FADE_IN:
-		g_alpha -= FADE_RATE;		// 透明度を増す
-		if (g_alpha <= 0.0f) {
+		alpha -= FADE_RATE;		// 透明度を増す
+		if (alpha <= 0.0f) {
 			// フェードインを終了する
-			g_alpha = 0.0f;
+			alpha = 0.0f;
 			stateFade = FADE_NONE;
 		}
-		// ボリュームもフェードイン
-		//CSound::SetVolume(1.0f - g_fAlpha);
 		break;
 	default:
 		break;
@@ -119,7 +114,7 @@ void Fade::Draw() {
 	SetPolygonFrameSize(1.0f, 1.0f);
 	SetPolygonTexture(nullptr);
 	SetPolygonColor(red, green, blue);
-	SetPolygonAlpha(g_alpha);
+	SetPolygonAlpha(alpha);
 	DrawPolygon(GetDeviceContext());
 	// 元に戻す
 	SetPolygonColor(1.0f, 1.0f, 1.0f);
@@ -140,7 +135,7 @@ void Fade::StartFadeOut(eSCENE eScene) {
 	if (stateFade != FADE_OUT) {
 		//eNowScene = eScene;
 		stateFade = FADE_OUT;
-		g_alpha = 0.0f;
+		alpha = 0.0f;
 		nextScene = eScene;
 	}
 }

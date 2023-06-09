@@ -20,7 +20,7 @@
 #define M_AMBIENT			XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
 #define M_EMISSIVE			XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
 
-#define MAX_SHADOW			(5000)
+#define MAX_SHADOW			(100)
 
 //-------------------- ç\ë¢ëÃíËã` --------------------
 typedef struct {
