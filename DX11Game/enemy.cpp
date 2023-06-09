@@ -177,23 +177,42 @@ void Enemy::Update() {
 	moveVal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	// 向かうルートと現在の位置を比較して移動量を決める
-	if ((*rootIndexNum).x != -1 && abs(pos.x - ((*rootIndexNum).x * 80 - 640 + 40)) > 1.0f) {
-		if (pos.x - ((*rootIndexNum).x * 80 - 640 + 40) < -1.0f) {
-			moveVal.x = VALUE_MOVE_ENEMY;
-			rotDest.y = rotCamera.y - 90.0f;
-		} else if (pos.x - ((*rootIndexNum).x * 80 - 640 + 40) > 1.0f) {
-			moveVal.x = -VALUE_MOVE_ENEMY;
-			rotDest.y = rotCamera.y + 90.0f;
-		}
-	} else if ((*rootIndexNum).y != -1 && abs(pos.y - ((-(*rootIndexNum).y * 80.0f) - 480.0f)) > 1.0f) {
-		if (pos.y - ((-(*rootIndexNum).y * 80.0f) - 480.0f) < -1.0f) {
-			moveVal.z = -VALUE_MOVE_ENEMY;
-			rotDest.y = rotCamera.y;
-		} else if (pos.y - ((-(*rootIndexNum).y * 80.0f) - 480.0f) > 1.0f) {
-			moveVal.z = VALUE_MOVE_ENEMY;
-			rotDest.y = rotCamera.y + 180.0f;
-		}
-	} else {
+	//if ((*rootIndexNum).x != -1 && abs(pos.x - ((*rootIndexNum).x * 80 - 640 + 40)) > 1.0f) {
+	//	if (pos.x - ((*rootIndexNum).x * 80 - 640 + 40) < -1.0f) {
+	//		moveVal.x = VALUE_MOVE_ENEMY;
+	//		rotDest.y = rotCamera.y - 90.0f;
+	//	} else if (pos.x - ((*rootIndexNum).x * 80 - 640 + 40) > 1.0f) {
+	//		moveVal.x = -VALUE_MOVE_ENEMY;
+	//		rotDest.y = rotCamera.y + 90.0f;
+	//	}
+	//} else if ((*rootIndexNum).y != -1 && abs(pos.y - ((-(*rootIndexNum).y * 80.0f) - 480.0f)) > 1.0f) {
+	//	if (pos.y - ((-(*rootIndexNum).y * 80.0f) - 480.0f) < -1.0f) {
+	//		moveVal.z = -VALUE_MOVE_ENEMY;
+	//		rotDest.y = rotCamera.y;
+	//	} else if (pos.y - ((-(*rootIndexNum).y * 80.0f) - 480.0f) > 1.0f) {
+	//		moveVal.z = VALUE_MOVE_ENEMY;
+	//		rotDest.y = rotCamera.y + 180.0f;
+	//	}
+	//} else {
+	//	moveVal.z = 0.0f;
+	//}
+	if ((*rootIndexNum).x != -1 && mapIndex.x < (*rootIndexNum).x) {
+		moveVal.x = VALUE_MOVE_ENEMY;
+		rotDest.y = rotCamera.y - 90.0f;
+	} else if ((*rootIndexNum).x != -1 && mapIndex.x > (*rootIndexNum).x) {
+		moveVal.x = -VALUE_MOVE_ENEMY;
+		rotDest.y = rotCamera.y + 90.0f;
+	} else if ((*rootIndexNum).x == -1 || mapIndex.x == (*rootIndexNum).x) {
+		moveVal.x = 0.0f;
+	}
+
+	if ((*rootIndexNum).y != -1 && mapIndex.y < (*rootIndexNum).y) {
+		moveVal.z = -VALUE_MOVE_ENEMY;
+		rotDest.y = rotCamera.y;
+	} else if ((*rootIndexNum).y != -1 && mapIndex.y > (*rootIndexNum).y) {
+		moveVal.z = VALUE_MOVE_ENEMY;
+		rotDest.y = rotCamera.y + 180.0f;
+	} else if ((*rootIndexNum).y == -1 || mapIndex.y == (*rootIndexNum).y) {
 		moveVal.z = 0.0f;
 	}
 
@@ -354,6 +373,8 @@ void Enemy::Destroy() {
 	int nExp = StartDwarfEffect(pos);
 
 	isCollision = false;
+
+	CSound::Play(SE_KILL);
 
 	GameObjManager::DelList(gameObjNum, false);		// Uninitがモデルと丸影の開放のみなのでなし。ちょい上で丸影の開放は行った、
 													// モデルの開放はシングルトンの為別の敵描画に影響が出るため行わない

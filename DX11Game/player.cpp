@@ -15,6 +15,7 @@
 #include "Texture.h"
 
 #include "fade.h"
+#include "Sound.h"
 
 #include "shadow.h"
 #include "explosion.h"
@@ -316,8 +317,14 @@ void Player::Update() {
 			if (hitList[i].myTag == BULLET_ENEMY) {
 				// ’e‚Æ“–‚½‚Á‚½Žž
 				hitPoint--;	//HP‚ðŒ¸‚ç‚·
-			
+		
 				pGameScene->StoragePlayerHP(hitPoint);	// ƒQ[ƒ€ƒV[ƒ“‚ÉHP‚ð•Û‘¶‚·‚é
+				
+				if (hitPoint > 0) {
+					CSound::Play(SE_DAMAGE);
+				} else {
+					CSound::Play(SE_KILL);
+				}
 			}
 		}
 	}

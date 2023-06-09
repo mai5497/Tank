@@ -24,10 +24,10 @@
 #define PARTICLE_TIME			(120)		// è¡Ç¶ÇÈÇ‹Ç≈ÇÃéûä‘
 
 
-#define MATERIAL_DIFFUSE		XMFLOAT4(1,1,1,1)
-#define MATERIAL_AMBIENT		XMFLOAT4(0,0,0,1)
-#define MATERIAL_SPECULAR		XMFLOAT4(0,0,0,1)
-#define MATERIAL_EMISSIVE		XMFLOAT4(0,0,0,1)
+#define MATERIAL_DIFFUSE		(XMFLOAT4(1,1,1,1))
+#define MATERIAL_AMBIENT		(XMFLOAT4(0,0,0,1))
+#define MATERIAL_SPECULAR		(XMFLOAT4(0,0,0,1))
+#define MATERIAL_EMISSIVE		(XMFLOAT4(0,0,0,1))
 #define MATERIAL_POWER			(1.0f)
 
 std::unique_ptr<Texture> Particle::pTexture;

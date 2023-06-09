@@ -3,12 +3,18 @@
 // 編集者：伊地田真衣
 // 
 //************************************************************************************
-#pragma once
+#ifndef __LIGHT_H__
+#define __LIGHT_H__
+
+//-------------------- インクルード部 --------------------
 #include "main.h"
 
+
+//-------------------- クラス定義 --------------------
 class CLight
 {
 private:
+	//---変数
 	XMFLOAT4 m_diffuse;
 	XMFLOAT4 m_ambient;
 	XMFLOAT4 m_specular;
@@ -16,6 +22,7 @@ private:
 	bool m_bEnable;			// ライティング有効/無効
 
 public:
+	//---関数
 	CLight();
 
 	void Init();
@@ -28,3 +35,5 @@ public:
 
 	static CLight* Get();
 };
+
+#endif // !__LIGHT_H__

@@ -113,6 +113,7 @@ void Result::Uninit() {
 void Result::Update() {
 	//クリックまたは[Enter]押下
 	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_RETURN)) {
+		// SE再生
 		CSound::Play(SE_DECIDE);
 		//セレクト画面へ
 		Fade::StartFadeOut(SCENE_TITLE);
@@ -143,7 +144,7 @@ void Result::Draw() {
 	DrawPolygon(pDC);
 
 
-	if (stageNum >= MAX_STAGE) {
+	if (stageNum >= MAX_STAGE) {	// 全クリ
 		// 「ステージ」の文字
 		SetPolygonFrameSize(1.0f, 1.0f);
 		SetPolygonSize(STAGECHAR_WIDTH, STAGECHAR_HEIGHT);

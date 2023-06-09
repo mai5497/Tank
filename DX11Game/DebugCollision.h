@@ -7,9 +7,10 @@
 #ifndef __DEBUGCOLLISION_H__
 #define __DEBUGCOLLISION_H__
 
-
+//-------------------- 前方定義 --------------------
 class GameObject;
 
+//-------------------- プロトタイプ宣言 --------------------
 void DrawCollisionSphere(GameObject* gameobject);
 
 #endif

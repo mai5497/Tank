@@ -1,3 +1,10 @@
+//************************************************************************************
+// 
+// 弾の発射する向きのガイド[BulletLine.cpp]
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
+//-------------------- インクルード --------------------
 #include "BulletLine.h"
 #include "Light.h"
 #include "Camera.h"
@@ -6,27 +13,43 @@
 #include "input.h"
 
 //-------------------- 定数定義 --------------------
-#define	TEX_FILENAME	(L"data/texture/FX_BulletLine.png")	// テクスチャ ファイル名
+#define	TEX_FILENAME			(L"data/texture/FX_BulletLine.png")	// テクスチャ ファイル名
 #define LINE_WIDTH				(50)
 #define LINE_HEIGHT				(10)
 
-#define M_DIFFUSE				XMFLOAT4(1.0f,1.0f,1.0f,1.0f)
-#define M_SPECULAR				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
+#define M_DIFFUSE				(XMFLOAT4(1.0f,1.0f,1.0f,1.0f))
+#define M_SPECULAR				(XMFLOAT4(0.0f,0.0f,0.0f,1.0f))
 #define M_POWER					(1.0f)
-#define M_AMBIENT				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
-#define M_EMISSIVE				XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
+#define M_AMBIENT				(XMFLOAT4(0.0f,0.0f,0.0f,1.0f))
+#define M_EMISSIVE				(XMFLOAT4(0.0f,0.0f,0.0f,1.0f))
 
 
+//====================================================================================
+//
+//				コンストラクタ
+//
+//====================================================================================
 BulletLine::BulletLine() {
 
 }
 
+//====================================================================================
+//
+//				デストラクタ
+//
+//====================================================================================
 BulletLine::~BulletLine() {
 
 }
 
+
+//====================================================================================
+//
+//				初期化
+//
+//====================================================================================
 void BulletLine::Init(GameObject *_pObj) {
-	pObj = _pObj;
+	pObj = _pObj;	// ガイドを出すオブジェクト
 
 	ID3D11Device* pDevice = GetDevice();
 
@@ -51,26 +74,33 @@ void BulletLine::Init(GameObject *_pObj) {
 	XMStoreFloat4x4(&line.mtxTexture, XMMatrixIdentity());
 	XMStoreFloat4x4(&line.mtxWorld, XMMatrixIdentity());
 
+	// ガイドを出す方向、位置を算出
 	dir = XMFLOAT3(-pObj->mtxWorld._31, -pObj->mtxWorld._32, -pObj->mtxWorld._33);
 	pos = XMFLOAT3(pObj->pos.x + dir.x*LINE_WIDTH, 5.0f, pObj->pos.z + dir.z*LINE_WIDTH);
 	angle = XMFLOAT3(90.0f, pObj->rotModel.y + 90.0f, pObj->rotModel.z);
 
+	// ワールド座標に格納
 	XMStoreFloat4x4(&line.mtxWorld, XMMatrixTranslation(pos.x,pos.y,pos.z));
 }
 
 void BulletLine::Uninit() {
+	// メッシュの開放
 	ReleaseMesh(&line);
 }
 
 void BulletLine::Update() {
-	XMStoreFloat3(&dir, XMVector3Normalize(XMLoadFloat3(&dir)));	// 正規化
+	// 正規化
+	XMStoreFloat3(&dir, XMVector3Normalize(XMLoadFloat3(&dir)));
+	// 座標の算出
 	pos = XMFLOAT3(pObj->pos.x  + dir.x * LINE_WIDTH , 5.0f, pObj->pos.z + dir.z * LINE_WIDTH);
-	//pos = XMFLOAT3(0.0, 5.0f, 0.0);
-	
+
+	// 角度の算出
 	float radian = atan2f(dir.z, dir.x);
 	float degree = radian * 180 / 3.14f;
 	angle = XMFLOAT3(90.0f, -degree, pObj->rotModel.z);
 
+
+	//----- 座標や角度をワールド座標に変換 -----
 	XMMATRIX _mtxWorld, _mtxRot, _mtxTranslate;
 
 	// ワールドマトリックスの初期化
@@ -87,7 +117,6 @@ void BulletLine::Update() {
 
 	// ワールドマトリックス設定
 	XMStoreFloat4x4(&line.mtxWorld, _mtxWorld);
-
 }
 
 void BulletLine::Draw() {

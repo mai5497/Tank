@@ -21,6 +21,7 @@ class Texture;
 //-------------------- クラス定義 --------------------
 class Title : public Scene {
 public:
+	//---関数
 	Title();
 	~Title();
 
@@ -30,13 +31,14 @@ public:
 	virtual void Draw();	// 描画
 
 private:
+	//---変数
 	std::unique_ptr<TitleLogo> pLogo;			// タイトルロゴ
 	std::unique_ptr<PressSpace> pStart;			// プレススペース
 	std::unique_ptr<Particle> pParticle;		// パーティクル
 
-	int resetTimer;
-	int fadeTimer;
-	bool isFade;
+	int resetTimer;	// シーンをリスタートする時間
+	int fadeTimer;	// フェードに入るまでの待機時間
+	bool isFade;	// フェードに入る許可フラグ
 };
 
 #endif // !__TITLE_H__

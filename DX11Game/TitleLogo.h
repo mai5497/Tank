@@ -1,16 +1,25 @@
+//************************************************************************************
+// 
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
+
 #ifndef __TITLELOGO_H__
 #define __TITLELOGO_H__
 
+//-------------------- インクルード部 --------------------
 #include "main.h"
 #include "polygon.h"
 #include "Texture.h"
 
+//-------------------- 定数 --------------------
 #define SPRING_TOTAL	(4)	// ゴムひも総数
 #define STRING_TOTAL	(6)	// 文字数
 
-
+//-------------------- クラス定義 --------------------
 class TitleLogo {
 public:
+	//---関数
 	TitleLogo();
 	~TitleLogo();
 
@@ -21,6 +30,7 @@ public:
 	void Draw();
 
 private:
+	//---変数
 	static LPCWSTR pszTexFName; 
 
 	static std::unique_ptr<Texture> pTexture;
@@ -39,7 +49,6 @@ private:
 	};
 
 	SPRING springs[STRING_TOTAL][SPRING_TOTAL];
-
 };
 
 

@@ -26,6 +26,7 @@ Collision::Collision() {
 //
 //====================================================================================
 Collision::~Collision() {
+	// オブジェクトの解放
 	int delCnt = pObjects.size();
 	for (int i = 0; i < delCnt; i++) {
 		pObjects[i].reset();
@@ -110,12 +111,8 @@ void Collision::Update() {
 				// 当たっているものリストへの追加
 				pObjects[i]->hitList.emplace_back(*pObjects[j]);
 				pObjects[j]->hitList.emplace_back(*pObjects[i]);
-			} /*else {
-				pObjects[i]->isHit = false;
-				pObjects[j]->isHit = false;
-			}*/
+			} 
 		}
-
 	}
 }
 

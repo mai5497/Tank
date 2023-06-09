@@ -9,6 +9,7 @@
 #include "input.h"
 
 #include "fade.h"
+#include "Sound.h"
 
 #include "bg.h"
 #include "SelectUI.h"
@@ -37,8 +38,12 @@ Select::~Select() {
 //
 //====================================================================================
 void Select::Init() {
+	// UI表示のシーン初期化
 	pUI = std::make_unique<SelectUI>();
 	pUI->Init();
+
+	// BGM再生
+	CSound::Play(BGM_MODE);
 }
 
 //====================================================================================
@@ -47,6 +52,10 @@ void Select::Init() {
 //
 //====================================================================================
 void Select::Uninit() {
+	// BGM再生停止
+	CSound::Stop(BGM_MODE);
+
+	// UI表示のシーン終了
 	pUI->Uninit();
 	pUI.reset();
 }
@@ -61,12 +70,13 @@ void Select::Update() {
 	
 	// 決定キーが押されたらシーン遷移
 	if (GetMouseRelease(MOUSEBUTTON_L) || GetKeyRelease(VK_SPACE)) {
+		// SE再生
+		CSound::Play(SE_DECIDE);
+
 		if (_select == SelectUI::START) {
 			Fade::StartFadeOut(SCENE_STAGESUMMARY);
 		} else if (_select == SelectUI::TUTORIAL) {
 			Fade::StartFadeOut(SCENE_TUTORIAL);
-		} else if (_select == SelectUI::SCORE) {
-			Fade::StartFadeOut(SCENE_GAME);
 		}
 	}
 }

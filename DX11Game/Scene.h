@@ -6,10 +6,13 @@
 #ifndef __SCENE_H__
 #define __SCENE_H__
 
+//-------------------- インクルード部 --------------------
 #include "main.h"
 
+//-------------------- クラス定義 --------------------
 class Scene {
 public:
+	//---変数
 	Scene();
 	virtual ~Scene();
 

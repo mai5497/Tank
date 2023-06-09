@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include "input.h"
 #include "fade.h"
+#include "Sound.h"
 
 #include "bg.h"
 
@@ -46,6 +47,9 @@ void Tutorial::Init() {
 
 	pUI = std::make_unique<Texture>();
 	pUI->SetTexture(pDevice,PATH_UI_TEXTURE);
+	
+	// BGMÄ¶
+	CSound::Play(BGM_MODE);
 }
 
 
@@ -55,6 +59,9 @@ void Tutorial::Init() {
 //
 //====================================================================================
 void Tutorial::Uninit() {
+	// BGMÄ¶’âŽ~
+	CSound::Stop(BGM_MODE);
+
 	pUI->ReleaseTexture();
 	pUI.reset();
 }

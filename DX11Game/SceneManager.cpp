@@ -4,6 +4,7 @@
 // 編集者：伊地田真衣
 // 
 //************************************************************************************
+//-------------------- インクルード --------------------
 #include "SceneManager.h"
 #include "Scene.h"
 
@@ -20,7 +21,6 @@
 
 #include "WallObject.h"
 
-//-------------------- グローバル変数定義 --------------------
 eSCENE SceneManager::nextScene = SCENE_NONE;
 
 //====================================================================================
@@ -48,14 +48,9 @@ void SceneManager::Init() {
 	stageNum = -1;	// ステージ番号は0から シーンはいるときに加算するので-1で初期化
 
 	// 最初はタイトル画面
-#if 1
 	nowScene = nextScene = SCENE_TITLE;
 	if(!pNowScene)pNowScene = std::make_shared<Title>();
-#else
-	stageNum++;
-	nowScene = nextScene = SCENE_GAME;
-	if (!pNowScene)pNowScene = std::make_shared<Game>(stageNum);
-#endif
+
 	pNowScene->Init();
 
 	// フェードの初期化

@@ -15,14 +15,16 @@
 //-------------------- 前方定義 --------------------
 class GameObject;
 
-//-------------------- プロトタイプ宣言 --------------------
+//-------------------- クラス定義 --------------------
 class Collision {
 public:
+	//---列挙定数
 	enum eCollisionType {
 		DYNAMIC = 0,
 		STATIC,
 	};
 
+	//---関数
 	Collision();
 	~Collision();
 
@@ -40,6 +42,7 @@ public:
 	void Push(std::shared_ptr<GameObject> A, std::shared_ptr<GameObject> B);
 
 private:
+	//---変数
 	static std::vector<std::shared_ptr<GameObject>> pObjects;
 	static int updateIndex;
 };

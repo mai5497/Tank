@@ -18,6 +18,7 @@
 //-------------------- クラス定義 --------------------
 class Particle {
 public:
+	//---関数
 	Particle();
 	~Particle();
 
@@ -26,7 +27,8 @@ public:
 	void Update();
 	void Draw();
 
-	//---パーティクル関連
+	//---変数
+	// パーティクル関連
 	struct PARTICLE {
 		int status;					// 状態
 		int timer;					// タイマー	
@@ -43,6 +45,7 @@ public:
 	PARTICLE particles[PARTICLE_MAX];
 
 private:
+	//---変数
 	static std::unique_ptr<Texture> pTexture;
 
 	bool isButtonOnce;	// 一度だけ入力をうけつける

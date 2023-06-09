@@ -1,3 +1,10 @@
+//************************************************************************************
+// 
+// デバッグ用境界球表示[DebugCollision.cpp]
+// 編集者：伊地田真衣
+// 
+//************************************************************************************
+
 //-------------------- インクルード部 --------------------
 #include "DebugCollision.h"
 #include "AssimpModel.h"
@@ -10,13 +17,6 @@
 #define M_POWER			(1.0f)
 #define M_AMBIENT		XMFLOAT4(0.0f,1.0f,0.0f,0.3f)
 #define M_EMISSIVE		XMFLOAT4(0.0f,0.0f,0.0f,1.0f)
-
-//#define	VALUE_MOVE_PLAYER	(0.155f)	// 移動速度
-//#define	RATE_MOVE_PLAYER	(0.025f)	// 移動慣性係数
-//#define	VALUE_ROTATE_PLAYER	(4.5f)		// 回転速度
-//#define	RATE_ROTATE_PLAYER	(0.1f)		// 回転慣性係数
-//
-//#define	PLAYER_RADIUS		(10.0f)		// 境界球半径
 
 //-------------------- グローバル変数定義 --------------------
 static MESH			g_mesh;					// メッシュ情報
@@ -130,11 +130,6 @@ void DrawCollisionSphere(GameObject* gameobject) {
 	mtxScale = XMMatrixScaling(_GameObject.size.x, _GameObject.size.y, _GameObject.size.z);
 	mtxWorld = XMMatrixMultiply(mtxScale, mtxWorld);
 
-	// 回転を反映
-	//mtxRot = XMMatrixRotationRollPitchYaw(XMConvertToRadians(g_rotModel.x),
-	//	XMConvertToRadians(g_rotModel.y), XMConvertToRadians(g_rotModel.z));
-	//mtxWorld = XMMatrixMultiply(mtxWorld, mtxRot);
-
 	// 移動を反映
 	mtxTranslate = XMMatrixTranslation(_GameObject.pos.x, _GameObject.pos.y, _GameObject.pos.z);
 	mtxWorld = XMMatrixMultiply(mtxWorld, mtxTranslate);
@@ -148,12 +143,6 @@ void DrawCollisionSphere(GameObject* gameobject) {
 	ID3D11DeviceContext* pDC = GetDeviceContext();
 
 	g_mesh.primitiveType = PT_TRIANGLE;
-	//PT_UNDEFINED = 0,
-	//	PT_POINT,
-	//	PT_LINE,
-	//	PT_LINESTRIP,
-	//	PT_TRIANGLE,
-	//	PT_TRIANGLESTRIP,
 
 	// 半透明部分を描画
 	SetBlendState(BS_ALPHABLEND);	// アルファブレンド有効
